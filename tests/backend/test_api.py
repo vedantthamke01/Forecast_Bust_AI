@@ -60,10 +60,41 @@ async def test_risk_map():
         assert resp.status_code == 200
         data = resp.json()
         assert "grid" in data
-        assert len(data["grid"]) > 0
-        first_cell = data["grid"][0]
-        assert "bust_probability" in first_cell
-        assert "risk_badge" in first_cell
+        grid = data["grid"]
+        assert len(grid) == 25
+        assert data["grid_points_count"] == 25
+        assert data["model_version"] == "model_real_v002"
+        assert data["data_type"] == "REAL"
+        assert data["dataset_version"] == "dataset_real_v002"
+
+        seen_coords = set()
+        probs = []
+        for cell in grid:
+            assert "latitude" in cell
+            assert "longitude" in cell
+            assert "bust_probability" in cell
+            assert "reliability_score" in cell
+            assert "risk_badge" in cell
+            assert "risk_level" in cell
+            assert "forecast_value" in cell
+
+            # Valid geographic bounds for India
+            assert 8.0 <= cell["latitude"] <= 36.0
+            assert 68.0 <= cell["longitude"] <= 98.0
+
+            # Unique coordinate check (no overlapping duplicate stations)
+            coord = (round(cell["latitude"], 4), round(cell["longitude"], 4))
+            assert coord not in seen_coords
+            seen_coords.add(coord)
+
+            # Valid probability and reliability intervals
+            assert 0.0 <= cell["bust_probability"] <= 1.0
+            assert 0.0 <= cell["reliability_score"] <= 1.0
+            probs.append(cell["bust_probability"])
+
+        # Genuine spatial variation: not all stations have identical bust probability
+        assert min(probs) != max(probs)
+        assert len(set(probs)) >= 3
 
 
 @pytest.mark.asyncio
@@ -134,4 +165,41 @@ async def test_health_and_model_provenance_consistency():
         # Health demo_mode documentation must clarify that demo_mode is a weather provider fallback
         assert "demo_mode" in health_data
         assert "demo_mode_description" in health_data
+
+
+@pytest.mark.asyncio
+async def test_risk_map_multi_variable_and_horizons():
+    """
+    Validates that /api/risk/map correctly adapts to different meteorological
+    variables (precipitation, temperature, wind, pressure) and lead times (72h, 120h, 240h).
+    """
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # 1. Test Temperature across Indian sectors (must reflect orographic lapse rates)
+        temp_resp = await client.get("/api/risk/map?lead_hours=96&variable=temperature")
+        assert temp_resp.status_code == 200
+        temp_data = temp_resp.json()
+        assert temp_data["variable"] == "temperature"
+        temp_vals = [pt["forecast_value"] for pt in temp_data["grid"]]
+        # High altitude stations (e.g. Shimla) must be cooler than coastal plains (e.g. Chennai)
+        assert min(temp_vals) < 22.0
+        assert max(temp_vals) > 28.0
+
+        # 2. Test Wind variable
+        wind_resp = await client.get("/api/risk/map?lead_hours=120&variable=wind")
+        assert wind_resp.status_code == 200
+        wind_data = wind_resp.json()
+        assert wind_data["variable"] == "wind"
+        wind_vals = [pt["forecast_value"] for pt in wind_data["grid"]]
+        assert min(wind_vals) >= 0.0
+        assert max(wind_vals) > 8.0
+
+        # 3. Test Lead Horizon sensitivity: 72h vs 240h
+        resp_72 = await client.get("/api/risk/map?lead_hours=72&variable=precipitation")
+        resp_240 = await client.get("/api/risk/map?lead_hours=240&variable=precipitation")
+        assert resp_72.status_code == 200
+        assert resp_240.status_code == 200
+        data_72 = resp_72.json()
+        data_240 = resp_240.json()
+        assert data_72["forecast_horizon_hours"] == 72
+        assert data_240["forecast_horizon_hours"] == 240
 

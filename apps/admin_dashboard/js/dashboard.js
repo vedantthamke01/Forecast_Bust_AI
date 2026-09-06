@@ -405,6 +405,11 @@ async function loadMapRiskGrid() {
           fillOpacity: 0.85
         }).addTo(state.leafletMap);
 
+        let unit = "mm";
+        if (state.variable === "temperature") unit = "°C";
+        else if (state.variable === "wind") unit = "m/s";
+        else if (state.variable === "pressure") unit = "hPa";
+
         const popupContent = `
           <div style="color: #0f172a; font-family: sans-serif; font-size: 12px; min-width: 170px;">
             <strong style="font-size: 14px;">${pt.name}</strong><br>
@@ -412,7 +417,7 @@ async function loadMapRiskGrid() {
             <hr style="margin: 4px 0; border: 0; border-top: 1px solid #ccc;">
             <span>Horizon: <strong>Day ${pt.forecast_horizon_hours/24} (${pt.forecast_horizon_hours}h)</strong></span><br>
             <span>Bust Risk: <strong>${(pt.bust_probability * 100).toFixed(1)}% (${pt.risk_badge})</strong></span><br>
-            <span>Forecast: ${pt.forecast_value} mm</span>
+            <span>Forecast: ${pt.forecast_value} ${unit}</span>
           </div>
         `;
         circle.bindPopup(popupContent);

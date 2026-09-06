@@ -73,7 +73,42 @@ class BustPredictionService:
         include_explanation: bool = True
     ) -> Dict[str, Any]:
         """Calculates calibrated bust probability and risk categorization."""
-        p_val = forecast_val if forecast_val is not None else 25.0
+        var_clean = (variable or "precipitation").lower().strip()
+        if var_clean == "temperature":
+            f_temp = forecast_val if forecast_val is not None else forecast_temp
+            f_precip = 5.0
+            f_wind = forecast_wind
+            f_press = forecast_press
+            f_hum = forecast_hum
+            display_val = f_temp
+        elif var_clean == "wind":
+            f_temp = forecast_temp
+            f_precip = 5.0
+            f_wind = forecast_val if forecast_val is not None else forecast_wind
+            f_press = forecast_press
+            f_hum = forecast_hum
+            display_val = f_wind
+        elif var_clean == "pressure":
+            f_temp = forecast_temp
+            f_precip = 5.0
+            f_wind = forecast_wind
+            f_press = forecast_val if forecast_val is not None else forecast_press
+            f_hum = forecast_hum
+            display_val = f_press
+        elif var_clean == "humidity":
+            f_temp = forecast_temp
+            f_precip = 5.0
+            f_wind = forecast_wind
+            f_press = forecast_press
+            f_hum = forecast_val if forecast_val is not None else forecast_hum
+            display_val = f_hum
+        else:  # default precipitation
+            f_temp = forecast_temp
+            f_precip = forecast_val if forecast_val is not None else 25.0
+            f_wind = forecast_wind
+            f_press = forecast_press
+            f_hum = forecast_hum
+            display_val = f_precip
 
         # Construct single-instance DataFrame for feature extraction
         row_dict = {
@@ -81,11 +116,11 @@ class BustPredictionService:
             "lead_hours": lead_hours,
             "latitude": latitude,
             "longitude": longitude,
-            "forecast_temperature": forecast_temp,
-            "forecast_precipitation": p_val,
-            "forecast_wind": forecast_wind,
-            "forecast_pressure": forecast_press,
-            "forecast_humidity": forecast_hum,
+            "forecast_temperature": f_temp,
+            "forecast_precipitation": f_precip,
+            "forecast_wind": f_wind,
+            "forecast_pressure": f_press,
+            "forecast_humidity": f_hum,
             "forecast_cloud_cover": 50.0,
             "ensemble_spread": ensemble_spread,
             "run_revision": run_revision
@@ -161,7 +196,7 @@ class BustPredictionService:
             "forecast_horizon_hours": lead_hours,
             "forecast_day": int(lead_hours // 24),
             "variable": variable,
-            "forecast_value": p_val,
+            "forecast_value": round(float(display_val), 1),
             "bust_probability": bust_prob,
             "bust_probability_percentage": round(bust_prob * 100, 1),
             "reliability_score": reliability,
@@ -181,29 +216,60 @@ class BustPredictionService:
     def get_spatial_risk_grid(self, lead_hours: int = 96, variable: str = "precipitation") -> List[Dict[str, Any]]:
         """Computes spatial grid of bust risk across major Indian synoptic sectors."""
         grid_points = []
+        var_lower = (variable or "precipitation").lower().strip()
+
         for city in INDIAN_CITIES_DB:
             lat = city["lat"]
             lon = city["lon"]
             name = city["name"]
+            elev = city.get("elevation", 100.0)
 
-            # Climatological proxy based on region
-            spread = 1.0 + (lead_hours / 24.0) * 0.35
-            rev = 0.4 + (lead_hours / 48.0) * 0.2
-            if lead_hours == 96 and city["name"] in ["Pune", "Mumbai", "Bhubaneswar"]:
-                spread = 3.8
-                rev = 2.4
-                fc_precip = 42.0
-            else:
-                fc_precip = 12.0
+            # Atmospheric predictability decay with forecast horizon (Day 1 to Day 10)
+            base_spread = 1.0 + (lead_hours / 24.0) * 0.32
+            base_rev = 0.35 + (lead_hours / 48.0) * 0.18
+
+            # Physical / climatological baselines based on geographic region and elevation
+            is_coastal_or_ghats = name in ["Pune", "Mumbai", "Bhubaneswar", "Panaji", "Thiruvananthapuram", "Chennai", "Visakhapatnam"]
+            is_mountain = elev > 1000.0 or name in ["Shimla", "Srinagar", "Dehradun", "Shillong"]
+
+            # Elevation temperature lapse rate (~6.5°C per 1000m)
+            climo_temp = max(10.0, round(32.0 - (elev / 1000.0) * 6.5, 1))
+
+            if var_lower == "temperature":
+                city_val = climo_temp
+                spread = base_spread + (0.5 if is_mountain else 0.0)
+                rev = base_rev
+            elif var_lower == "wind":
+                city_val = 11.5 if is_coastal_or_ghats else (8.0 if is_mountain else 5.5)
+                spread = base_spread + (0.4 if is_coastal_or_ghats else 0.0)
+                rev = base_rev
+            elif var_lower == "pressure":
+                city_val = round(1013.25 - (elev / 100.0) * 0.8, 1)
+                spread = base_spread
+                rev = base_rev
+            else:  # Precipitation / default
+                if is_coastal_or_ghats:
+                    city_val = 35.0
+                    spread = base_spread + 0.6
+                    rev = base_rev + 0.4
+                elif is_mountain:
+                    city_val = 20.0
+                    spread = base_spread + 0.4
+                    rev = base_rev + 0.2
+                else:
+                    city_val = 12.0
+                    spread = base_spread
+                    rev = base_rev
 
             risk = self.predict_risk(
                 latitude=lat,
                 longitude=lon,
                 lead_hours=lead_hours,
                 variable=variable,
-                forecast_val=fc_precip,
-                ensemble_spread=spread,
-                run_revision=rev,
+                forecast_val=city_val,
+                forecast_temp=climo_temp,
+                ensemble_spread=round(spread, 2),
+                run_revision=round(rev, 2),
                 include_explanation=False
             )
             grid_points.append({

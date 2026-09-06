@@ -14,13 +14,19 @@ router = APIRouter(prefix="/datasets", tags=["Dataset Management & Quality"])
 @router.get("/status")
 async def get_dataset_status():
     """Returns dataset status adhering to Section 35 specification."""
-    real_meta_file = os.path.join("datasets", "metadata", "dataset_real_v001.json")
-    demo_meta_file = os.path.join("datasets", "metadata", "dataset_v001.json")
-    meta_file = real_meta_file if os.path.exists(real_meta_file) else demo_meta_file
+    meta_candidates = [
+        os.path.join("datasets", "metadata", "dataset_real_v002.json"),
+        os.path.join("datasets", "metadata", "dataset_real_v001.json"),
+        os.path.join("datasets", "metadata", "dataset_v001.json"),
+    ]
+    meta_file = next((f for f in meta_candidates if os.path.exists(f)), None)
 
-    real_qc_file = os.path.join("datasets", "metadata", "quality_report_real.json")
-    demo_qc_file = os.path.join("datasets", "metadata", "quality_report.json")
-    qc_file = real_qc_file if os.path.exists(real_qc_file) else demo_qc_file
+    qc_candidates = [
+        os.path.join("datasets", "metadata", "quality_report_real_v002.json"),
+        os.path.join("datasets", "metadata", "quality_report_real.json"),
+        os.path.join("datasets", "metadata", "quality_report.json"),
+    ]
+    qc_file = next((f for f in qc_candidates if os.path.exists(f)), None)
 
     meta = {}
     if os.path.exists(meta_file):
@@ -48,11 +54,14 @@ async def get_dataset_status():
 @router.get("/quality")
 async def get_dataset_quality():
     """Returns real dataset quality report calculated from active records (Section 17)."""
-    real_qc_file = os.path.join("datasets", "metadata", "quality_report_real.json")
-    demo_qc_file = os.path.join("datasets", "metadata", "quality_report.json")
-    qc_file = real_qc_file if os.path.exists(real_qc_file) else demo_qc_file
+    qc_candidates = [
+        os.path.join("datasets", "metadata", "quality_report_real_v002.json"),
+        os.path.join("datasets", "metadata", "quality_report_real.json"),
+        os.path.join("datasets", "metadata", "quality_report.json"),
+    ]
+    qc_file = next((f for f in qc_candidates if os.path.exists(f)), None)
 
-    if not os.path.exists(qc_file):
+    if not qc_file or not os.path.exists(qc_file):
         raise HTTPException(status_code=404, detail="Data quality report not found. Run setup_data or prepare_real first.")
 
     with open(qc_file, "r") as f:

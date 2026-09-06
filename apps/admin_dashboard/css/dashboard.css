@@ -1,6 +1,7 @@
 /* ==============================================================================
-   NCMRWF AI-Based Forecast Bust Detection Platform - Stylesheet
-   Design Philosophy: Clean, Scientific, Data-First, Accessible, Professional
+   NCMRWF AI-Based Forecast Bust Detection Platform - Enhanced Dashboard Stylesheet
+   Project: SIH26079 (MoES / NCMRWF India)
+   Design Philosophy: Scientific Rigor, Visual Excellence, Dynamic Interactivity
    ============================================================================== */
 
 :root {
@@ -29,7 +30,8 @@
   --risk-very-high: #ef4444;
   --risk-very-high-bg: rgba(239, 68, 68, 0.15);
 
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -49,9 +51,12 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Header & Top Bar */
+/* ==============================================================================
+   Header & Top Bar
+   ============================================================================== */
 .navbar {
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
@@ -62,6 +67,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
+  backdrop-filter: blur(8px);
 }
 
 .brand-section {
@@ -71,14 +77,15 @@ body {
 }
 
 .brand-badge {
-  background-color: #1e3a8a;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
   color: #bfdbfe;
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.6rem;
   border-radius: var(--radius-sm);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .brand-title {
@@ -90,6 +97,12 @@ body {
   gap: 0.5rem;
 }
 
+.brand-id-tag {
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: var(--text-muted);
+}
+
 .brand-sub {
   font-size: 0.8rem;
   color: var(--text-secondary);
@@ -99,31 +112,71 @@ body {
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
+  flex-wrap: wrap;
 }
 
-.demo-pill {
-  background: rgba(56, 189, 248, 0.1);
-  color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  padding: 0.25rem 0.65rem;
+.mode-pill {
+  padding: 0.3rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.mode-pill.live-mode {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.mode-pill.scenario-mode {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
 .pulse-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--accent-primary);
-  box-shadow: 0 0 8px var(--accent-primary);
+  background-color: currentColor;
+  box-shadow: 0 0 8px currentColor;
+  animation: pulse-ring 2s infinite ease-in-out;
 }
 
-/* Tabs Navigation */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.provenance-chip {
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--accent-primary);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--risk-low);
+}
+
+/* ==============================================================================
+   Tabs Navigation
+   ============================================================================== */
 .tabs-bar {
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
@@ -138,7 +191,7 @@ body {
   border: none;
   color: var(--text-secondary);
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   padding: 0.85rem 1.15rem;
   cursor: pointer;
@@ -157,12 +210,14 @@ body {
   font-weight: 600;
 }
 
-/* Main Content Container */
+/* ==============================================================================
+   Main Content Container
+   ============================================================================== */
 .main-container {
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.25rem 1.75rem;
   flex: 1;
 }
 
@@ -181,123 +236,489 @@ body {
   border-left: 4px solid var(--accent-primary);
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.82rem;
   color: var(--text-secondary);
+  gap: 1rem;
 }
 
-/* Card System */
-.card {
-  background-color: var(--bg-card);
+.org-tag {
+  font-weight: 600;
+  color: var(--accent-primary);
+  white-space: nowrap;
+}
+
+/* ==============================================================================
+   Compact Visual Pipeline Summary (Judge Overview)
+   ============================================================================== */
+.pipeline-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.pipeline-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pipeline-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.step-num-badge {
+  background-color: var(--accent-secondary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.pipeline-tag {
+  font-size: 0.75rem;
+  color: var(--risk-low);
+  font-weight: 600;
+}
+
+.pipeline-mini-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.flow-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.65rem;
+  text-align: center;
+  min-width: 105px;
+  flex: 1;
+  transition: all 0.2s ease;
+}
+
+.flow-item:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-card-hover);
+}
+
+.flow-item.active-live {
+  border-color: var(--risk-low);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.flow-step {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.flow-item.active-live .flow-step {
+  background: var(--risk-low);
+  color: #0b1120;
+}
+
+.flow-name {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.flow-sub {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.flow-arrow {
+  color: var(--text-muted);
+  font-weight: bold;
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+/* ==============================================================================
+   Judge Workflow Step A, B, C Container
+   ============================================================================== */
+.judge-workflow-box {
+  background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 1.25rem;
   margin-bottom: 1.25rem;
 }
 
-.card-title {
-  font-size: 1rem;
+.workflow-section {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.step-badge {
+  background: var(--accent-secondary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.05em;
+}
+
+.step-badge-mini {
+  background: var(--accent-secondary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.section-title {
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-/* Grid Layouts */
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-}
-
-.grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-}
-
-.dashboard-hero {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
-/* Location Bar & Controls */
-.controls-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 0.9rem 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
-.search-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-  max-width: 420px;
-}
-
-.input-field {
-  background-color: var(--bg-primary);
-  border: 1px solid var(--border-color);
+.coverage-badge-historical {
+  font-size: 0.75rem;
+  color: var(--risk-low);
+  font-weight: 600;
+  margin-left: auto;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 0.2rem 0.6rem;
   border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  padding: 0.55rem 0.85rem;
-  font-size: 0.88rem;
-  width: 100%;
-  outline: none;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-.input-field:focus {
+.coverage-badge-op {
+  font-size: 0.75rem;
+  color: var(--risk-mod);
+  font-weight: 600;
+  margin-left: auto;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* Step A: Location controls */
+.location-controls-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.65rem;
+}
+
+.search-box {
+  display: flex;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 260px;
+}
+
+.coord-box {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.coord-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.coord-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.coord-input {
+  width: 95px !important;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.quick-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.pills-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.pill-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pill-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
   border-color: var(--accent-primary);
 }
 
-.btn {
-  background-color: var(--accent-secondary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 0.55rem 1rem;
-  font-size: 0.88rem;
+.pill-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
   font-weight: 600;
+}
+
+/* Step B: Horizon controls */
+.horizon-pills-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.horizon-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.15s ease;
-  display: inline-flex;
+  transition: all 0.15s ease;
+  flex: 1;
+  min-width: 90px;
+  text-align: center;
+}
+
+.horizon-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+.horizon-btn.active {
+  background: var(--accent-secondary);
+  color: #fff;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.horizon-btn.op-ext {
+  border-style: dashed;
+}
+
+.slider-row {
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.btn:hover {
-  background-color: #0369a1;
+.lead-slider {
+  flex: 1;
+  min-width: 160px;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
 }
 
-.btn-secondary {
+/* Step C: Variable controls */
+.variable-pills-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.var-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 500;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.var-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+.var-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  font-weight: 600;
+}
+
+/* ==============================================================================
+   What-If Scenario Panel
+   ============================================================================== */
+.scenario-panel {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px dashed rgba(245, 158, 11, 0.5);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.scenario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.scenario-pill {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.scenario-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.scenario-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.scenario-input-group label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.scenario-input-group .input-field {
+  width: 140px;
+  font-family: var(--font-mono);
+}
+
+.scenario-btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.scenario-status-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ==============================================================================
+   Dashboard Hero Cards
+   ============================================================================== */
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.btn-secondary:hover {
-  background-color: var(--bg-card-hover);
+.card-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.provenance-bar {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  align-items: center;
 }
 
 /* Metric Gauges & Badges */
@@ -305,23 +726,30 @@ body {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 1rem;
+  padding: 0.85rem 0.65rem;
   text-align: center;
 }
 
 .metric-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
 .metric-value {
-  font-size: 1.85rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: #fff;
+  font-family: var(--font-mono);
+}
+
+.metric-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
 .risk-badge-large {
@@ -329,7 +757,7 @@ body {
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-sm);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   letter-spacing: 0.02em;
 }
 
@@ -338,46 +766,131 @@ body {
 .risk-high { background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid var(--risk-high); }
 .risk-very-high { background: var(--risk-very-high-bg); color: var(--risk-very-high); border: 1px solid var(--risk-very-high); }
 
-/* Lead Time Slider */
-.slider-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  min-width: 260px;
+/* Dual Progress Bar */
+.gauge-container {
+  margin-bottom: 1rem;
 }
 
-.slider-label {
+.gauge-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
+  margin-bottom: 0.35rem;
 }
 
-.lead-slider {
-  width: 100%;
-  accent-color: var(--accent-primary);
-  cursor: pointer;
+.gauge-track {
+  height: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+  border: 1px solid var(--border-subtle);
 }
 
-/* Leaflet Map Styling */
-#risk-map-canvas {
-  height: 520px;
-  width: 100%;
+.gauge-fill-risk {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+  transition: width 0.4s ease;
+}
+
+.gauge-fill-rel {
+  height: 100%;
+  background: rgba(56, 189, 248, 0.4);
+  transition: width 0.4s ease;
+}
+
+/* SHAP Summary Box */
+.shap-summary-box {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 0.85rem 1rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background-color: #0b1120;
+  border: 1px solid var(--border-subtle);
 }
 
-/* SHAP Factor Breakdown Cards */
+.shap-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.shap-icon {
+  font-size: 0.9rem;
+}
+
+.shap-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.shap-summary-text {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* NWP Guidance Card elements */
+.lead-valid-tag {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: rgba(15, 23, 42, 0.5);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.nwp-box {
+  padding: 0.75rem 0.5rem;
+}
+
+.nwp-metric {
+  font-size: 1.35rem !important;
+}
+
+.nwp-meta-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.anti-leakage-notice {
+  margin-top: 0.75rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.74rem;
+  color: var(--risk-low);
+}
+
+/* ==============================================================================
+   SHAP Factors List & Horizon Chart
+   ============================================================================== */
+.shap-factors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .factor-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.65rem 0.95rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 0.5rem;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   border-left: 4px solid transparent;
+  transition: all 0.15s ease;
 }
 
 .factor-amplifier {
@@ -392,10 +905,145 @@ body {
 
 .factor-shap-score {
   font-weight: 700;
-  font-family: monospace;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
 }
 
-/* Tables */
+.chart-footer-note {
+  display: flex;
+  justify-content: center;
+  gap: 0.85rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.65rem;
+}
+
+/* ==============================================================================
+   Geographic Risk Map (India)
+   ============================================================================== */
+.map-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.map-legend {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.legend-chip {
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.legend-low { color: var(--risk-low); background: var(--risk-low-bg); }
+.legend-mod { color: var(--risk-mod); background: var(--risk-mod-bg); }
+.legend-high { color: var(--risk-high); background: var(--risk-high-bg); }
+.legend-vhigh { color: var(--risk-very-high); background: var(--risk-very-high-bg); }
+
+.map-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+#risk-map-canvas {
+  height: 520px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: #0b1120;
+}
+
+.map-provenance-footer {
+  margin-top: 0.65rem;
+  display: flex;
+  gap: 0.85rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ==============================================================================
+   Historical Verification View (Stage Distinction)
+   ============================================================================== */
+.verification-concept-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.concept-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.concept-stage {
+  flex: 1;
+  min-width: 260px;
+}
+
+.concept-stage strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.concept-stage p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.stage-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  background: rgba(56, 189, 248, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.35rem;
+}
+
+.stage-verif {
+  color: var(--risk-low);
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.concept-arrow {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.verification-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.85rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ==============================================================================
+   Data Tables
+   ============================================================================== */
 .table-container {
   overflow-x: auto;
 }
@@ -403,7 +1051,7 @@ body {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   text-align: left;
 }
 
@@ -413,6 +1061,7 @@ body {
   padding: 0.65rem 0.85rem;
   font-weight: 600;
   border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
 }
 
 .data-table td {
@@ -426,7 +1075,19 @@ body {
   color: var(--text-primary);
 }
 
-/* Pipeline Status Pipeline Steps */
+.code-pill {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+/* ==============================================================================
+   Admin ML Pipeline Steps
+   ============================================================================== */
 .pipeline-steps {
   display: flex;
   justify-content: space-between;
@@ -471,20 +1132,147 @@ body {
 .step-label {
   position: absolute;
   top: 50px;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .dashboard-hero { grid-template-columns: 1fr; }
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: 1fr; }
+/* ==============================================================================
+   Grid Layouts
+   ============================================================================== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
 }
 
-@media (max-width: 640px) {
-  .grid-2, .grid-4 { grid-template-columns: 1fr; }
-  .navbar { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+/* Buttons & Inputs */
+.btn {
+  background-color: var(--accent-secondary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.95rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background-color: #0369a1;
+}
+
+.btn-secondary {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--accent-primary);
+}
+
+.input-field {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input-field:focus {
+  border-color: var(--accent-primary);
+}
+
+/* Toast Alerts */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toast-message {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: slideIn 0.25s ease;
+  max-width: 360px;
+}
+
+.toast-error {
+  border-left: 4px solid var(--risk-very-high);
+}
+
+.toast-success {
+  border-left: 4px solid var(--risk-low);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ==============================================================================
+   Responsive Layout Media Queries
+   ============================================================================== */
+@media (max-width: 1200px) {
+  .dashboard-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .concept-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-container {
+    padding: 0.75rem;
+  }
+  .horizon-pills-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

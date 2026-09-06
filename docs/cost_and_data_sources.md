@@ -37,9 +37,10 @@ In accordance with scientific meteorological integrity, this platform strictly d
 ├────────────────────────────┬───────────────────────────────────────────┤
 │ DATA ROLE                  │ SOURCE & DEFINITION                       │
 ├────────────────────────────┼───────────────────────────────────────────┤
-│ 1. Historical Forecasts    │ ECMWF Open Data / NCMRWF Archive          │
-│    "What was predicted?"   │ Forecast run initialized at time T for    │
-│                            │ valid time T + N hours (lead time tau).   │
+│ 1. Historical Forecasts    │ Open-Meteo Previous Runs / ECMWF Open Data│
+│    "What was predicted?"   │ Real archived forecasts initialized at T  │
+│                            │ for valid time T + tau (Days 1-7, 24-168h)│
+│                            │ (Free endpoint stores up to Day 7).       │
 ├────────────────────────────┼───────────────────────────────────────────┤
 │ 2. Reference / Reanalysis  │ ERA5 Reanalysis (ECMWF / Copernicus)      │
 │    "What occurred?"        │ Physical data assimilation combining past │
@@ -53,7 +54,8 @@ In accordance with scientific meteorological integrity, this platform strictly d
 │                            │ observatories (rain gauges, anemometers). │
 ├────────────────────────────┼───────────────────────────────────────────┤
 │ 4. Live Operational NWP    │ Open-Meteo Global Ensemble (10-Day)       │
-│    "Current Guidance"      │ Multi-model operational forecast horizon. │
+│    "Current Guidance"      │ Multi-model operational forecast horizon  │
+│                            │ supporting full Days 1-10 (24h to 240h).  │
 └────────────────────────────┴───────────────────────────────────────────┘
 ```
 

@@ -25,3 +25,8 @@
 5. **Operational Retraining Criteria**:
    - Automatic retraining requires accumulation of verified ground-truth reference data (typically available with a 2-day to 5-day latency for preliminary reanalysis products).
    - Candidate models are strictly gated and will not replace the production model unless they meet pre-defined Brier score and PR-AUC thresholds.
+
+6. **Free Public NWP Archive Horizon Depth (168h / Day 7)**:
+   - Free public historical NWP endpoints (such as Open-Meteo Previous Runs) archive model initializations up to Day 7 (`previous_day1` through `previous_day7` = 24h to 168h).
+   - Historical initializations for Day 8 (192h), Day 9 (216h), and Day 10 (240h) are not retained in public free endpoints. In accordance with strict scientific integrity guidelines, these days are not synthesized or fabricated. Live operational inference continues to support the full 10-day (240h) forecast window via live ECMWF IFS. Full historical Days 8–10 re-forecasting requires institutional NCMRWF/ECMWF MARS tape archive access.
+

@@ -191,6 +191,49 @@ def train_pipeline(
     print(f" Confusion Matrix:            {test_metrics['confusion_matrix']}")
     print("==================================================\n")
 
+    # Per-Horizon Performance Breakdown (Section 10 Requirement)
+    print("==========================================================================================")
+    print("        LEAD-HORIZON DIAGNOSTIC BREAKDOWN (DAYS 3–10 MEDIUM-RANGE PERFORMANCE)           ")
+    print("==========================================================================================")
+    print(f"{'Lead':<8} | {'Day':<6} | {'Samples':<8} | {'Bust Rate':<10} | {'PR-AUC':<8} | {'ROC-AUC':<8} | {'Brier':<8} | {'Recall':<8} | {'F1':<8}")
+    print("-" * 90)
+
+    lead_breakdown = {}
+    target_leads = [24, 48, 72, 96, 120, 144, 168, 192, 216, 240]
+
+    for lh in target_leads:
+        day_num = lh // 24
+        mask = (X_test["lead_hours"] == lh)
+        sub_n = int(mask.sum())
+        if sub_n > 0:
+            y_sub_true = y_test[mask]
+            y_sub_pred = calibrated_preds[mask]
+            y_sub_prob = calibrated_probs[mask]
+            sub_metrics = evaluate_model_performance(y_sub_true, y_sub_pred, y_sub_prob)
+            bust_rt = round((y_sub_true.sum() / sub_n) * 100, 1)
+
+            lead_breakdown[f"{lh}h"] = {
+                "day": f"Day {day_num}",
+                "samples": sub_n,
+                "bust_rate_pct": bust_rt,
+                "pr_auc": sub_metrics["pr_auc"],
+                "roc_auc": sub_metrics["roc_auc"],
+                "brier_score": sub_metrics["brier_score"],
+                "recall": sub_metrics["recall"],
+                "f1_score": sub_metrics["f1_score"]
+            }
+            print(f"{lh}h ({day_num}d)  | Day {day_num:<2} | {sub_n:<8} | {bust_rt:<9}% | {sub_metrics['pr_auc']:<8.4f} | {sub_metrics['roc_auc']:<8.4f} | {sub_metrics['brier_score']:<8.4f} | {sub_metrics['recall']:<8.4f} | {sub_metrics['f1_score']:<8.4f}")
+        else:
+            lead_breakdown[f"{lh}h"] = {
+                "day": f"Day {day_num}",
+                "samples": 0,
+                "status": "Historical validation unavailable in free public archive (> 168h)"
+            }
+            print(f"{lh}h ({day_num}d)  | Day {day_num:<2} | 0        | N/A        | N/A      | N/A      | N/A      | N/A      | N/A      [Archive limit: > 168h]")
+
+    print("==========================================================================================\n")
+    test_metrics["lead_time_breakdown"] = lead_breakdown
+
     # 7. Model Versioning & Artifact Storage
     if not model_version:
         prefix = "model_real_v" if data_type == "REAL" else "model_v"

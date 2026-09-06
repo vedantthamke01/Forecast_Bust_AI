@@ -220,7 +220,7 @@ where:
 | **Brier Calibration Score** | **0.0450** | Low mean squared error proving strong probabilistic reliability. |
 | **Expected Calibration Error** | **0.0257** | Low bin-level discrepancy indicating calibrated risk outputs. |
 | **Overall Accuracy** | **94.62%** | Correct classification rate over 7,560 held-out test records. |
-| **Confusion Matrix ($TN / FP / FN / TP$)** | `7152 / 1 / 406 / 1` | High precision, conservative false-positive suppression. |
+| **Confusion Matrix ($TN / FP / FN / TP$)** | `7152 / 1 / 406 / 1` | Confusion Matrix (TN / FP / FN / TP). |
 
 ---
 

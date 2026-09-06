@@ -79,7 +79,7 @@ The SIH26079 platform is structured into decoupled, modular tiers ensuring stric
 1. **Raw NWP Ingestion**: Downloads historical NWP forecast runs across 25 stations for horizons 24h to 168h.
 2. **ERA5 Alignment**: Ingests ERA5 gridded reanalysis for matching valid timestamps ($T_{\text{valid}} = T_0 + \tau$).
 3. **Error Calculation & Labeling**: Computes $|NWP - ERA5|$ and tags records with `is_bust` using dynamic lead scaling.
-4. **Leakage Audit**: Verifies feature matrix contains zero references, observations, or error metrics.
+4. **Leakage Audit**: The implemented leakage gate and temporal validation tests are designed to prevent future reference/error information from entering T0 inference.
 5. **Model Promotion**: Candidate model evaluated on chronological test set. If Brier score and PR-AUC beat baseline, candidate is promoted in `models/registry.json`.
 
 ### Flow B: Live Operational Runtime Inference ($T_0$)

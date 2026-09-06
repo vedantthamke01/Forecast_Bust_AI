@@ -58,7 +58,7 @@ Before this phase, running `python -m data_pipeline.download --source era5` trig
 │    Forecasts       │ (GFS Seamless / ECMWF IFS)  │                     │
 ├────────────────────┼─────────────────────────────┼─────────────────────┤
 │ 2. Reference       │ ECMWF Copernicus ERA5       │ REAL (Reanalysis    │
-│    Ground Truth    │ Reanalysis (CDS API)        │ Ground Truth)       │
+│    Field           │ Reanalysis (CDS API)        │ Reference Field)    │
 ├────────────────────┼─────────────────────────────┼─────────────────────┤
 │ 3. Live Forecasts  │ Open-Meteo Operational      │ REAL (Operational   │
 │    (Inference)     │ ECMWF IFS 10-Day Ensemble   │ Live Guidance)      │
@@ -102,7 +102,7 @@ Before this phase, running `python -m data_pipeline.download --source era5` trig
 
 ## 5. Machine Learning Validation & Metrics (`model_real_v002`)
 
-### Chronological Splitting (Zero Temporal Leakage)
+### Chronological Splitting (Temporal Leakage Prevention)
 - **Training Set (70%)**: `2024-07-10 00:00:00` to `2025-08-05 23:00:00` (25,200 samples)
 - **Validation Set (15%)**: `2025-08-06 00:00:00` to `2025-08-07 23:00:00` (5,040 samples)
 - **Test Holdout Set (15%)**: `2026-01-15 00:00:00` to `2026-01-17 23:00:00` (7,560 samples — strictly unseen future)

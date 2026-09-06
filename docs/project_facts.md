@@ -81,7 +81,7 @@
 | **Historical NWP Training Data** | **Yes** (37,800 records) | **No** (Public archive limitation) |
 | **Model Development Coverage** | **Yes** | **No** |
 | **Live Operational NWP Inference** | **Yes** (ECMWF IFS) | **Yes** (ECMWF IFS 10-day) |
-| **Scientific Boundary** | Fully validated on authentic data | Legitimate archive limitation; data NOT fabricated |
+| **Scientific Boundary** | Validated against the project's automated scientific, integration, end-to-end, and judge-demo verification suites | Legitimate archive limitation; data NOT fabricated |
 
 *Scientific Policy Statement*: The system supports operational bust-risk estimation through Day 10, while the current public historical archive used for model development extends through Day 7. Historical training coverage for Days 8–10 requires access to a deeper institutional NWP archive (e.g., NCMRWF / ECMWF MARS tape archive).
 
@@ -104,7 +104,7 @@ To prevent future-information leakage, data splitting is performed chronological
 | **Expected Calibration Error (ECE)** | `0.0310` | `0.0257` | **-0.0053** (Tighter alignment) |
 | **Accuracy** | `94.10%` | `94.62%` | **+0.52%** |
 | **Test Sample Size** | 7,560 records | 7,560 records | Held-out future period |
-| **Confusion Matrix ($TN / FP / FN / TP$)** | — | `7152 / 1 / 406 / 1` | Conservative thresholding |
+| **Confusion Matrix ($TN / FP / FN / TP$)** | — | `7152 / 1 / 406 / 1` | Confusion Matrix (TN / FP / FN / TP) |
 
 ---
 

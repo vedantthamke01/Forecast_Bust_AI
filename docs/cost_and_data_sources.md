@@ -50,7 +50,7 @@ In accordance with scientific meteorological integrity, this platform strictly d
 │                            │ a raw station observation or forecast.    │
 ├────────────────────────────┼───────────────────────────────────────────┤
 │ 3. Station Observations    │ IMD Synoptic Station Network              │
-│    "Ground Truth"          │ Physical surface sensors at Indian        │
+│    "In-Situ Reference"     │ Physical surface sensors at Indian        │
 │                            │ observatories (rain gauges, anemometers). │
 ├────────────────────────────┼───────────────────────────────────────────┤
 │ 4. Live Operational NWP    │ Open-Meteo Global Ensemble (10-Day)       │

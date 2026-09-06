@@ -39,7 +39,7 @@ Critical Need: Operational Probability of Forecast Bust P(Bust)
 
 1. **Ingests Operational Forecasts at $T_0$**: Ingests multi-parameter medium-range NWP guidance (precipitation, temperature, wind, pressure, humidity, cloud cover, ensemble dispersion).
 2. **Extracts Forecast-Time Features**: Derives synoptic proxies, baroclinic pressure anomalies, seasonal solar positions, and run revision signals strictly from data available at initialization time $T_0$.
-3. **Applies Anti-Leakage Gating**: Validates that zero future reference observations, future errors, or verification flags enter the feature matrix.
+3. **Applies Anti-Leakage Gating**: The implemented leakage gate and temporal validation tests are designed to prevent future reference/error information from entering T0 inference. All implemented leakage checks and adversarial leakage tests passed.
 4. **Estimates Calibrated Bust Probability**: Uses a LightGBM model calibrated with Isotonic Regression to predict $P(\text{Bust} \in [0, 1])$.
 5. **Assigns Standardized Risk Badges**: Maps probabilities to four operational tiers: 🟢 LOW ($<25\%$), 🟡 MODERATE ($25\text{–}50\%$), 🟠 HIGH ($50\text{–}75\%$), and 🔴 VERY HIGH ($\ge 75\%$).
 6. **Explains Local Decision via TreeSHAP**: Decomposes the prediction into additive feature attributions, isolating the top model amplifiers and mitigators.
@@ -255,7 +255,7 @@ FORBIDDEN_LEAKAGE_SUBSTRINGS = [
     "ground_truth", "target", "label", "future", "verification"
 ]
 ```
-If any column contains a forbidden substring, feature extraction aborts with a `ValueError` / `DataLeakageException`. All 13 simulated adversarial leakage injection tests pass with zero false negatives.
+If any column contains a forbidden substring, feature extraction aborts with a `ValueError` / `DataLeakageException`. All 13 simulated adversarial leakage injection tests were intercepted by the gate.
 
 ---
 
@@ -292,7 +292,7 @@ All metrics were evaluated on the chronologically isolated test partition (2026-
 | **Expected Calibration Error (ECE)**| `0.0310` | `0.0257` | **-0.0053** (Tighter alignment) |
 | **Accuracy** | `94.10%` | `94.62%` | **+0.52%** |
 | **Test Records** | 7,560 | 7,560 | Held-out future split |
-| **Confusion Matrix ($TN / FP / FN / TP$)**| — | `7152 / 1 / 406 / 1` | Conservative thresholding |
+| **Confusion Matrix ($TN / FP / FN / TP$)**| — | `7152 / 1 / 406 / 1` | Confusion Matrix (TN / FP / FN / TP) |
 
 ---
 

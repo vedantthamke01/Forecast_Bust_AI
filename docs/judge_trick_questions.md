@@ -80,4 +80,4 @@ While our core architecture, API, and calibration pipeline are fully functional,
 1. Direct integration with NCMRWF's internal HPC job scheduler and GRIB2 file pipelines.
 2. Ingestion of internal NCUM 51-member ensemble grids rather than external web APIs.
 3. Conducting a multi-season shadow verification study alongside operational forecasters to evaluate performance across diverse monsoon regimes.
-This project is an advanced, validated, and reproducible prototype demonstrating technical feasibility."
+This project is an advanced prototype ready for SIH evaluation and technical demonstration. Further institutional validation would be required before operational deployment."

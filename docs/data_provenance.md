@@ -8,7 +8,7 @@
 
 ## 1. Data Pipeline Lifecycle & Provenance Flow
 
-The training and validation dataset (`dataset_real_v002.csv`) is produced through an automated, reproducible ingestion and spatio-temporal alignment pipeline:
+The software pipeline and documented processing methodology are reproducible with access to the required source data and archives. Historical Days 3–7 data are available from the documented archive workflow; historical Days 8–10 training data were not available from the public archive, and institutional archive access is required to extend historical training through Day 10. The training and validation dataset (`dataset_real_v002.csv`) is produced through an automated ingestion and spatio-temporal alignment pipeline:
 
 ```text
 ┌─────────────────────────────────┐       ┌─────────────────────────────────┐

@@ -88,7 +88,7 @@ At forecast issuance time $T_0$, ground truth does not exist. In Tab 3, we demon
 Looking at the verification table, you see the exact forecast issued at $T_0$, the realized ERA5 reference value, the absolute error, and the operational threshold scaled dynamically by lead time:
 $$\text{Threshold}(\tau) = \text{Base} \times [1 + 0.12 \times (\tau - 24)/24]$$
 
-This proves that forecast issuance and verification are strictly separated, eliminating data leakage."
+This demonstrates that forecast issuance and verification are strictly separated; all implemented leakage checks and adversarial leakage tests passed."
 
 ---
 

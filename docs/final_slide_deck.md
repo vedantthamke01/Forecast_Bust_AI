@@ -60,7 +60,7 @@
 - **Key Points**:
   - **Stage 1 (Inference at $T_0$)**: Live ECMWF IFS forecast $\to$ anti-leakage check $\to$ feature pipeline $\to$ LightGBM $\to$ P(Bust).
   - **Stage 2 (Verification at $T_0 + \tau$)**: Realized ERA5 reanalysis ingested strictly after valid time $\to$ error computation $\to$ bust label.
-  - Automated anti-leakage gate intercepts 9 forbidden patterns; zero future leakage.
+  - Automated anti-leakage gate intercepts 9 forbidden patterns; all implemented leakage checks and adversarial leakage tests passed.
   - Lead-scaled dynamic thresholding: $\text{Threshold}(\tau) = \text{Base} \times [1 + 0.12 \times (\tau - 24)/24]$.
 - **Suggested Visual**: End-to-end architecture diagram highlighting the temporal gap $\tau$ between $T_0$ prediction and $T_0 + \tau$ verification.
 - **Speaker Notes**: "Our architecture enforces strict temporal separation: at forecast time, future reference data does not exist. The leakage gate ensures no future error terms enter inference."

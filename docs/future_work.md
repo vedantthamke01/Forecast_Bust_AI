@@ -44,7 +44,7 @@ This roadmap outlines realistic, technically grounded next steps for transitioni
 
 ### 3.1 Conformal Prediction Sets
 - **Current State**: Isotonic regression probability calibration producing point probabilities $P(\text{Bust})$.
-- **Roadmap**: Implement Split Conformal Prediction to provide mathematically guaranteed finite-sample coverage bands (e.g., guaranteed 90% confidence intervals for absolute forecast error).
+- **Roadmap**: Implement Split Conformal Prediction to provide theoretically valid finite-sample coverage bands (e.g., 90% confidence intervals for absolute forecast error).
 
 ### 3.2 Sub-Division Specific Climatological Calibration
 - **Current State**: National-level calibration across 25 Indian synoptic stations.

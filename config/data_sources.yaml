@@ -1,0 +1,49 @@
+# ==============================================================================
+# NCMRWF Meteorological Data Sources & Regional Bounding Boxes
+# ==============================================================================
+
+regions:
+  india:
+    name: "India (Synoptic Domain)"
+    north: 37.5
+    south: 6.5
+    west: 68.0
+    east: 97.5
+  north_india:
+    name: "North India (Indo-Gangetic & Himalayan)"
+    north: 37.5
+    south: 24.0
+    west: 72.0
+    east: 88.0
+  peninsular_india:
+    name: "Peninsular India (Western Ghats & Coastal)"
+    north: 21.0
+    south: 8.0
+    west: 72.0
+    east: 85.0
+  monsoon_trough:
+    name: "Central India Monsoon Zone"
+    north: 26.0
+    south: 18.0
+    west: 72.0
+    east: 88.0
+
+variables:
+  - temperature_2m
+  - precipitation
+  - wind_speed_10m
+  - pressure_msl
+  - relative_humidity_2m
+  - cloud_cover
+
+bust_thresholds:
+  absolute:
+    precipitation_mm: 25.0
+    temperature_c: 4.0
+    wind_mps: 8.5
+    pressure_hpa: 5.0
+  lead_time_scaling:
+    enabled: true
+    base_factor: 0.12  # +12% threshold allowance per 24h lead time
+  percentile:
+    percentile_cutoff: 95.0

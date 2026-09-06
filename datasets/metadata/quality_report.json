@@ -1,0 +1,135 @@
+{
+  "dataset_name": "dataset_v001.csv",
+  "evaluation_timestamp": "2026-09-06T08:12:52.180071",
+  "status": "PASS",
+  "total_records": 1500,
+  "missing_overall_percentage": 0.0,
+  "duplicate_records": 0,
+  "duplicate_percentage": 0.0,
+  "invalid_coordinates_count": 0,
+  "temperature_anomalies_count": 0,
+  "precipitation_anomalies_count": 0,
+  "lead_time_coverage_percentage": 100.0,
+  "lead_hours_present": [
+    24,
+    48,
+    72,
+    96,
+    120,
+    144,
+    168,
+    192,
+    216,
+    240
+  ],
+  "missing_by_column": {
+    "initialization_time": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "valid_time": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "lead_hours": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "latitude": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "longitude": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "forecast_temperature": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "forecast_precipitation": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "forecast_wind": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "forecast_pressure": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "forecast_humidity": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "forecast_cloud_cover": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "ensemble_spread": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "run_revision": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "reference_temperature": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "reference_precipitation": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "reference_wind": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "reference_pressure": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "error_temperature": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "error_precipitation": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "error_wind": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "error_pressure": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "alignment_method": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "spatial_offset_deg": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "is_bust": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "bust_severity": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "labeling_method": {
+      "null_count": 0,
+      "percentage": 0.0
+    },
+    "operational_threshold": {
+      "null_count": 0,
+      "percentage": 0.0
+    }
+  }
+}

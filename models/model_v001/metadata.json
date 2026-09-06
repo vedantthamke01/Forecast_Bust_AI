@@ -1,0 +1,36 @@
+{
+  "model_version": "model_v001",
+  "dataset_version": "dataset_v001",
+  "training_period": "2023-01 to 2025-12",
+  "feature_version": "v1.0",
+  "algorithm": "LightGBM + Isotonic Calibration",
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0,
+    "expected_calibration_error": 0.001,
+    "confusion_matrix": {
+      "true_negatives": 217,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_positives": 33
+    },
+    "reliability_curve": {
+      "fraction_of_positives": [
+        0.0,
+        1.0
+      ],
+      "mean_predicted_value": [
+        0.001,
+        0.999
+      ]
+    }
+  },
+  "status": "VALIDATED",
+  "artifact_path": "C:\\Users\\tejas\\Documents\\SIH\\models\\model_v001\\model_bundle.joblib",
+  "created_at": "2026-09-06T09:53:48.119484"
+}

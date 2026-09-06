@@ -1,0 +1,66 @@
+# Python environment & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+!apps/flutter_app/lib/
+!apps/flutter_app/lib/**
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data and Model artifacts (large files)
+datasets/raw/*
+!datasets/raw/.gitkeep
+datasets/processed/*
+!datasets/processed/.gitkeep
+datasets/training/*
+!datasets/training/.gitkeep
+!datasets/training/dataset_v001.csv
+models/*.joblib
+models/*.bin
+models/*.pt
+!models/.gitkeep
+!models/registry.json
+!models/**/metadata.json
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+data.db
+
+# Environment variables & secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Flutter & Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.lock
+
+# IDE & OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

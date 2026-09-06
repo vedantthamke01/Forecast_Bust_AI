@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCMRWF | AI-Based Forecast Bust Detection Platform (SIH26079)</title>
+  
+  <!-- Leaflet CSS for ₹0 OpenStreetMap GIS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <!-- Dashboard CSS -->
+  <link rel="stylesheet" href="css/dashboard.css">
+  <!-- Chart.js for Open Source Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="brand-section">
+      <span class="brand-badge">NCMRWF / MoES</span>
+      <div>
+        <h1 class="brand-title">
+          <span>AI Forecast Bust Detection</span>
+          <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">(SIH26079)</span>
+        </h1>
+        <p class="brand-sub">Medium-Range Numerical Weather Prediction Reliability Layer (Days 3–10)</p>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <div class="demo-pill" id="demo-indicator">
+        <span class="pulse-dot"></span>
+        <span id="mode-text">DEMO BENCHMARK (₹0)</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-toggle-demo" title="Toggle Live Open-Meteo vs Benchmark Demo mode">
+        Switch to Live NWP
+      </button>
+      <a href="/docs" target="_blank" class="btn btn-secondary">API Docs</a>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-bar">
+    <button class="tab-btn active" data-tab="tab-overview">Operational Dashboard</button>
+    <button class="tab-btn" data-tab="tab-map">Geographic Risk Map (India)</button>
+    <button class="tab-btn" data-tab="tab-verification">Forecast vs Reference</button>
+    <button class="tab-btn" data-tab="tab-admin">Admin ML Studio & Pipeline</button>
+  </nav>
+
+  <!-- Main Workspace -->
+  <main class="main-container">
+
+    <!-- Official Scientific Disclaimer -->
+    <aside class="disclaimer-banner">
+      <span>
+        <strong>Scientific Notice:</strong> This platform estimates forecast bust probability and model reliability. It sits on top of NWP guidance and does NOT replace operational forecasts or official advisories issued by IMD/NCMRWF.
+      </span>
+      <span style="font-weight: 600; color: var(--accent-primary);">MoES / NCMRWF India</span>
+    </aside>
+
+    <!-- TAB 1: OPERATIONAL DASHBOARD -->
+    <section id="tab-overview" class="tab-pane active">
+      
+      <!-- Controls: Station Search & Lead Horizon Slider -->
+      <div class="controls-bar">
+        <div class="search-group">
+          <input type="text" id="station-search-input" class="input-field" placeholder="Search Indian city / observatory (e.g. Pune, Delhi, Mumbai)..." value="Pune">
+          <button class="btn" id="btn-search-station">Search</button>
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-label">
+            <span>Forecast Horizon: <strong id="lead-days-display" style="color: var(--accent-primary);">Day 4 (96 Hours)</strong></span>
+            <span style="color: var(--text-muted);">Range: 24h – 240h</span>
+          </div>
+          <input type="range" id="lead-slider" class="lead-slider" min="24" max="240" step="24" value="96">
+        </div>
+
+        <div>
+          <select id="variable-selector" class="input-field" style="width: auto;">
+            <option value="precipitation">Variable: Precipitation (24h)</option>
+            <option value="temperature">Variable: 2m Temperature</option>
+            <option value="wind">Variable: 10m Wind Speed</option>
+            <option value="pressure">Variable: Sea Level Pressure</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Hero Section: Risk Gauge & Current Forecast Overview -->
+      <div class="dashboard-hero">
+        
+        <!-- Primary Risk Assessment Card -->
+        <div class="card" style="border-top: 4px solid var(--accent-primary);">
+          <div class="card-title">
+            <span>Forecast Reliability & Bust Probability</span>
+            <span id="active-location-name" style="color: var(--accent-primary); font-size: 0.9rem;">Pune, Maharashtra (18.52°N, 73.86°E)</span>
+          </div>
+
+          <div class="grid-3" style="margin-bottom: 1.25rem;">
+            <div class="metric-box">
+              <div class="metric-label">Bust Probability</div>
+              <div class="metric-value" id="val-bust-prob" style="color: var(--risk-high);">78.0%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Reliability Index</div>
+              <div class="metric-value" id="val-reliability" style="color: #38bdf8;">22.0%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Risk Category</div>
+              <div style="margin-top: 0.4rem;">
+                <span class="risk-badge-large risk-high" id="val-risk-badge">🟠 HIGH</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHAP Explanatory Insight -->
+          <div style="background: rgba(15, 23, 42, 0.6); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--accent-primary); text-transform: uppercase; margin-bottom: 0.35rem;">
+              Meteorological Explainability (TreeSHAP)
+            </div>
+            <p id="shap-summary-text" style="font-size: 0.85rem; color: var(--text-secondary);">
+              Elevated bust risk primarily driven by Extended Forecast Horizon (Day 4) and NWP Ensemble Spread (3.80σ).
+            </p>
+          </div>
+        </div>
+
+        <!-- NWP Operational Guidance Values -->
+        <div class="card">
+          <div class="card-title">
+            <span>NWP Model Guidance Values</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="active-lead-tag">Valid: T + 96h</span>
+          </div>
+
+          <div class="grid-2">
+            <div class="metric-box">
+              <div class="metric-label">Precipitation</div>
+              <div class="metric-value" style="font-size: 1.4rem;" id="nwp-precip">42.0 mm</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Temperature</div>
+              <div class="metric-value" style="font-size: 1.4rem;" id="nwp-temp">27.5 °C</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Wind Speed</div>
+              <div class="metric-value" style="font-size: 1.4rem;" id="nwp-wind">14.5 m/s</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Pressure (MSLP)</div>
+              <div class="metric-value" style="font-size: 1.4rem;" id="nwp-press">1005.2 hPa</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
+            <span>Ensemble Spread: <strong id="nwp-spread" style="color: var(--text-primary);">3.80σ</strong></span>
+            <span>Run Jumpiness: <strong id="nwp-revision" style="color: var(--text-primary);">2.40</strong></span>
+            <span>Model: <strong id="nwp-model" style="color: var(--accent-primary);">ECMWF IFS / NCUM</strong></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SHAP Factor Decomposition & 10-Day Horizon Curve -->
+      <div class="grid-2">
+        <!-- SHAP Local Factors List -->
+        <div class="card">
+          <div class="card-title">Top Contributing Physical Factors (SHAP)</div>
+          <div id="shap-factors-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 10-Day Medium Range Horizon Timeline Chart -->
+        <div class="card">
+          <div class="card-title">10-Day Medium-Range Risk Profile (Day 1 to 10)</div>
+          <div style="height: 230px; position: relative;">
+            <canvas id="horizon-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 2: GEOGRAPHIC RISK MAP (INDIA) -->
+    <section id="tab-map" class="tab-pane">
+      <div class="card">
+        <div class="card-title">
+          <span>Spatial Forecast Bust Risk Map (India Synoptic Domain)</span>
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">Powered by OpenStreetMap & Leaflet (₹0)</span>
+        </div>
+
+        <div style="margin-bottom: 0.85rem; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.82rem; align-items: center;">
+          <span>Risk Legend:</span>
+          <span style="color: var(--risk-low); font-weight: 600;">🟢 Low (&lt;25%)</span>
+          <span style="color: var(--risk-mod); font-weight: 600;">🟡 Moderate (25–50%)</span>
+          <span style="color: var(--risk-high); font-weight: 600;">🟠 High (50–75%)</span>
+          <span style="color: var(--risk-very-high); font-weight: 600;">🔴 Very High (&gt;75%)</span>
+          <span style="color: var(--text-muted); margin-left: auto;">Click any station pin to inspect reliability details</span>
+        </div>
+
+        <div id="risk-map-canvas"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: FORECAST VS REFERENCE VERIFICATION -->
+    <section id="tab-verification" class="tab-pane">
+      <div class="card">
+        <div class="card-title">
+          <span>Operational Forecast vs Realized Reference Ground-Truth</span>
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">Verified against ERA5 Reanalysis & Station Records</span>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Historical verification comparing what the operational NWP model predicted at initialization time $T$ versus realized ground truth at valid time $T + \tau$. Errors exceeding dynamic operational thresholds are certified as forecast busts.
+        </p>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Initialization</th>
+                <th>Valid Time</th>
+                <th>Horizon</th>
+                <th>Forecasted Value</th>
+                <th>Realized Reference</th>
+                <th>Absolute Error</th>
+                <th>Threshold Applied</th>
+                <th>Bust Status</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody id="verification-table-body">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ADMIN ML STUDIO & PIPELINE -->
+    <section id="tab-admin" class="tab-pane">
+      
+      <!-- Pipeline Workflow Steps -->
+      <div class="card">
+        <div class="card-title">
+          <span>Automated End-to-End Pipeline Telemetry</span>
+          <span style="color: var(--risk-low); font-size: 0.8rem;">● ALL STAGES OPERATIONAL</span>
+        </div>
+
+        <div class="pipeline-steps">
+          <div class="step-node completed" title="Download & Ingestion">1<span class="step-label">DOWNLOAD</span></div>
+          <div class="step-node completed" title="Thermodynamic Validation">2<span class="step-label">VALIDATE</span></div>
+          <div class="step-node completed" title="Spatio-Temporal Alignment">3<span class="step-label">ALIGN</span></div>
+          <div class="step-node completed" title="Configurable Bust Labeling">4<span class="step-label">LABEL</span></div>
+          <div class="step-node completed" title="Feature Engineering & ML Training">5<span class="step-label">TRAIN</span></div>
+          <div class="step-node completed" title="Probability Calibration & Evaluation">6<span class="step-label">CALIBRATE</span></div>
+          <div class="step-node completed" title="Production Model Promotion">7<span class="step-label">DEPLOY</span></div>
+        </div>
+        <div style="height: 35px;"></div>
+      </div>
+
+      <!-- Dataset Health & Model Performance Card -->
+      <div class="grid-2">
+        
+        <!-- Dataset Health -->
+        <div class="card">
+          <div class="card-title">
+            <span>Dataset Health & QC Report Card</span>
+            <span class="brand-badge" id="admin-dataset-version">dataset_v001</span>
+          </div>
+
+          <div class="grid-2" style="margin-bottom: 1rem;">
+            <div class="metric-box">
+              <div class="metric-label">Total Records</div>
+              <div class="metric-value" style="font-size: 1.5rem;" id="admin-records-count">1,500</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Lead Coverage</div>
+              <div class="metric-value" style="font-size: 1.5rem;" id="admin-coverage">100.0%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Missing Values</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-missing">0.0%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Quality Status</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-qc-status">PASS</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn" id="btn-trigger-update">Run Incremental Update</button>
+            <button class="btn btn-secondary" id="btn-view-quality">View Full QC JSON</button>
+          </div>
+        </div>
+
+        <!-- Production Model Metrics -->
+        <div class="card">
+          <div class="card-title">
+            <span>Production Model Verification</span>
+            <span class="brand-badge" id="admin-model-version">model_v001 (Production)</span>
+          </div>
+
+          <div class="grid-2" style="margin-bottom: 1rem;">
+            <div class="metric-box">
+              <div class="metric-label">PR-AUC (Avg Precision)</div>
+              <div class="metric-value" style="font-size: 1.5rem;" id="admin-prauc">1.0000</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">ROC-AUC</div>
+              <div class="metric-value" style="font-size: 1.5rem;" id="admin-rocauc">1.0000</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Brier Calibration Score</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-brier">0.0000</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Expected Calib. Error (ECE)</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-ece">0.0010</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn" id="btn-trigger-retrain">Retrain Candidate Model</button>
+            <button class="btn btn-secondary" id="btn-rollback-model">Rollback Version</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Distribution Drift Monitor -->
+      <div class="card">
+        <div class="card-title">
+          <span>Atmospheric Feature Distribution Drift (Kolmogorov-Smirnov Test)</span>
+          <span id="drift-status-badge" style="color: var(--risk-low); font-weight: 600;">● STABLE (NO DRIFT)</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);" id="drift-desc">
+          Continuous two-sample Kolmogorov-Smirnov test comparing active operational NWP distributions against reference training bounds.
+        </p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Dashboard JS -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

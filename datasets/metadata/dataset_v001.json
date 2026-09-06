@@ -1,0 +1,18 @@
+{
+  "version": "dataset_v001",
+  "source": "NCMRWF Unified Model Archive + ERA5 Reanalysis [DEMO BENCHMARK]",
+  "start_date": "2023-06-01",
+  "end_date": "2026-03-31",
+  "rows": 1500,
+  "variables": [
+    "temperature",
+    "precipitation",
+    "wind",
+    "pressure",
+    "humidity",
+    "cloud_cover"
+  ],
+  "bust_rate_percentage": 13.2,
+  "created_at": "2026-09-06T08:12:52.181072",
+  "qc_status": "PASS"
+}

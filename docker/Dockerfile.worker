@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend/ ./backend/
+COPY data_pipeline/ ./data_pipeline/
+COPY ml_pipeline/ ./ml_pipeline/
+COPY datasets/ ./datasets/
+COPY models/ ./models/
+COPY config/ ./config/
+
+CMD ["python", "-m", "data_pipeline.update"]

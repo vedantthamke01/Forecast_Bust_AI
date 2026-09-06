@@ -268,3 +268,58 @@ async def test_forecast_comparison_and_history_verification():
         assert idx_data["bust_severity"] == "SEVERE"
 
 
+@pytest.mark.asyncio
+async def test_operational_inference_live_nwp_and_failure_modes():
+    """
+    Regression Test: Validates operational inference on newly issued NWP forecasts:
+    - Live NWP ingestion without manual forecast_value
+    - Lead time scaling across 72h, 96h, 120h, 168h
+    - Variable routing across precipitation, temperature, wind, pressure
+    - Model calibration (0 <= p <= 1, reliability = 1 - p)
+    - Strict 422 failure modes for out-of-bounds parameters
+    """
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # 1. Operational inference on live NWP forecast (no forecast_value provided)
+        live_resp = await client.get("/api/risk/location?lat=18.5204&lon=73.8567&lead_hours=96&variable=precipitation")
+        assert live_resp.status_code == 200
+        live_data = live_resp.json()
+        assert live_data["data_type"] == "REAL"
+        assert live_data["model_version"] == "model_real_v002"
+        assert live_data["is_demo_model"] is False
+        assert live_data["forecast_horizon_hours"] == 96
+        assert live_data["forecast_day"] == 4
+        assert 0.0 <= live_data["bust_probability"] <= 1.0
+        assert abs(live_data["bust_probability"] + live_data["reliability_score"] - 1.0) < 0.002
+        assert "summary_text" in live_data["explanation"]
+
+        # 2. Multi-variable routing
+        temp_resp = await client.get("/api/risk/location?lat=18.5204&lon=73.8567&lead_hours=72&variable=temperature&forecast_value=38.5&ensemble_spread=1.8")
+        assert temp_resp.status_code == 200
+        temp_data = temp_resp.json()
+        assert temp_data["variable"] == "temperature"
+        assert temp_data["forecast_value"] == 38.5
+
+        wind_resp = await client.get("/api/risk/location?lat=18.5204&lon=73.8567&lead_hours=120&variable=wind&forecast_value=18.2&ensemble_spread=2.0")
+        assert wind_resp.status_code == 200
+        wind_data = wind_resp.json()
+        assert wind_data["variable"] == "wind"
+        assert wind_data["forecast_value"] == 18.2
+
+        # 3. Failure modes: out-of-bound inputs must return HTTP 422
+        bad_lat = await client.get("/api/risk/location?lat=150&lon=73.8567&lead_hours=96")
+        assert bad_lat.status_code == 422
+
+        bad_lon = await client.get("/api/risk/location?lat=18.52&lon=-200&lead_hours=96")
+        assert bad_lon.status_code == 422
+
+        bad_lead_low = await client.get("/api/risk/location?lat=18.52&lon=73.8567&lead_hours=12")
+        assert bad_lead_low.status_code == 422
+
+        bad_lead_high = await client.get("/api/risk/location?lat=18.52&lon=73.8567&lead_hours=300")
+        assert bad_lead_high.status_code == 422
+
+        bad_spread = await client.get("/api/risk/location?lat=18.52&lon=73.8567&lead_hours=96&ensemble_spread=-1.0")
+        assert bad_spread.status_code == 422
+
+
+

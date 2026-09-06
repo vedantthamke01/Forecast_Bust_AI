@@ -70,7 +70,8 @@ class BustPredictionService:
         forecast_hum: float = 75.0,
         ensemble_spread: float = 1.2,
         run_revision: float = 0.5,
-        include_explanation: bool = True
+        include_explanation: bool = True,
+        forecast_source: Optional[str] = None
     ) -> Dict[str, Any]:
         """Calculates calibrated bust probability and risk categorization."""
         var_clean = (variable or "precipitation").lower().strip()
@@ -206,7 +207,7 @@ class BustPredictionService:
             "model_version": self.model_version,
             "dataset_version": getattr(self, "dataset_version", "dataset_real_v002"),
             "data_type": getattr(self, "data_type", "REAL"),
-            "forecast_source": "ECMWF IFS / GFS NWP",
+            "forecast_source": forecast_source or "ECMWF IFS / GFS NWP",
             "reference_source": "ECMWF ERA5 Reanalysis (Copernicus CDS)",
             "is_demo_model": getattr(self, "data_type", "REAL") == "SYNTHETIC",
             "explanation": explanation,

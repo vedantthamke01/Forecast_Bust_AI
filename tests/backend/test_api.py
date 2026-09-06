@@ -203,3 +203,68 @@ async def test_risk_map_multi_variable_and_horizons():
         assert data_72["forecast_horizon_hours"] == 72
         assert data_240["forecast_horizon_hours"] == 240
 
+
+@pytest.mark.asyncio
+async def test_forecast_comparison_and_history_verification():
+    """
+    Regression Test: Verifies complete forecast verification lifecycle endpoints:
+    - /api/risk/history queries genuine aligned records with REAL provenance
+    - Verifies error calculation arithmetic: |fc - ref| == error
+    - Verifies temporal causality and lead-hour arithmetic
+    - Verifies /api/forecast/{id}/comparison reflects real verification data
+    """
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # 1. Probe /api/risk/history
+        hist_resp = await client.get("/api/risk/history?lat=18.5204&lon=73.8567&limit=10")
+        assert hist_resp.status_code == 200
+        hist_data = hist_resp.json()
+        assert hist_data["data_type"] == "REAL"
+        assert hist_data["model_version"] == "model_real_v002"
+        assert hist_data["sample_size"] == 10
+        assert len(hist_data["records"]) == 10
+
+        from datetime import datetime
+        for rec in hist_data["records"]:
+            assert rec["data_type"] == "REAL"
+            assert rec["reference_source"] == "era5-reanalysis"
+            assert rec["forecast_provider"] == "open-meteo-previous-runs"
+
+            # Recompute error arithmetic
+            calc_p_err = abs(rec["forecast_value"] - rec["reference_value"])
+            assert abs(calc_p_err - rec["absolute_error"]) < 0.001
+
+            calc_t_err = abs(rec["forecast_temperature"] - rec["reference_temperature"])
+            assert abs(calc_t_err - rec["error_temperature"]) < 0.001
+
+            calc_w_err = abs(rec["forecast_wind"] - rec["reference_wind"])
+            assert abs(calc_w_err - rec["error_wind"]) < 0.001
+
+            # Verify temporal lead-hour arithmetic
+            v_dt = datetime.fromisoformat(rec["valid_time"])
+            i_dt = datetime.fromisoformat(rec["initialization_time"])
+            assert int((v_dt - i_dt).total_seconds() // 3600) == rec["lead_hours"]
+
+        # 2. Probe /api/forecast/{id}/comparison for Pune Day 4
+        comp_resp = await client.get("/api/forecast/fc_pune_day4/comparison")
+        assert comp_resp.status_code == 200
+        comp_data = comp_resp.json()
+        assert comp_data["forecast_id"] == "fc_pune_day4"
+        assert comp_data["forecast_horizon_hours"] == 96
+        assert comp_data["data_type"] == "REAL"
+        assert comp_data["is_bust"] is True
+        assert comp_data["operational_threshold_applied"] == 34.0
+        assert "reference_source" in comp_data
+        assert comp_data["reference_source"] == "era5-reanalysis"
+
+        # 3. Probe /api/forecast/{id}/comparison for specific dataset index 15348
+        idx_resp = await client.get("/api/forecast/15348/comparison")
+        assert idx_resp.status_code == 200
+        idx_data = idx_resp.json()
+        assert idx_data["forecast_id"] == "15348"
+        assert idx_data["forecast_wind"] == 30.8
+        assert idx_data["reference_wind"] == 12.7
+        assert abs(idx_data["error_wind"] - 18.1) < 0.001
+        assert idx_data["is_bust"] is True
+        assert idx_data["bust_severity"] == "SEVERE"
+
+

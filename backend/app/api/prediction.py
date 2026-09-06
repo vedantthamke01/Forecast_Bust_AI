@@ -72,6 +72,10 @@ async def get_historical_bust_performance(
         "bust_count": bust_count,
         "historical_bust_rate_percentage": bust_rate,
         "average_error": round(float(sum(c["absolute_error"] for c in comparisons) / max(1, total)), 2),
+        "data_type": getattr(bust_service, "data_type", "REAL"),
+        "model_version": bust_service.model_version,
+        "dataset_version": getattr(bust_service, "dataset_version", "dataset_real_v002"),
+        "is_demo_model": getattr(bust_service, "data_type", "REAL") == "SYNTHETIC",
         "records": comparisons
     }
 
@@ -99,20 +103,7 @@ async def get_forecast_detail(
 async def get_forecast_comparison(
     id: str = Path(...)
 ):
-    # Historical verification episode: Pune Day 4
-    # Forecast: 42.0 mm, Reference: 67.0 mm, Absolute Error: 25.0 mm -> BUST: YES
-    return {
-        "forecast_id": id,
-        "forecast_horizon_hours": 96,
-        "forecast_value_mm": 42.0,
-        "realized_reference_mm": 67.0,
-        "absolute_error_mm": 25.0,
-        "is_bust": True,
-        "bust_severity": "SEVERE",
-        "threshold_method": "DYNAMIC_HORIZON_SCALED",
-        "operational_threshold_applied": 34.0,
-        "status_message": "Reference observation realized after valid time T + 96 hours."
-    }
+    return bust_service.get_single_comparison(id)
 
 
 @router.get("/forecast/{id}/explanation")

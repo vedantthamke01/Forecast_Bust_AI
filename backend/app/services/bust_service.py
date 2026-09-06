@@ -14,7 +14,7 @@ import pandas as pd
 
 from backend.app.config import settings
 from ml_pipeline.features import extract_features, FEATURE_COLUMNS
-from ml_pipeline.explainability import MeteorologicalExplainer
+from ml_pipeline.explainability import MeteorologicalExplainer, generate_scientific_summary
 from data_pipeline.providers.geocoding import INDIAN_CITIES_DB
 
 
@@ -42,7 +42,7 @@ class BustPredictionService:
             try:
                 self.model_bundle = joblib.load(bundle_path)
                 self.model_version = prod_version
-                self.dataset_version = self.model_bundle.get("dataset_version", "dataset_real_v001")
+                self.dataset_version = self.model_bundle.get("dataset_version", "dataset_real_v002" if "v002" in prod_version else "dataset_real_v001")
                 self.data_type = self.model_bundle.get("data_type", "REAL" if "real" in prod_version else "SYNTHETIC")
                 raw_model = self.model_bundle.get("raw_model")
                 if raw_model is not None:
@@ -120,22 +120,41 @@ class BustPredictionService:
             risk_level = "VERY HIGH"
             risk_badge = "🔴 VERY HIGH"
 
-        # 3. SHAP Explanation
+        # 3. SHAP Explanation (Severity-Aware & Causally Conservative)
         explanation = {}
         if include_explanation:
             if self.explainer:
-                explanation = self.explainer.explain_instance(X, top_k=4)
+                explanation = self.explainer.explain_instance(
+                    X, top_k=4, risk_level=risk_level, bust_prob=bust_prob
+                )
             else:
+                top_amps = [
+                    {"description": f"Extended Forecast Horizon (Day {lead_hours//24})", "impact": "AMPLIFIER"},
+                    {"description": f"NWP Ensemble Spread / Dispersion ({ensemble_spread:.2f})", "impact": "AMPLIFIER"}
+                ]
+                top_mits = [
+                    {"description": "Mean Sea Level Pressure within normal bounds", "impact": "MITIGATOR"}
+                ]
                 explanation = {
-                    "top_amplifiers": [
-                        {"description": f"Forecast Horizon: {lead_hours}h (Day {lead_hours//24})", "impact": "AMPLIFIER"},
-                        {"description": f"Ensemble Spread ({ensemble_spread:.2f}σ)", "impact": "AMPLIFIER"}
-                    ],
-                    "top_mitigators": [
-                        {"description": "Baroclinic pressure within normal bounds", "impact": "MITIGATOR"}
-                    ],
-                    "summary_text": "Risk driven by forecast lead horizon and model ensemble spread."
+                    "all_factors": top_amps + top_mits,
+                    "top_amplifiers": top_amps,
+                    "top_mitigators": top_mits,
+                    "summary_text": generate_scientific_summary(
+                        amplifiers=top_amps,
+                        mitigators=top_mits,
+                        risk_level=risk_level,
+                        bust_prob=bust_prob
+                    )
                 }
+
+            # Ensure summary_text strictly aligns with final risk level and probability
+            if "summary_text" not in explanation or not explanation["summary_text"]:
+                explanation["summary_text"] = generate_scientific_summary(
+                    amplifiers=explanation.get("top_amplifiers", []),
+                    mitigators=explanation.get("top_mitigators", []),
+                    risk_level=risk_level,
+                    bust_prob=bust_prob
+                )
 
         return {
             "location": {"latitude": latitude, "longitude": longitude},
@@ -150,7 +169,7 @@ class BustPredictionService:
             "risk_level": risk_level,
             "risk_badge": risk_badge,
             "model_version": self.model_version,
-            "dataset_version": getattr(self, "dataset_version", "dataset_real_v001"),
+            "dataset_version": getattr(self, "dataset_version", "dataset_real_v002"),
             "data_type": getattr(self, "data_type", "REAL"),
             "forecast_source": "ECMWF IFS / GFS NWP",
             "reference_source": "ECMWF ERA5 Reanalysis (Copernicus CDS)",

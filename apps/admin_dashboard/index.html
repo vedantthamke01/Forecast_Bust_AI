@@ -327,7 +327,7 @@
           <div class="shap-summary-box">
             <div class="shap-summary-header">
               <span class="shap-icon">🔬</span>
-              <span class="shap-title">Meteorological Explainability (TreeSHAP Causal Drivers)</span>
+              <span class="shap-title">Model Explainability (TreeSHAP Feature Drivers)</span>
             </div>
             <p id="shap-summary-text" class="shap-summary-text">
               Evaluating local atmospheric predictors against climatological baseline...
@@ -374,7 +374,7 @@
           <!-- NWP Ensemble Spread & Provenance -->
           <div class="nwp-meta-footer">
             <div>Ensemble Spread: <strong id="nwp-spread" style="color: var(--text-primary);">--σ</strong></div>
-            <div>Run Jumpiness: <strong id="nwp-revision" style="color: var(--text-primary);">--</strong></div>
+            <div>Run Revision / Consistency: <strong id="nwp-revision" style="color: var(--text-primary);">--</strong></div>
             <div>Source: <strong id="nwp-model" style="color: var(--accent-primary);">ECMWF IFS (Operational)</strong></div>
           </div>
 
@@ -393,7 +393,7 @@
         <!-- SHAP Local Factors List -->
         <div class="card">
           <div class="card-title">
-            <span>Top Contributing Physical Factors (Local SHAP Attribution)</span>
+            <span>Top Contributing Model Features (Local TreeSHAP Attribution)</span>
             <span style="font-size: 0.75rem; color: var(--text-muted);">+ Amplifier (Risk ↑) | – Mitigator (Risk ↓)</span>
           </div>
           <div id="shap-factors-list" class="shap-factors-list">
@@ -430,6 +430,9 @@
           <span>Spatial Forecast Bust Risk Map (India Synoptic Domain — 25 Observatories)</span>
           <span style="font-size: 0.8rem; color: var(--text-secondary);">Powered by OpenStreetMap & Leaflet (₹0 Zero Cost Stack)</span>
         </div>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin: -0.5rem 0 0.75rem 0;">
+          A model-generated spatial visualization of estimated forecast-bust risk under the selected forecast scenario.
+        </p>
 
         <!-- Map Controls & Legend Bar -->
         <div class="map-controls-row">
@@ -461,7 +464,7 @@
     <section id="tab-verification" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>Operational Forecast vs Realized Reference Ground-Truth</span>
+          <span>Operational Forecast vs Realized Reference Outcome</span>
           <span style="font-size: 0.8rem; color: var(--accent-primary);">Verified against Copernicus ERA5 Reanalysis</span>
         </div>
 
@@ -476,8 +479,8 @@
             <div class="concept-arrow">➔</div>
             <div class="concept-stage">
               <div class="stage-tag stage-verif">STAGE 2: T₀ + τ VERIFICATION</div>
-              <strong>Post-Event Ground Truth Verification</strong>
-              <p>Reference observation (ERA5 Reanalysis) is ingested <strong>only after the valid time has passed</strong> to calculate absolute error $|NWP - ERA5|$ and certify whether a bust occurred.</p>
+              <strong>Post-Event ERA5 Reference Verification</strong>
+              <p>Reference data (ERA5 Reanalysis) is ingested <strong>only after the valid time has passed</strong> to calculate absolute error $|NWP - ERA5|$ and certify whether a bust occurred.</p>
             </div>
           </div>
         </div>
@@ -590,7 +593,7 @@
             <div class="metric-box">
               <div class="metric-label">PR-AUC (Precision-Recall)</div>
               <div class="metric-value" style="font-size: 1.5rem;" id="admin-prauc">0.2682</div>
-              <div class="metric-sub">Significant over baseline (0.053)</div>
+              <div class="metric-sub">Baseline: 0.0950 (+0.1732)</div>
             </div>
             <div class="metric-box">
               <div class="metric-label">ROC-AUC Discriminative</div>
@@ -600,12 +603,12 @@
             <div class="metric-box">
               <div class="metric-label">Brier Calibration Score</div>
               <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-brier">0.0450</div>
-              <div class="metric-sub">Well-calibrated probabilities</div>
+              <div class="metric-sub">Brier Score (Isotonic)</div>
             </div>
             <div class="metric-box">
               <div class="metric-label">Expected Calib. Error (ECE)</div>
-              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-ece">0.0163</div>
-              <div class="metric-sub">Reliability alignment error</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-ece">0.0257</div>
+              <div class="metric-sub">Expected Calibration Error</div>
             </div>
           </div>
 
@@ -661,7 +664,7 @@
                 <td><strong>Training Dataset</strong></td>
                 <td><code class="code-pill">dataset_real_v002.csv</code></td>
                 <td>37,800 authentic records (India)</td>
-                <td>Spatio-temporally aligned NWP forecasts and ERA5 ground-truth</td>
+                <td>Spatio-temporally aligned NWP forecasts and ERA5 reference reanalysis</td>
               </tr>
               <tr>
                 <td><strong>Historical NWP Source</strong></td>
@@ -670,10 +673,10 @@
                 <td>Multi-day medium-range forecasts saved at initialization</td>
               </tr>
               <tr>
-                <td><strong>Ground-Truth Reanalysis</strong></td>
+                <td><strong>Historical Reference Reanalysis</strong></td>
                 <td><code class="code-pill">era5-reanalysis</code></td>
                 <td>Copernicus Climate Data Store (CDS)</td>
-                <td>Hourly 0.25° European Reanalysis post-event observation</td>
+                <td>Hourly 0.25° European Reanalysis post-event reference</td>
               </tr>
               <tr>
                 <td><strong>Operational Live Forecast</strong></td>
@@ -709,19 +712,19 @@
         <div class="card">
           <div class="card-title">1. Anti-Leakage & Operational Decoupling</div>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
-            At forecast initialization time $T_0$, ground truth observations do not exist. Many academic models accidentally leak future observations into feature pipelines. SIH26079 implements strict feature gating: only NWP variables, spatial coordinates, forecast horizon, and ensemble spreads available at $T_0$ enter the model.
+            At forecast initialization time $T_0$, future reference observations do not exist. Many academic models accidentally leak future observations into feature pipelines. The implemented leakage gate and temporal validation tests are designed to prevent future reference/error information from entering $T_0$ inference.
           </p>
         </div>
 
         <div class="card">
-          <div class="card-title">2. Dynamic Climatological Bust Thresholds</div>
+          <div class="card-title">2. Lead-Dependent Dynamic Bust Thresholds</div>
           <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
-            Rather than arbitrary fixed thresholds (e.g. 50 mm everywhere), the system utilizes station-specific error distributions:
+            Project labeling thresholds scale dynamically with lead horizon $\tau$:
             <br>
             <code style="display: block; margin: 0.5rem 0; padding: 0.4rem; background: rgba(0,0,0,0.3); border-radius: 4px; font-family: monospace;">
-              Threshold = μ_error + k · σ_spread
+              Threshold(τ) = Base_Threshold · [1 + 0.12 · max(0, (τ - 24)/24)]
             </code>
-            This accounts for topographical variation between Western Ghats, Indo-Gangetic plains, and coastal regions.
+            Base thresholds: Precipitation 25 mm, Temperature 4.0°C, Wind 8.5 m/s. Compound bust logic triggers when absolute error exceeds the lead-scaled threshold.
           </p>
         </div>
       </div>

@@ -1,9 +1,10 @@
 """
-SHAP-Based Meteorological Explainability Engine.
-Computes mathematically exact additive feature attributions (TreeSHAP)
-for local forecast bust predictions.
-Translates mathematical SHAP coefficients into human-interpretable
-atmospheric physics and NWP dynamics factors.
+SHAP-Based Model Explainability Engine.
+SHAP provides a game-theoretic additive feature-attribution framework used to identify
+which model inputs most influenced an individual prediction. It explains the model prediction,
+not the physical atmosphere itself.
+Translates mathematical SHAP coefficients into human-interpretable descriptions
+of model input features.
 """
 from typing import List, Dict, Any, Optional
 import numpy as np
@@ -20,7 +21,7 @@ FEATURE_DESCRIPTIONS = {
     "forecast_humidity": "Forecasted Relative Humidity ({val}%)",
     "forecast_cloud_cover": "Forecasted Cloud Cover ({val}%)",
     "ensemble_spread": "NWP Ensemble Spread / Dispersion ({val})",
-    "run_revision": "Consecutive Model Run Jumpiness / Revision ({val})",
+    "run_revision": "Run Revision / Consistency Signal ({val})",
     "sin_day_of_year": "Seasonal Day-of-Year Phase",
     "cos_day_of_year": "Climatological Solar Position",
     "month": "Seasonal Month ({val})",

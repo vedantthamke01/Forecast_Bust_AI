@@ -5,43 +5,63 @@
 
 ---
 
-## 1. What Constitutes a Forecast Bust?
+## 1. Forecast Verification & Bust Detection Lifecycle
 
-In operational meteorological science, a **forecast bust** refers to an extreme forecast failure where the Numerical Weather Prediction (NWP) model deviates substantially from realized ground truth observations or reanalysis (ERA5). 
+A forecast bust is an extreme forecast failure where Numerical Weather Prediction (NWP) guidance deviates substantially from post-event reference data at matching valid times:
 
-Unlike routine incremental bias (e.g. 1.5°C temperature error or 4 mm light drizzle discrepancy), forecast busts are characterized by:
-1. **High Operational Consequence**: Missing an extreme synoptic or mesoscale convective event (e.g., flash flood, intense thunderstorm, severe cold/heat wave) or issuing false alarms for benign conditions.
-2. **Horizon Dependency**: Errors that are intolerable at Day 2 (48 hours) might be within standard ensemble spread boundaries at Day 8 (192 hours).
+$$\text{Forecast Initialized at } T_0 \xrightarrow{\text{Lead } \tau} \text{Reference Data at } T_0 + \tau \xrightarrow{} \text{Absolute Error } |NWP - \text{Ref}| \xrightarrow{\text{Threshold}(\tau)} \text{Bust Label}$$
+
+1. **Forecast Issuance ($T_0$)**: NWP values, ensemble spread, run revision, and temporal features are available. Future reference data does not exist.
+2. **Matching Valid Time ($T_0 + \tau$)**: Event valid time occurs. Post-event reference data (Copernicus ERA5 reanalysis) becomes available.
+3. **Absolute Forecast Error**: Computed across meteorological variables:
+   $$\text{Error}_{\text{precip}} = |P_{\text{nwp}} - P_{\text{ref}}|$$
+   $$\text{Error}_{\text{temp}} = |T_{\text{nwp}} - T_{\text{ref}}|$$
+   $$\text{Error}_{\text{wind}} = |W_{\text{nwp}} - W_{\text{ref}}|$$
+4. **Lead-Dependent Threshold Evaluation**: Error is evaluated against lead-horizon scaled thresholds $\text{Threshold}(\tau)$.
+5. **Bust Label & Severity**: Labeled as binary event ($\text{is\_bust} \in \{0, 1\}$) and categorized into severity bands.
+
+*Note: These thresholds are project labeling thresholds established for model training and empirical verification. They are not universal meteorological laws or statutory limits.*
 
 ---
 
-## 2. Configurable Labeling Strategies
+## 2. Lead-Time Dependent Dynamic Thresholding
 
-Our system provides four mathematically sound labeling methods. Every labeled record explicitly preserves its labeling strategy in its metadata:
+Forecast uncertainty increases with lead horizon $\tau \in [24, 240]$ hours. In the primary labeling implementation (`data_pipeline/labeler.py`), thresholds scale with lead time above Day 1 (24 hours):
 
-### Strategy 1: Absolute Error Thresholding
-A binary bust flag is raised if the absolute error between NWP forecast $\hat{y}$ and reference observation $y$ exceeds an operational threshold:
+$$\text{Threshold}(\tau) = \text{Base\_Threshold} \times \left(1.0 + 0.12 \times \max\left(0, \frac{\tau - 24}{24}\right)\right)$$
 
-$$\text{Error}_{\text{abs}} = |\hat{y} - y|$$
+### Applied Project Thresholds by Lead Time
 
-- **Precipitation (24h accumulation)**: $\text{Threshold}_{\text{rain}} = 25.0\text{ mm}$ (or $50.0\text{ mm}$ for severe event)
-- **Temperature ($2m$)**: $\text{Threshold}_{\text{temp}} = 4.0^{\circ}\text{C}$
-- **Wind Speed ($10m$)**: $\text{Threshold}_{\text{wind}} = 8.5\text{ m/s}$ ($\sim 30\text{ km/h}$)
-- **Mean Sea Level Pressure (MSLP)**: $\text{Threshold}_{\text{press}} = 5.0\text{ hPa}$
+| Lead Horizon ($\tau$) | Forecast Day | Precipitation Threshold | Temperature Threshold | Wind Speed Threshold |
+| :---: | :---: | :---: | :---: | :---: |
+| **24h** | Day 1 | 25.00 mm | 4.00°C | 8.50 m/s |
+| **48h** | Day 2 | 28.00 mm | 4.48°C | 9.52 m/s |
+| **72h** | Day 3 | 31.00 mm | 4.96°C | 10.54 m/s |
+| **96h** | Day 4 | 34.00 mm | 5.44°C | 11.56 m/s |
+| **120h** | Day 5 | 37.00 mm | 5.92°C | 12.58 m/s |
+| **144h** | Day 6 | 40.00 mm | 6.40°C | 13.60 m/s |
+| **168h** | Day 7 | 43.00 mm | 6.88°C | 14.62 m/s |
 
-### Strategy 2: Climatological / Percentile-Based Thresholding
-Because variance varies drastically across geography (e.g., Western Ghats vs Thar Desert) and seasons (SW Monsoon vs Winter), a threshold can be defined dynamically:
+---
 
-$$\text{Bust} = 1 \iff |\hat{y} - y| > P_{95}(\text{Historical Errors for Sub-Division and Season})$$
+## 3. Severity Classification Logic
 
-### Strategy 3: Lead-Time Dependent Dynamic Thresholding
-Forecast uncertainty grows non-linearly with forecast lead time $\tau \in [24, 240]$ hours. An operational threshold is scaled with lead time:
+Severity is calculated from the maximum ratio of absolute forecast error to the applicable operational threshold:
 
-$$\text{Threshold}(\tau) = \text{Threshold}_0 \times \left(1 + \gamma \times \frac{\tau - 24}{24}\right)$$
+$$\text{Ratio}_{\max} = \max\left(\frac{\text{Error}_{\text{precip}}}{\text{Threshold}_{\text{precip}}(\tau)}, \frac{\text{Error}_{\text{temp}}}{\text{Threshold}_{\text{temp}}(\tau)}, \frac{\text{Error}_{\text{wind}}}{\text{Threshold}_{\text{wind}}(\tau)}\right)$$
 
-Where $\gamma \approx 0.10$ to $0.15$ per 24 hours of lead time. Under this regime, a 20 mm rainfall error constitutes a severe bust at 48 hours (Day 2), but is recognized as standard variance at 216 hours (Day 9).
+- **`NONE`**: $\text{is\_bust} = 0$ ($\text{Ratio}_{\max} < 1.0$)
+- **`MODERATE`**: $\text{is\_bust} = 1$ and $1.0 \le \text{Ratio}_{\max} < 1.5$
+- **`SEVERE`**: $\text{is\_bust} = 1$ and $1.5 \le \text{Ratio}_{\max} < 2.0$
+- **`EXTREME`**: $\text{is\_bust} = 1$ and $\text{Ratio}_{\max} \ge 2.0$
 
-### Strategy 4: Multi-Variable Compound Bust
-In many high-impact situations, no single variable alone reaches extreme thresholds, but the compound state is disastrous (e.g., moderate rainfall coupled with gale-force winds and rapid pressure plunge).
-- Bust flagged if:
-  $$\text{Bust}_{\text{compound}} = 1 \iff (\text{Bust}_{\text{rain}} = 1) \lor (\text{Bust}_{\text{temp}} = 1 \land \text{Bust}_{\text{wind}} = 1) \lor (\text{Bust}_{\text{press}} = 1 \land \text{Bust}_{\text{wind}} = 1)$$
+---
+
+## 4. Compound Bust Logic
+
+Under multi-variable compound labeling:
+$$\text{Bust}_{\text{compound}} = 1 \iff (\text{Bust}_{\text{precip}} = 1) \lor (\text{Bust}_{\text{temp}} = 1 \land \text{Bust}_{\text{wind}} = 1)$$
+
+Under standard synoptic labeling:
+$$\text{Bust} = 1 \iff (\text{Bust}_{\text{precip}} = 1) \lor (\text{Bust}_{\text{temp}} = 1) \lor (\text{Bust}_{\text{wind}} = 1)$$
+

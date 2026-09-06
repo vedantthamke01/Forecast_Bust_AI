@@ -61,20 +61,26 @@ In accordance with scientific meteorological integrity, this platform strictly d
 
 ---
 
-## 3. Fallback and Fault-Tolerance Architecture
+## 3. Upstream Provider Failure & Fault-Tolerance Behavior
 
-If any network source becomes unreachable or air-gapped:
+In accordance with strict scientific meteorological integrity, the platform never invents synthetic weather values or falsely attributes fabricated guidance to ECMWF when an upstream provider request fails:
+
 ```text
-Live NWP API (Open-Meteo)
-       │ (Network error or offline)
-       ▼
-Local Verified Benchmark Dataset (DEMO MODE)
-       │ (Cached physical records for 25 Indian synoptic stations)
-       ▼
-Deterministic Local Model Inference & Calibration
-       │ (Zero latency, ₹0 spend)
-       ▼
-Meteorological Dashboard & Flutter App Render
+┌────────────────────────────────────────────────────────────────────────┐
+│                   OPERATIONAL PROVIDER FAILURE HANDLING                │
+├────────────────────────────────────────────────────────────────────────┤
+│ 1. Upstream Provider Available:                                        │
+│    Live ECMWF IFS forecast returned -> feature extraction -> inference  │
+│                                                                        │
+│ 2. Upstream Provider Unavailable / Network Timeout:                     │
+│    Explicit HTTP 503 (Service Unavailable) status returned with        │
+│    descriptive diagnostic message. No weather values are invented.     │
+│                                                                        │
+│ 3. Forecaster Scenario / What-If Mode:                                 │
+│    Forecasters can supply explicit scenario overrides (e.g. 42mm,      │
+│    3.8σ spread) for sensitivity and stress evaluation.                 │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-No external paid service can bring down this application.
+No external network interruption can cause silent data corruption or false attribution.
+

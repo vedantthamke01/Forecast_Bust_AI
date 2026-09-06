@@ -837,7 +837,7 @@ async function loadAdminData() {
       document.getElementById("admin-prauc").textContent = (m.pr_auc || 0.2682).toFixed(4);
       document.getElementById("admin-rocauc").textContent = (m.roc_auc || 0.8756).toFixed(4);
       document.getElementById("admin-brier").textContent = (m.brier_score || 0.0450).toFixed(4);
-      document.getElementById("admin-ece").textContent = (m.expected_calibration_error || 0.0163).toFixed(4);
+      document.getElementById("admin-ece").textContent = (m.expected_calibration_error || 0.0257).toFixed(4);
     }
 
     // 3. Distribution Drift Status

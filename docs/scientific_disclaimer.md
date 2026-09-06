@@ -7,21 +7,22 @@
 
 ## 1. Operational Mandate & Scope
 
-This software system is designed exclusively as an **auxiliary forecast reliability evaluation layer**. 
+The system provides a **forecast-reliability layer alongside existing NWP forecasts**.
 
-- It operates downstream of Numerical Weather Prediction (NWP) systems (including global models such as NCUM, ECMWF IFS, GFS, and regional models).
-- It analyzes forecast parameters, ensemble dispersion, model jumpiness, and atmospheric dynamics proxies to estimate the **risk of an anomalous forecast failure**.
+- **Complementary Positioning**: NWP provides the expected weather state; the ML system estimates the probability that the forecast may experience a significant forecast error.
+- **No Substitute Forecasts**: The system does not replace NWP, does not replace IMD or NCMRWF, does not produce a better weather forecast than NWP, and does not predict weather independently of NWP.
+- **Auxiliary Analysis**: It analyzes forecast parameters, ensemble dispersion, run revision consistency, and atmospheric dynamics proxies to estimate the risk of an anomalous forecast failure.
 - **Under NO circumstances does this system generate substitute meteorological forecasts or overwrite official weather advisories.**
 
-## 2. Official Authority
+## 2. Statutory Authority & Intended Users
 
-Official weather forecasts, severe weather alerts, cyclone tracks, heavy rainfall red/orange alerts, and heatwave warnings across the Republic of India are under the statutory mandate of:
-- **India Meteorological Department (IMD)**
-- **National Centre for Medium Range Weather Forecasting (NCMRWF)**
+- **Statutory Authority**: Official weather forecasts, severe weather alerts, cyclone tracks, heavy rainfall red/orange alerts, and heatwave warnings across the Republic of India are under the statutory mandate of the **India Meteorological Department (IMD)** and the **National Centre for Medium Range Weather Forecasting (NCMRWF)**.
+- **Intended Users**: Potential users include meteorological forecast analysts, forecast operations teams, researchers, disaster-management decision-support systems, and downstream applications that need forecast reliability information.
+- **Adoption Status**: The project does not claim operational deployment or institutional adoption by IMD or NCMRWF.
 
-Meteorologists, forecasters, disaster management authorities (NDMA/SDMA), and the public must refer to official bulletins issued by IMD and MoES for operational decisions and life-safety actions.
+## 3. Probabilistic Interpretation & Calibration
 
-## 3. Probabilistic Interpretation
+- **Model Estimate**: The Bust Probability $P(\text{Bust} = 1)$ is a calibrated model estimate. A low model probability (e.g. 0.7%) indicates the model estimates a low bust probability for the supplied forecast conditions; it is not physical proof of atmospheric stability, nor is probability a guarantee of certainty.
+- **Calibration Meaning**: A calibrated probability is intended to correspond to observed event frequency over sufficiently large groups of predictions with similar predicted probabilities.
+- **Directional Neutrality**: A high bust probability does not indicate which alternative direction the weather will deviate toward (e.g. higher vs lower precipitation), but indicates that the operational NWP solution has low confidence and elevated vulnerability to significant error.
 
-- The **Bust Probability $P(\text{Bust} = 1)$** represents the empirical, calibrated likelihood that a forecast's absolute error will exceed pre-configured physical or climatological threshold percentiles.
-- A high bust probability does **not** indicate which alternative direction the weather will deviate toward (e.g. higher vs lower precipitation), but indicates that the operational NWP solution has low confidence and elevated vulnerability to significant error.

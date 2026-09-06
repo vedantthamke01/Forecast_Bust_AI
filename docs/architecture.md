@@ -30,11 +30,11 @@
 ┌────────────────────────────────────────────────────────────────────────┐
 │                3. MACHINE LEARNING & CALIBRATION ENGINE                │
 │   • Strict Automated Anti-Leakage Gate (Excludes future actuals)       │
-│   • Temporal Train/Val/Test Split (Train: 2023-24, Val: 2025, Test: 26)│
+│   • Temporal Split (Train: ≤2025-08-05, Val: 08-06..07, Test: 01-15..17)│
 │   • Baseline: Calibrated Logistic Regression                           │
 │   • Primary: Tuned LightGBM Gradient Boosted Trees                     │
 │   • Probability Calibration: Isotonic Regression / Platt Scaling       │
-│   • Explainability: TreeSHAP additive physical factor attributions     │
+│   • Explainability: TreeSHAP additive feature attributions             │
 │   • Model Registry & Promotion Acceptance Gate                         │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
@@ -66,7 +66,8 @@
 - `data_pipeline/`: Downloader, incremental updater, alignment engine, quality checks, and labeling.
 - `ml_pipeline/`: Feature engineering, leakage detector, training pipeline, calibration, and drift detector.
 - `datasets/`: Versioned data (`raw`, `processed`, `training`, `metadata`).
-- `models/`: Registered models (`model_v001`, `model_v002`) and catalog `registry.json`.
+- `models/`: Registered models (champion: `model_real_v002`) and catalog `registry.json`.
 - `apps/admin_dashboard/`: Web Meteorological Dashboard and Admin ML Studio.
 - `apps/flutter_app/`: Cross-platform Flutter mobile and desktop application.
-- `tests/`: 17 automated tests covering backend, ML, leakage, and data pipeline.
+- `tests/`: 49 automated tests covering backend, ML, leakage, calibration, and data pipeline.
+

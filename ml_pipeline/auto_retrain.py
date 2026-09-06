@@ -1,6 +1,6 @@
 """
-Automated Model Retraining & Continuous Learning Workflow.
-Checks incoming data volume, trains candidate models under controlled gates,
+Automated Model Retraining & Periodic Evaluation Workflow.
+Supports retraining when newly verified forecast/reference pairs become available,
 evaluates candidate vs production models, and only promotes when scientifically justified.
 """
 import argparse

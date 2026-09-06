@@ -412,7 +412,7 @@ class BustPredictionService:
                 "data_type": str(row.get("data_type", "REAL")),
                 "forecast_provider": str(row.get("forecast_provider", "open-meteo-previous-runs")),
                 "reference_source": str(row.get("reference_source", "era5-reanalysis")),
-                "status_message": f"Reference observation realized after valid time T + {lead} hours."
+                "status_message": f"Reference data (ERA5) realized after valid time T + {lead} hours."
             }
 
         return None

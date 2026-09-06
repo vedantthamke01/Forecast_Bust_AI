@@ -77,7 +77,10 @@ Calculates calibrated bust probability, reliability index, risk badge, and SHAP 
   "reliability_percentage": 22.0,
   "risk_level": "HIGH",
   "risk_badge": "🟠 HIGH",
-  "model_version": "model_v001",
+  "model_version": "model_real_v002",
+  "dataset_version": "dataset_real_v002",
+  "data_type": "REAL",
+  "is_demo_model": false,
   "explanation": {
     "top_amplifiers": [
       { "description": "Extended Forecast Horizon (Day 4)", "shap_value": 0.32, "impact": "AMPLIFIER" },
@@ -86,16 +89,21 @@ Calculates calibrated bust probability, reliability index, risk badge, and SHAP 
     "top_mitigators": [
       { "description": "Mean Sea Level Pressure within standard bounds", "shap_value": -0.09, "impact": "MITIGATOR" }
     ],
-    "summary_text": "Elevated bust risk primarily driven by Extended Forecast Horizon (Day 4) and NWP Ensemble Spread."
+    "summary_text": "Overall bust risk is HIGH (78.0%). The forecast shows elevated risk of a significant forecast error. The main factors increasing the estimated risk are Extended Forecast Horizon (Day 4), NWP Ensemble Spread (3.80σ)."
   }
 }
 ```
 
 ### `GET /api/risk/map?lead_hours={lead_hours}&variable={variable}`
-Returns spatial grid of bust risk and reliability for map visualization across India.
+Returns a model-generated spatial visualization grid of estimated forecast-bust risk and reliability for the selected scenario across India.
 
 ### `GET /api/risk/history?lat={lat}&lon={lon}&limit=10`
-Returns verified historical forecast vs realized reference records with error deltas.
+Returns verified historical forecast vs realized ERA5 reference records with error deltas.
+
+### `GET /forecast/{id}/comparison`
+Returns post-event verification record comparing historical NWP forecast against realized ERA5 reference.
+- Nonexistent forecast or comparison IDs return HTTP 404 (Not Found). The API strictly never invents fake verification records.
+
 
 ---
 

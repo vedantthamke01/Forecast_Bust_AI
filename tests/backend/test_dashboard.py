@@ -132,3 +132,46 @@ async def test_api_risk_map_contract_and_units():
                 assert "name" in pt and "latitude" in pt and "longitude" in pt
                 assert "bust_probability" in pt and "risk_badge" in pt
                 assert "forecast_value" in pt
+
+
+@pytest.mark.asyncio
+async def test_dashboard_user_facing_weather_and_reliability_elements():
+    """Verifies that the consumer-grade weather + AI reliability elements are present in the HTML."""
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        resp = await client.get("/dashboard/")
+        assert resp.status_code == 200
+        text = resp.text
+
+        # Location intelligence
+        assert 'id="btn-use-geolocation"' in text
+        assert 'id="btn-open-search"' in text
+        assert 'id="location-search-modal"' in text
+        assert 'id="active-location-name"' in text
+
+        # Current weather hero
+        assert 'id="cur-weather-card"' in text
+        assert "CURRENT WEATHER" in text
+        assert 'id="cur-temp"' in text
+        assert 'id="cur-precip"' in text
+        assert 'id="cur-humidity"' in text
+        assert 'id="cur-wind"' in text
+
+        # Mission banner
+        assert "We don't predict the weather" in text
+
+        # Forecast timeline
+        assert 'id="forecast-timeline-container"' in text
+
+        # Why Explanation panel
+        assert 'id="why-explanation-panel"' in text
+        assert 'id="btn-open-why"' in text
+        assert "TreeSHAP" in text
+
+        # Day 10 archive notice
+        assert 'id="day10-archive-notice"' in text
+
+        # 4 Primary navigation tabs
+        assert "Weather & Reliability" in text
+        assert "Spatial Risk Map" in text
+        assert "Forecast vs Reference" in text
+        assert "Scientific / Advanced" in text

@@ -322,4 +322,41 @@ async def test_operational_inference_live_nwp_and_failure_modes():
         assert bad_spread.status_code == 422
 
 
+@pytest.mark.asyncio
+async def test_reverse_geocoding():
+    """Verifies that reverse geocoding resolves coordinates to city/state."""
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # 1. Valid coordinates for Pune
+        resp = await client.get("/api/locations/reverse?lat=18.5204&lon=73.8567")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["name"] == "Pune"
+        assert data["state"] == "Maharashtra"
+        assert data["country"] == "India"
 
+        # 2. Out-of-bounds latitude
+        bad_lat = await client.get("/api/locations/reverse?lat=95.0&lon=73.8567")
+        assert bad_lat.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_current_weather_endpoint():
+    """Verifies the /api/weather/current endpoint returns authentic live meteorological fields."""
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # 1. Pune coordinates
+        resp = await client.get("/api/weather/current?lat=18.5204&lon=73.8567")
+        assert resp.status_code == 200
+        data = resp.json()
+
+        assert "temperature_c" in data
+        assert "precipitation_mm" in data
+        assert "wind_speed_mps" in data
+        assert "pressure_hpa" in data
+        assert "humidity_percent" in data
+        assert "cloud_cover_percent" in data
+        assert "provider" in data
+        assert "model" in data
+
+        # Out-of-bounds coordinates
+        bad_resp = await client.get("/api/weather/current?lat=195.0&lon=73.8567")
+        assert bad_resp.status_code == 422

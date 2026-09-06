@@ -1,0 +1,45 @@
+{
+  "model_version": "model_real_v001",
+  "dataset_version": "dataset_real_v001",
+  "data_type": "REAL",
+  "training_period": "2024-07-10 00:00:00 to 2025-08-05 23:00:00",
+  "validation_period": "2025-08-06 00:00:00 to 2025-08-07 23:00:00",
+  "test_period": "2026-01-15 00:00:00 to 2026-01-17 23:00:00",
+  "feature_version": "v1.0",
+  "algorithm": "LightGBM + Isotonic Calibration",
+  "metrics": {
+    "accuracy": 0.9462,
+    "precision": 0.5,
+    "recall": 0.0025,
+    "f1_score": 0.0049,
+    "roc_auc": 0.8756,
+    "pr_auc": 0.2682,
+    "brier_score": 0.045,
+    "expected_calibration_error": 0.0257,
+    "confusion_matrix": {
+      "true_negatives": 7152,
+      "false_positives": 1,
+      "false_negatives": 406,
+      "true_positives": 1
+    },
+    "reliability_curve": {
+      "fraction_of_positives": [
+        0.0109,
+        0.0727,
+        0.134,
+        0.3178,
+        0.5
+      ],
+      "mean_predicted_value": [
+        0.0122,
+        0.159,
+        0.216,
+        0.4812,
+        0.5385
+      ]
+    }
+  },
+  "status": "VALIDATED",
+  "artifact_path": "C:\\Users\\tejas\\Documents\\SIH\\models\\model_real_v001\\model_bundle.joblib",
+  "created_at": "2026-09-06T11:48:30.959410"
+}

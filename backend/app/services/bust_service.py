@@ -42,16 +42,20 @@ class BustPredictionService:
             try:
                 self.model_bundle = joblib.load(bundle_path)
                 self.model_version = prod_version
+                self.dataset_version = self.model_bundle.get("dataset_version", "dataset_real_v001")
+                self.data_type = self.model_bundle.get("data_type", "REAL" if "real" in prod_version else "SYNTHETIC")
                 raw_model = self.model_bundle.get("raw_model")
                 if raw_model is not None:
                     self.explainer = MeteorologicalExplainer(raw_model)
-                print(f"[+] BustPredictionService: Loaded production bundle {prod_version}")
+                print(f"[+] BustPredictionService: Loaded production bundle {prod_version} (Provenance: {self.data_type})")
                 return
             except Exception as e:
                 print(f"[!] Warning: Could not load model bundle: {e}")
 
         self.model_bundle = None
         self.explainer = None
+        self.dataset_version = "unknown"
+        self.data_type = "REAL"
 
     def predict_risk(
         self,
@@ -146,6 +150,11 @@ class BustPredictionService:
             "risk_level": risk_level,
             "risk_badge": risk_badge,
             "model_version": self.model_version,
+            "dataset_version": getattr(self, "dataset_version", "dataset_real_v001"),
+            "data_type": getattr(self, "data_type", "REAL"),
+            "forecast_source": "ECMWF IFS / GFS NWP",
+            "reference_source": "ECMWF ERA5 Reanalysis (Copernicus CDS)",
+            "is_demo_model": getattr(self, "data_type", "REAL") == "SYNTHETIC",
             "explanation": explanation,
             "disclaimer": "This system provides forecast reliability estimation and does not replace official NWP or meteorological advisories."
         }

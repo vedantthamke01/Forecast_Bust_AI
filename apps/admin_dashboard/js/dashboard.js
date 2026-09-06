@@ -205,6 +205,26 @@ async function loadLocationRisk() {
       probEl.style.color = "var(--risk-very-high)";
     }
 
+    // Update Provenance Bar
+    const tagEl = document.getElementById("bar-provenance-tag");
+    if (tagEl) {
+      if (data.data_type === "REAL") {
+        tagEl.textContent = "● REAL NWP + ERA5 VALIDATED";
+        tagEl.style.color = "var(--risk-low)";
+      } else {
+        tagEl.textContent = "⚠ DEMONSTRATION DATA (SYNTHETIC)";
+        tagEl.style.color = "var(--risk-mod)";
+      }
+    }
+    const fcSrc = document.getElementById("bar-forecast-src");
+    if (fcSrc && data.forecast_source) fcSrc.textContent = data.forecast_source;
+    const refSrc = document.getElementById("bar-reference-src");
+    if (refSrc && data.reference_source) refSrc.textContent = data.reference_source;
+    const dsVer = document.getElementById("bar-dataset-ver");
+    if (dsVer && data.dataset_version) dsVer.textContent = data.dataset_version;
+    const modVer = document.getElementById("bar-model-ver");
+    if (modVer && data.model_version) modVer.textContent = data.model_version;
+
     // Set SHAP Explainability
     if (data.explanation) {
       const summaryEl = document.getElementById("shap-summary-text");

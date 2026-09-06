@@ -14,8 +14,13 @@ router = APIRouter(prefix="/datasets", tags=["Dataset Management & Quality"])
 @router.get("/status")
 async def get_dataset_status():
     """Returns dataset status adhering to Section 35 specification."""
-    meta_file = os.path.join("datasets", "metadata", "dataset_v001.json")
-    qc_file = os.path.join("datasets", "metadata", "quality_report.json")
+    real_meta_file = os.path.join("datasets", "metadata", "dataset_real_v001.json")
+    demo_meta_file = os.path.join("datasets", "metadata", "dataset_v001.json")
+    meta_file = real_meta_file if os.path.exists(real_meta_file) else demo_meta_file
+
+    real_qc_file = os.path.join("datasets", "metadata", "quality_report_real.json")
+    demo_qc_file = os.path.join("datasets", "metadata", "quality_report.json")
+    qc_file = real_qc_file if os.path.exists(real_qc_file) else demo_qc_file
 
     meta = {}
     if os.path.exists(meta_file):
@@ -30,7 +35,7 @@ async def get_dataset_status():
     return {
         "latest_data": meta.get("end_date", "2026-03-31"),
         "dataset_version": meta.get("version", "dataset_v001"),
-        "total_records": meta.get("rows", 1500),
+        "total_records": meta.get("total_records") or meta.get("rows", 1500),
         "coverage": f"{qc.get('lead_time_coverage_percentage', 100.0)}%",
         "last_update": meta.get("created_at", "2026-09-06T12:00:00Z"),
         "update_status": "healthy" if qc.get("status") == "PASS" else "needs_review",
@@ -43,9 +48,12 @@ async def get_dataset_status():
 @router.get("/quality")
 async def get_dataset_quality():
     """Returns real dataset quality report calculated from active records (Section 17)."""
-    qc_file = os.path.join("datasets", "metadata", "quality_report.json")
+    real_qc_file = os.path.join("datasets", "metadata", "quality_report_real.json")
+    demo_qc_file = os.path.join("datasets", "metadata", "quality_report.json")
+    qc_file = real_qc_file if os.path.exists(real_qc_file) else demo_qc_file
+
     if not os.path.exists(qc_file):
-        raise HTTPException(status_code=404, detail="Data quality report not found. Run setup_data or prepare-data first.")
+        raise HTTPException(status_code=404, detail="Data quality report not found. Run setup_data or prepare_real first.")
 
     with open(qc_file, "r") as f:
         report = json.load(f)

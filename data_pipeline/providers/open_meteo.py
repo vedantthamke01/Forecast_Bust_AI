@@ -1,32 +1,33 @@
 """
-Open-Meteo Provider Adapter.
-Integrates free global NWP ensemble forecasts and ERA5 historical reanalysis.
-Does not require API keys, making it ideal for immediate operational testing.
+Open-Meteo Operational Forecast Provider.
+Retrieves live/current operational 10-day medium-range ensemble forecasts (ECMWF IFS)
+for real-time inference and UI demonstration.
+STRICT SEPARATION:
+This class is for CURRENT OPERATIONAL FORECASTS.
+It does NOT provide historical training forecasts.
 """
 from typing import List, Optional
 from datetime import datetime, timedelta
 import httpx
 from data_pipeline.providers.base import (
-    ForecastProvider, ReferenceWeatherProvider, HistoricalForecastProvider,
-    NormalizedForecast, NormalizedReference
+    ForecastProvider, ReferenceWeatherProvider, NormalizedForecast, NormalizedReference
 )
 
 
-class OpenMeteoProvider(ForecastProvider, HistoricalForecastProvider, ReferenceWeatherProvider):
+class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
     def __init__(self, timeout: float = 15.0):
         self.forecast_base_url = "https://api.open-meteo.com/v1/forecast"
         self.archive_base_url = "https://archive-api.open-meteo.com/v1/archive"
-        self.ensemble_base_url = "https://ensemble-api.open-meteo.com/v1/ensemble"
         self.timeout = timeout
 
     def get_provider_name(self) -> str:
-        return "Open-Meteo NWP & ERA5 Reanalysis"
+        return "Open-Meteo Operational ECMWF IFS [CURRENT FORECAST]"
 
     def is_available(self) -> bool:
         return True
 
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10) -> List[NormalizedForecast]:
-        """Fetch 10-day medium range forecast with hourly resolution."""
+        """Fetch current operational 10-day medium range forecast with hourly resolution."""
         params = {
             "latitude": latitude,
             "longitude": longitude,
@@ -57,18 +58,16 @@ class OpenMeteoProvider(ForecastProvider, HistoricalForecastProvider, ReferenceW
         forecasts = []
 
         for i, t_str in enumerate(times):
-            # Parse ISO timestamp
             valid_time = datetime.fromisoformat(t_str)
             lead_hours = int((valid_time - init_time).total_seconds() // 3600)
             if lead_hours < 0:
                 continue
 
-            # Compute proxy ensemble spread based on lead time and atmospheric variance
-            # Uncertainty naturally grows with lead time
+            # Proxy ensemble spread scaling with lead horizon
             base_spread = 0.5 + (lead_hours / 24.0) * 0.45
 
             forecasts.append(NormalizedForecast(
-                provider="open-meteo",
+                provider="open-meteo-operational",
                 model="ecmwf-ifs",
                 initialization_time=init_time,
                 valid_time=valid_time,
@@ -86,13 +85,6 @@ class OpenMeteoProvider(ForecastProvider, HistoricalForecastProvider, ReferenceW
             ))
 
         return forecasts
-
-    async def get_historical_forecast(
-        self, latitude: float, longitude: float, start_date: str, end_date: str
-    ) -> List[NormalizedForecast]:
-        """Fetch past forecast data."""
-        # For open-meteo, archived forecasts can be retrieved via the archive API
-        return await self.get_forecast(latitude, longitude, days=10)
 
     async def get_reference_data(
         self, latitude: float, longitude: float, start_date: str, end_date: str

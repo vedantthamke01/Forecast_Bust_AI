@@ -60,6 +60,18 @@ python -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 Open your browser at `http://localhost:8000` to interact with the meteorological dashboard and API documentation at `http://localhost:8000/docs`.
 
+### Real NWP & ERA5 Training Pipeline
+```bash
+# 1. Ingest 37,800 genuine NWP forecast-reference pairs (Days 1–7)
+python -m data_pipeline.prepare_real
+
+# 2. Chronologically train & calibrate production model (model_real_v001)
+python -m ml_pipeline.train --dataset datasets/training/dataset_real_v001.csv --version model_real_v001 --dataset-version dataset_real_v001
+
+# 3. Run complete test suite (24 tests)
+python -m pytest
+```
+
 ### Option B: Docker Compose
 ```bash
 docker compose up --build

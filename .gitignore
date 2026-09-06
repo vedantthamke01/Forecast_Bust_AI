@@ -32,6 +32,8 @@ datasets/training/*
 !datasets/training/.gitkeep
 !datasets/training/dataset_v001.csv
 models/*.joblib
+models/*/*.joblib
+models/**/*.joblib
 models/*.bin
 models/*.pt
 !models/.gitkeep

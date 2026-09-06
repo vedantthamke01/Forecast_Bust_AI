@@ -41,6 +41,9 @@ async def get_risk_map(
         "forecast_horizon_hours": lead_hours,
         "forecast_day": int(lead_hours // 24),
         "variable": variable,
+        "data_type": getattr(bust_service, "data_type", "REAL"),
+        "model_version": bust_service.model_version,
+        "dataset_version": getattr(bust_service, "dataset_version", "dataset_real_v001"),
         "grid_points_count": len(grid),
         "grid": grid,
         "legend": {

@@ -72,3 +72,12 @@ def test_quality_assessment_pass():
     assert report["status"] == "PASS"
     assert report["total_records"] == 2
     assert report["invalid_coordinates_count"] == 0
+
+
+def test_era5_cds_provider_configured():
+    from data_pipeline.providers.era5 import ERA5CDSProvider
+    provider = ERA5CDSProvider()
+    assert "ECMWF" in provider.get_provider_name()
+    # When .cdsapirc exists, is_available() should return True
+    assert provider.is_available() is True
+

@@ -84,3 +84,54 @@ async def test_datasets_status():
         data = resp.json()
         assert "dataset_version" in data
         assert data["training_ready"] is True
+
+
+@pytest.mark.asyncio
+async def test_health_and_model_provenance_consistency():
+    """
+    Regression Test: Proves that /health metadata, /ready metadata,
+    and /api/risk/location model provenance cannot contradict each other.
+    Validates that if production model is REAL, neither /health nor /ready
+    reports is_demo_model as True or model_version as anything other than model_real_v002.
+    """
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        # 1. Probe /health
+        health_resp = await client.get("/health")
+        assert health_resp.status_code == 200
+        health_data = health_resp.json()
+
+        # 2. Probe /ready
+        ready_resp = await client.get("/ready")
+        assert ready_resp.status_code == 200
+        ready_data = ready_resp.json()
+
+        # 3. Probe /api/risk/location
+        risk_resp = await client.get(
+            "/api/risk/location?lat=18.5204&lon=73.8567&lead_hours=96&variable=precipitation&forecast_value=42&ensemble_spread=1.5"
+        )
+        assert risk_resp.status_code == 200
+        risk_data = risk_resp.json()
+
+        # Provenance Cross-Check:
+        # Model version must be strictly identical across /health, /ready, and /api/risk/location
+        assert health_data["model_version"] == "model_real_v002"
+        assert ready_data["model_version"] == "model_real_v002"
+        assert risk_data["model_version"] == "model_real_v002"
+
+        # Data type must be strictly "REAL"
+        assert health_data["data_type"] == "REAL"
+        assert ready_data["data_type"] == "REAL"
+        assert risk_data["data_type"] == "REAL"
+
+        # is_demo_model must be strictly False across all endpoints
+        assert health_data["is_demo_model"] is False
+        assert ready_data["is_demo_model"] is False
+        assert risk_data["is_demo_model"] is False
+
+        # If data_type is "REAL", is_demo_model MUST be False (logical identity)
+        assert (risk_data["data_type"] == "REAL") == (not risk_data["is_demo_model"])
+
+        # Health demo_mode documentation must clarify that demo_mode is a weather provider fallback
+        assert "demo_mode" in health_data
+        assert "demo_mode_description" in health_data
+

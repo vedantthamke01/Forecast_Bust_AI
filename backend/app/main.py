@@ -13,7 +13,7 @@ from fastapi.responses import RedirectResponse
 from backend.app.config import settings
 from backend.app.database.database import init_db
 from backend.app.api.weather import router as weather_router
-from backend.app.api.prediction import router as prediction_router
+from backend.app.api.prediction import router as prediction_router, bust_service
 from backend.app.api.models import router as models_router
 from backend.app.api.datasets import router as datasets_router
 from backend.app.api.admin import router as admin_router
@@ -52,6 +52,11 @@ async def health_check():
         "organization": "NCMRWF / MoES",
         "environment": settings.ENVIRONMENT,
         "demo_mode": settings.DEMO_MODE,
+        "demo_mode_description": "Application weather provider fallback mode. ML model provenance is tracked separately by 'data_type' and 'is_demo_model'.",
+        "model_version": bust_service.model_version,
+        "dataset_version": getattr(bust_service, "dataset_version", "dataset_real_v002"),
+        "data_type": getattr(bust_service, "data_type", "REAL"),
+        "is_demo_model": getattr(bust_service, "data_type", "REAL") == "SYNTHETIC",
         "scientific_disclaimer": "This system provides forecast reliability estimation and does not replace official NWP or meteorological advisories."
     }
 
@@ -61,7 +66,10 @@ async def readiness_check():
     return {
         "status": "ready",
         "database": "connected",
-        "model_loaded": True
+        "model_loaded": True,
+        "model_version": bust_service.model_version,
+        "data_type": getattr(bust_service, "data_type", "REAL"),
+        "is_demo_model": getattr(bust_service, "data_type", "REAL") == "SYNTHETIC"
     }
 
 

@@ -27,7 +27,7 @@ services:
       - ENVIRONMENT=production
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres_dev_password@postgres:5432/forecast_bust_db
       - OPEN_METEO_ENABLED=true
-      - DEMO_MODE=true
+      - DEMO_MODE=false
     ports:
       - "8000:8000"
     depends_on:
@@ -42,7 +42,7 @@ services:
     container_name: ncmrwf_worker
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres_dev_password@postgres:5432/forecast_bust_db
-      - DEMO_MODE=true
+      - DEMO_MODE=false
     depends_on:
       postgres:
         condition: service_healthy

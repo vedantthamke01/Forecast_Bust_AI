@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     CDS_API_URL: Optional[str] = "https://cds.climate.copernicus.eu/api/v2"
     CDS_API_KEY: Optional[str] = None
     OPEN_METEO_ENABLED: bool = True
-    DEMO_MODE: bool = True
+    DEMO_MODE: bool = False
 
     # India Synoptic Bounding Box
     DEFAULT_REGION_NORTH: float = 37.5

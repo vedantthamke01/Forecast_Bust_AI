@@ -9,14 +9,19 @@
 ## 1. System Health & Probes
 
 ### `GET /health`
-Returns service operational health and the statutory scientific disclaimer.
+Returns service operational health, weather fallback mode, active model provenance, and the statutory scientific disclaimer.
 ```json
 {
   "status": "healthy",
   "service": "forecast-bust-detection",
   "organization": "NCMRWF / MoES",
   "environment": "development",
-  "demo_mode": true,
+  "demo_mode": false,
+  "demo_mode_description": "Application weather provider fallback mode. ML model provenance is tracked separately by 'data_type' and 'is_demo_model'.",
+  "model_version": "model_real_v002",
+  "dataset_version": "dataset_real_v002",
+  "data_type": "REAL",
+  "is_demo_model": false,
   "scientific_disclaimer": "This system provides forecast reliability estimation and does not replace official NWP or meteorological advisories."
 }
 ```
@@ -27,7 +32,10 @@ Readiness probe for container orchestrators.
 {
   "status": "ready",
   "database": "connected",
-  "model_loaded": true
+  "model_loaded": true,
+  "model_version": "model_real_v002",
+  "data_type": "REAL",
+  "is_demo_model": false
 }
 ```
 

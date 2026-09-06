@@ -40,7 +40,7 @@ async def get_dataset_status():
 
     return {
         "latest_data": meta.get("end_date", "2026-03-31"),
-        "dataset_version": meta.get("version", "dataset_v001"),
+        "dataset_version": meta.get("version", "dataset_real_v002"),
         "total_records": meta.get("total_records") or meta.get("rows", 1500),
         "coverage": f"{qc.get('lead_time_coverage_percentage', 100.0)}%",
         "last_update": meta.get("created_at", "2026-09-06T12:00:00Z"),

@@ -21,6 +21,10 @@ const state = {
   scenarioOverride: null, // { forecast_value, ensemble_spread } if what-if mode active
   cachedNwpForecasts: null,
   lastCachedCoords: null,
+  activeRiskRequestId: 0,
+  activeHorizonRequestId: 0,
+  riskAbortController: null,
+  horizonAbortController: null,
   leafletMap: null,
   mapMarkers: [],
   horizonChart: null
@@ -361,6 +365,12 @@ async function performLocationSearch(query) {
 
 // Load Risk for Active Location & Horizon (STEP E)
 async function loadLocationRisk() {
+  if (state.riskAbortController) {
+    state.riskAbortController.abort();
+  }
+  state.riskAbortController = new AbortController();
+  const requestId = ++state.activeRiskRequestId;
+
   try {
     let url = `${API_BASE}/api/risk/location?lat=${state.currentStation.lat}&lon=${state.currentStation.lon}&lead_hours=${state.leadHours}&variable=${state.variable}`;
     
@@ -368,11 +378,16 @@ async function loadLocationRisk() {
       url += `&forecast_value=${state.scenarioOverride.forecast_value}&ensemble_spread=${state.scenarioOverride.ensemble_spread}`;
     }
 
-    const resp = await fetch(url);
+    const resp = await fetch(url, { signal: state.riskAbortController.signal });
     if (!resp.ok) {
       throw new Error(`API returned HTTP ${resp.status}`);
     }
     const data = await resp.json();
+
+    // Ignore if a newer request was dispatched
+    if (requestId !== state.activeRiskRequestId) {
+      return;
+    }
 
     // Bust Probability & Reliability Scores (guaranteed mathematically: Rel = 100% - Prob)
     const probVal = (data.bust_probability * 100).toFixed(1);
@@ -438,6 +453,12 @@ async function loadLocationRisk() {
       renderShapFactors(data.explanation.all_factors || []);
     }
   } catch (err) {
+    if (err.name === "AbortError") {
+      return;
+    }
+    if (requestId !== state.activeRiskRequestId) {
+      return;
+    }
     console.error("Error loading location risk:", err);
     showToast("Could not load bust prediction from server. Please retry.", "error");
   }
@@ -477,19 +498,28 @@ function renderShapFactors(factors) {
 
 // Load Operational NWP Weather Forecast & Medium-Range Horizons (STEP D)
 async function loadForecastHorizons() {
+  if (state.horizonAbortController) {
+    state.horizonAbortController.abort();
+  }
+  state.horizonAbortController = new AbortController();
+  const requestId = ++state.activeHorizonRequestId;
+
   try {
     const cacheKey = `${state.currentStation.lat.toFixed(4)}_${state.currentStation.lon.toFixed(4)}`;
     let horizons = state.cachedNwpForecasts;
 
     if (!horizons || state.lastCachedCoords !== cacheKey) {
       const url = `${API_BASE}/api/weather/forecast?lat=${state.currentStation.lat}&lon=${state.currentStation.lon}&days=10&demo=${state.isDemoMode}`;
-      const resp = await fetch(url);
+      const resp = await fetch(url, { signal: state.horizonAbortController.signal });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
+      if (requestId !== state.activeHorizonRequestId) return;
       horizons = data.horizons || [];
       state.cachedNwpForecasts = horizons;
       state.lastCachedCoords = cacheKey;
     }
+
+    if (requestId !== state.activeHorizonRequestId) return;
 
     if (horizons && horizons.length > 0) {
       // Find matching horizon
@@ -521,6 +551,8 @@ async function loadForecastHorizons() {
       updateHorizonChart(horizons);
     }
   } catch (err) {
+    if (err.name === "AbortError") return;
+    if (requestId !== state.activeHorizonRequestId) return;
     console.error("Forecast horizons fetch error:", err);
     showToast("Live NWP data unavailable. Please retry or use What-If Scenario.", "error");
   }

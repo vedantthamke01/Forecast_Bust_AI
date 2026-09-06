@@ -32,7 +32,7 @@
         ]
       }
     },
-    "status": "PRODUCTION",
+    "status": "ARCHIVED_BASELINE",
     "artifact_path": "C:\\Users\\tejas\\Documents\\SIH\\models\\model_v001\\model_bundle.joblib",
     "created_at": "2026-09-06T09:53:48.119484"
   },
@@ -77,7 +77,7 @@
         ]
       }
     },
-    "status": "PRODUCTION",
+    "status": "ARCHIVED_BASELINE",
     "artifact_path": "C:\\Users\\tejas\\Documents\\SIH\\models\\model_real_v001\\model_bundle.joblib",
     "created_at": "2026-09-06T11:48:30.959410"
   },

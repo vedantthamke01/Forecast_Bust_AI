@@ -3,6 +3,7 @@ Forecast Bust Risk & Explainability API Router.
 Provides calibrated probability inference, geographic risk maps,
 historical forecast-vs-reference verification, and SHAP explainability.
 """
+import math
 from typing import Optional
 from fastapi import APIRouter, Query, HTTPException, Path
 from backend.app.services.bust_service import BustPredictionService
@@ -12,25 +13,71 @@ router = APIRouter(prefix="", tags=["Forecast Bust Risk & Verification"])
 bust_service = BustPredictionService()
 weather_service = WeatherService()
 
+ALLOWED_VARIABLES = {"precipitation", "temperature", "wind", "pressure", "humidity"}
+
 
 @router.get("/risk/location")
 async def get_risk_by_location(
-    lat: float = Query(..., ge=-90, le=90, description="Latitude"),
-    lon: float = Query(..., ge=-180, le=180, description="Longitude"),
+    lat: float = Query(..., ge=-90, le=90, description="Latitude (-90 to 90)"),
+    lon: float = Query(..., ge=-180, le=180, description="Longitude (-180 to 180)"),
     lead_hours: int = Query(96, ge=24, le=240, description="Lead time in hours (24 to 240)"),
     variable: str = Query("precipitation", description="Target variable: precipitation, temperature, wind, pressure"),
     forecast_value: Optional[float] = Query(None, description="Optional forecasted value override"),
-    ensemble_spread: Optional[float] = Query(None, ge=0.0, description="NWP Ensemble Spread (dispersion)")
+    ensemble_spread: Optional[float] = Query(None, ge=0.0, le=50.0, description="NWP Ensemble Spread (dispersion, 0 to 50)")
 ):
+    # 1. Finite Value Validation (Reject NaN and Inf)
+    for name, val in [("lat", lat), ("lon", lon), ("forecast_value", forecast_value), ("ensemble_spread", ensemble_spread)]:
+        if val is not None and (math.isnan(val) or math.isinf(val)):
+            raise HTTPException(
+                status_code=422,
+                detail=f"Parameter '{name}' must be a finite numerical value (received NaN or Infinity)."
+            )
+
+    # 2. Variable Whitelist Validation
+    var_clean = (variable or "").lower().strip()
+    if not var_clean or var_clean not in ALLOWED_VARIABLES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported variable '{variable}'. Supported variables: {', '.join(sorted(ALLOWED_VARIABLES))}."
+        )
+
+    # 3. Physical Plausibility Validation (Conservative boundaries)
+    if forecast_value is not None:
+        if var_clean == "precipitation":
+            if forecast_value < 0.0 or forecast_value > 2000.0:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Physically invalid precipitation: {forecast_value} mm. Must be between 0.0 and 2000.0 mm."
+                )
+        elif var_clean == "temperature":
+            if forecast_value < -100.0 or forecast_value > 75.0:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Physically invalid temperature: {forecast_value} °C. Must be between -100.0 and 75.0 °C."
+                )
+        elif var_clean == "wind":
+            if forecast_value < 0.0 or forecast_value > 150.0:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Physically invalid wind speed: {forecast_value} m/s. Must be between 0.0 and 150.0 m/s."
+                )
+        elif var_clean == "pressure":
+            if forecast_value < 800.0 or forecast_value > 1100.0:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Physically invalid sea level pressure: {forecast_value} hPa. Must be between 800.0 and 1100.0 hPa."
+                )
+
+    f_precip = 5.0
     f_temp = 28.0
     f_wind = 6.0
     f_press = 1010.0
     f_hum = 75.0
     spread = ensemble_spread if ensemble_spread is not None else 1.5
     rev = 0.5
-    fc_src = "ECMWF IFS / GFS NWP"
+    fc_src = "ECMWF IFS (Operational NWP)"
 
-    # If forecast_value or ensemble_spread is not explicitly supplied, attempt live operational NWP ingestion
+    # If forecast_value or ensemble_spread is not supplied, fetch live operational NWP guidance
     if forecast_value is None or ensemble_spread is None:
         try:
             req_days = min(10, max(1, (lead_hours + 23) // 24))
@@ -39,6 +86,8 @@ async def get_risk_by_location(
                 matching = min(horizons, key=lambda h: abs(h.lead_hours - lead_hours))
                 if matching.temperature_2m is not None:
                     f_temp = matching.temperature_2m
+                if matching.precipitation is not None:
+                    f_precip = matching.precipitation
                 if matching.wind_speed_10m is not None:
                     f_wind = matching.wind_speed_10m
                 if matching.pressure_msl is not None:
@@ -49,28 +98,46 @@ async def get_risk_by_location(
                     spread = matching.ensemble_spread
                 if matching.run_revision is not None:
                     rev = matching.run_revision
-                fc_src = f"Live {matching.provider} ({matching.model})"
+
+                # Accurately identify provider source without false claims
+                if "demo" in str(matching.provider).lower():
+                    fc_src = f"Fallback {matching.provider} ({matching.model})"
+                else:
+                    fc_src = f"Live {matching.provider} ({matching.model})"
+
                 if forecast_value is None:
-                    var_clean = (variable or "precipitation").lower().strip()
                     if var_clean == "temperature":
-                        forecast_value = matching.temperature_2m
+                        forecast_value = f_temp
                     elif var_clean == "wind":
-                        forecast_value = matching.wind_speed_10m
+                        forecast_value = f_wind
                     elif var_clean == "pressure":
-                        forecast_value = matching.pressure_msl
+                        forecast_value = f_press
                     elif var_clean == "humidity":
-                        forecast_value = matching.relative_humidity_2m
+                        forecast_value = f_hum
                     else:
-                        forecast_value = matching.precipitation
-        except Exception:
-            pass  # Seamless fallback to verified baselines
+                        forecast_value = f_precip
+            else:
+                raise HTTPException(
+                    status_code=503,
+                    detail="Live operational NWP forecast unavailable from upstream provider. Please retry or provide a scenario override."
+                )
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Live operational NWP provider error: {str(e)}. Please retry or provide a scenario override."
+            )
+    else:
+        fc_src = "Scenario / What-if Input Override"
 
     result = bust_service.predict_risk(
         latitude=lat,
         longitude=lon,
         lead_hours=lead_hours,
-        variable=variable,
+        variable=var_clean,
         forecast_val=forecast_value,
+        forecast_precip=f_precip,
         forecast_temp=f_temp,
         forecast_wind=f_wind,
         forecast_press=f_press,
@@ -85,18 +152,26 @@ async def get_risk_by_location(
 @router.get("/risk/map")
 async def get_risk_map(
     lead_hours: int = Query(96, ge=24, le=240, description="Lead horizon (e.g. 96 for Day 4)"),
-    variable: str = Query("precipitation", description="Weather variable: precipitation, temperature, wind, pressure, combined")
+    variable: str = Query("precipitation", description="Weather variable: precipitation, temperature, wind, pressure")
 ):
-    grid = bust_service.get_spatial_risk_grid(lead_hours=lead_hours, variable=variable)
+    var_clean = (variable or "").lower().strip()
+    if var_clean not in ALLOWED_VARIABLES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported variable '{variable}'. Supported variables: {', '.join(sorted(ALLOWED_VARIABLES))}."
+        )
+
+    grid = bust_service.get_spatial_risk_grid(lead_hours=lead_hours, variable=var_clean)
     return {
         "forecast_horizon_hours": lead_hours,
         "forecast_day": int(lead_hours // 24),
-        "variable": variable,
+        "variable": var_clean,
         "data_type": getattr(bust_service, "data_type", "REAL"),
         "model_version": bust_service.model_version,
         "dataset_version": getattr(bust_service, "dataset_version", "dataset_real_v002"),
         "grid_points_count": len(grid),
         "grid": grid,
+        "stations": grid,
         "legend": {
             "LOW": {"badge": "🟢 LOW", "threshold": "< 25%", "color": "#10b981"},
             "MODERATE": {"badge": "🟡 MODERATE", "threshold": "25% - 50%", "color": "#f59e0b"},
@@ -154,7 +229,13 @@ async def get_forecast_detail(
 async def get_forecast_comparison(
     id: str = Path(...)
 ):
-    return bust_service.get_single_comparison(id)
+    comparison = bust_service.get_single_comparison(id)
+    if not comparison:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Historical verification record '{id}' not found in verification archive."
+        )
+    return comparison
 
 
 @router.get("/forecast/{id}/explanation")

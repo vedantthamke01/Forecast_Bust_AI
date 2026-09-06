@@ -46,8 +46,13 @@ async def trigger_model_training(
 @router.get("/drift/status")
 async def get_drift_status():
     """Evaluates Kolmogorov-Smirnov distribution drift between training reference and current records."""
-    training_file = os.path.join("datasets", "training", "dataset_v001.csv")
-    if not os.path.exists(training_file):
+    candidates = [
+        os.path.join("datasets", "training", "dataset_real_v002.csv"),
+        os.path.join("datasets", "training", "dataset_real_v001.csv"),
+        os.path.join("datasets", "training", "dataset_v001.csv")
+    ]
+    training_file = next((f for f in candidates if os.path.exists(f)), None)
+    if not training_file or not os.path.exists(training_file):
         return {
             "status": "STABLE",
             "message": "Baseline dataset not found; drift test skipped."

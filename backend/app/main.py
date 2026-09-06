@@ -34,6 +34,28 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+import math
+
+def sanitize_for_json(obj):
+    if isinstance(obj, dict):
+        return {k: sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [sanitize_for_json(item) for item in obj]
+    elif isinstance(obj, float):
+        if math.isinf(obj) or math.isnan(obj):
+            return str(obj)
+        return obj
+    return obj
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc: RequestValidationError):
+    sanitized = sanitize_for_json(exc.errors())
+    return JSONResponse(status_code=422, content={"detail": sanitized})
+
+
 # Enable CORS for Flutter Web/Mobile and local browsers
 app.add_middleware(
     CORSMiddleware,

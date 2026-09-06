@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     DEFAULT_REGION_EAST: float = 97.5
 
     # ML Pipeline Settings
-    DATASET_VERSION_DEFAULT: str = "dataset_v001"
-    MODEL_VERSION_DEFAULT: str = "model_v001"
+    DATASET_VERSION_DEFAULT: str = "dataset_real_v002"
+    MODEL_VERSION_DEFAULT: str = "model_real_v002"
     MIN_SAMPLES_FOR_RETRAIN: int = 500
 
     # Model Acceptance Gate

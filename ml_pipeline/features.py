@@ -9,7 +9,7 @@ import numpy as np
 
 
 FORBIDDEN_LEAKAGE_SUBSTRINGS = [
-    "actual", "reference", "observed", "error", "ground_truth", "target", "label"
+    "actual", "reference", "observed", "error", "ground_truth", "target", "label", "future", "verification"
 ]
 
 FEATURE_COLUMNS = [
@@ -102,7 +102,12 @@ def extract_features(df: pd.DataFrame, is_training: bool = False) -> Tuple[pd.Da
             f"Offending columns: {leakages}"
         )
 
-    # Impute missing values with median
+    # Coerce to strictly numeric types, converting unexpected strings/symbols to NaN
+    for col in FEATURE_COLUMNS:
+        X[col] = pd.to_numeric(X[col], errors="coerce")
+
+    # Replace inf and -inf with NaN, then impute with column medians / zero fallback
+    X = X.replace([np.inf, -np.inf], np.nan)
     X = X.fillna(X.median(numeric_only=True)).fillna(0.0)
 
     y = None

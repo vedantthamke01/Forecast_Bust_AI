@@ -41,6 +41,9 @@ async def get_current_model():
     return {
         "status": "PRODUCTION",
         "production_model_version": prod_version,
+        "model_version": prod_version,
+        "dataset_version": model_meta.get("dataset_version", "dataset_real_v002"),
+        "provenance": model_meta.get("data_type", "REAL"),
         "metadata": model_meta
     }
 

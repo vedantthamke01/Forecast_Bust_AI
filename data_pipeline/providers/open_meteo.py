@@ -46,6 +46,7 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
             "Accept": "application/json"
         }
         self._current_cache: Dict[Tuple[float, float], Tuple[datetime, NormalizedCurrentWeather]] = {}
+        self._forecast_cache: Dict[Tuple[float, float, int], Tuple[datetime, List[NormalizedForecast]]] = {}
         self._rate_limit_until: Optional[datetime] = None
         self._lock = asyncio.Lock()
 
@@ -142,82 +143,131 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
 
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10) -> List[NormalizedForecast]:
         """Fetch current operational 10-day medium range forecast with hourly resolution."""
-        params = {
-            "latitude": latitude,
-            "longitude": longitude,
-            "hourly": "temperature_2m,precipitation,wind_speed_10m,pressure_msl,relative_humidity_2m,cloud_cover",
-            "wind_speed_unit": "ms",
-            "forecast_days": min(days, 10),
-            "timezone": "UTC"
-        }
-        if self.api_key:
-            params["apikey"] = self.api_key
-
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            last_resp = None
-            for attempt in range(2):
-                resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
-                last_resp = resp
-                if resp.status_code == 429:
-                    retry_after = int(resp.headers.get("retry-after", "30"))
-                    cooldown = min(max(retry_after, 15), 60)
-                    self._rate_limit_until = datetime.now(timezone.utc) + timedelta(seconds=cooldown)
-                    if attempt < 1 and retry_after <= 2:
-                        await asyncio.sleep(retry_after)
-                        continue
-                    logger.error(f"Open-Meteo forecast 429 received (cooldown {cooldown}s): {resp.text}")
-                    resp.raise_for_status()
-                resp.raise_for_status()
-                data = resp.json()
-                break
-            else:
-                if last_resp is not None:
-                    last_resp.raise_for_status()
-                raise RuntimeError("Failed to fetch forecast after retries")
-
-        hourly = data.get("hourly", {})
-        times = hourly.get("time", [])
-        temps = hourly.get("temperature_2m", [])
-        precips = hourly.get("precipitation", [])
-        winds = hourly.get("wind_speed_10m", [])
-        pressures = hourly.get("pressure_msl", [])
-        humidities = hourly.get("relative_humidity_2m", [])
-        clouds = hourly.get("cloud_cover", [])
-
+        cache_key = (round(latitude, 3), round(longitude, 3), days)
         now = datetime.now(timezone.utc)
-        init_time = now.replace(minute=0, second=0, microsecond=0)
+        if cache_key in self._forecast_cache:
+            cached_time, cached_val = self._forecast_cache[cache_key]
+            if (now - cached_time).total_seconds() < 600:
+                return cached_val
 
-        forecasts: List[NormalizedForecast] = []
-        for i in range(len(times)):
-            valid_dt = datetime.fromisoformat(times[i])
-            if valid_dt.tzinfo is None:
-                valid_dt = valid_dt.replace(tzinfo=timezone.utc)
-            lead_h = max(0, int((valid_dt - init_time).total_seconds() // 3600))
-            if lead_h < 0:
-                continue
+        # Deduplicate and serialize forecast requests
+        async with self._lock:
+            now = datetime.now(timezone.utc)
+            if cache_key in self._forecast_cache:
+                cached_time, cached_val = self._forecast_cache[cache_key]
+                if (now - cached_time).total_seconds() < 600:
+                    return cached_val
 
-            # Proxy ensemble spread scaling with lead horizon
-            base_spread = 0.5 + (lead_h / 24.0) * 0.45
+            if self._rate_limit_until and now < self._rate_limit_until:
+                wait_sec = int((self._rate_limit_until - now).total_seconds())
+                raise RuntimeError(
+                    f"Open-Meteo rate limit active on upstream host. Cooldown in progress ({wait_sec}s remaining)."
+                )
 
-            forecasts.append(NormalizedForecast(
-                provider="open-meteo-operational" if not self.api_key else "open-meteo-customer",
-                model="ecmwf-ifs",
-                initialization_time=init_time,
-                valid_time=valid_dt,
-                lead_hours=lead_h,
-                latitude=latitude,
-                longitude=longitude,
-                temperature_2m=temps[i] if i < len(temps) else None,
-                precipitation=precips[i] if i < len(precips) else None,
-                wind_speed_10m=winds[i] if i < len(winds) else None,
-                pressure_msl=pressures[i] if i < len(pressures) else None,
-                relative_humidity_2m=humidities[i] if i < len(humidities) else None,
-                cloud_cover=clouds[i] if i < len(clouds) else None,
-                ensemble_spread=round(base_spread, 2),
-                run_revision=0.0
-            ))
+            params = {
+                "latitude": latitude,
+                "longitude": longitude,
+                "current": "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,pressure_msl,cloud_cover",
+                "hourly": "temperature_2m,precipitation,wind_speed_10m,pressure_msl,relative_humidity_2m,cloud_cover",
+                "wind_speed_unit": "ms",
+                "forecast_days": min(days, 10),
+                "timezone": "UTC"
+            }
+            if self.api_key:
+                params["apikey"] = self.api_key
 
-        return forecasts
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                last_resp = None
+                for attempt in range(2):
+                    resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
+                    last_resp = resp
+                    if resp.status_code == 429:
+                        retry_after = int(resp.headers.get("retry-after", "30"))
+                        cooldown = min(max(retry_after, 15), 60)
+                        self._rate_limit_until = datetime.now(timezone.utc) + timedelta(seconds=cooldown)
+                        if attempt < 1 and retry_after <= 2:
+                            await asyncio.sleep(retry_after)
+                            continue
+                        logger.error(f"Open-Meteo forecast 429 received (cooldown {cooldown}s): {resp.text}")
+                        resp.raise_for_status()
+                    resp.raise_for_status()
+                    data = resp.json()
+                    break
+                else:
+                    if last_resp is not None:
+                        last_resp.raise_for_status()
+                    raise RuntimeError("Failed to fetch forecast after retries")
+
+            # Also populate current weather cache from the current block to save a future request!
+            current_data = data.get("current")
+            curr_cache_key = (round(latitude, 3), round(longitude, 3))
+            if current_data:
+                time_str = current_data.get("time")
+                try:
+                    c_time = datetime.fromisoformat(time_str) if time_str else datetime.now(timezone.utc)
+                    if c_time.tzinfo is None:
+                        c_time = c_time.replace(tzinfo=timezone.utc)
+                except Exception:
+                    c_time = datetime.now(timezone.utc)
+
+                curr_obj = NormalizedCurrentWeather(
+                    provider="open-meteo-operational" if not self.api_key else "open-meteo-customer",
+                    model="ecmwf-ifs",
+                    observation_time=c_time,
+                    latitude=latitude,
+                    longitude=longitude,
+                    temperature_2m=current_data.get("temperature_2m"),
+                    precipitation=current_data.get("precipitation"),
+                    wind_speed_10m=current_data.get("wind_speed_10m"),
+                    pressure_msl=current_data.get("pressure_msl"),
+                    relative_humidity_2m=current_data.get("relative_humidity_2m"),
+                    cloud_cover=current_data.get("cloud_cover")
+                )
+                self._current_cache[curr_cache_key] = (now, curr_obj)
+
+            hourly = data.get("hourly", {})
+            times = hourly.get("time", [])
+            temps = hourly.get("temperature_2m", [])
+            precips = hourly.get("precipitation", [])
+            winds = hourly.get("wind_speed_10m", [])
+            pressures = hourly.get("pressure_msl", [])
+            humidities = hourly.get("relative_humidity_2m", [])
+            clouds = hourly.get("cloud_cover", [])
+
+            init_time = now.replace(minute=0, second=0, microsecond=0)
+
+            forecasts: List[NormalizedForecast] = []
+            for i in range(len(times)):
+                valid_dt = datetime.fromisoformat(times[i])
+                if valid_dt.tzinfo is None:
+                    valid_dt = valid_dt.replace(tzinfo=timezone.utc)
+                lead_h = max(0, int((valid_dt - init_time).total_seconds() // 3600))
+                if lead_h < 0:
+                    continue
+
+                # Proxy ensemble spread scaling with lead horizon
+                base_spread = 0.5 + (lead_h / 24.0) * 0.45
+
+                forecasts.append(NormalizedForecast(
+                    provider="open-meteo-operational" if not self.api_key else "open-meteo-customer",
+                    model="ecmwf-ifs",
+                    initialization_time=init_time,
+                    valid_time=valid_dt,
+                    lead_hours=lead_h,
+                    latitude=latitude,
+                    longitude=longitude,
+                    temperature_2m=temps[i] if i < len(temps) else None,
+                    precipitation=precips[i] if i < len(precips) else None,
+                    wind_speed_10m=winds[i] if i < len(winds) else None,
+                    pressure_msl=pressures[i] if i < len(pressures) else None,
+                    relative_humidity_2m=humidities[i] if i < len(humidities) else None,
+                    cloud_cover=clouds[i] if i < len(clouds) else None,
+                    ensemble_spread=round(base_spread, 2),
+                    run_revision=0.0
+                ))
+
+            self._forecast_cache[cache_key] = (now, forecasts)
+            return forecasts
 
     async def get_reference_data(
         self, latitude: float, longitude: float, start_date: str, end_date: str

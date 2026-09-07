@@ -27,6 +27,8 @@ class Settings(BaseSettings):
 
     # Weather Providers
     GOOGLE_WEATHER_API_KEY: Optional[str] = None
+    OPEN_METEO_BASE_URL: Optional[str] = None
+    OPEN_METEO_API_KEY: Optional[str] = None
     CDS_API_URL: Optional[str] = "https://cds.climate.copernicus.eu/api/v2"
     CDS_API_KEY: Optional[str] = None
     OPEN_METEO_ENABLED: bool = True

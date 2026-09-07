@@ -11,6 +11,7 @@ import logging
 from typing import List, Optional, Dict, Tuple
 from datetime import datetime, timedelta, timezone
 import httpx
+from backend.app.config import settings
 from data_pipeline.providers.base import (
     ForecastProvider, ReferenceWeatherProvider, NormalizedForecast, NormalizedReference, NormalizedCurrentWeather
 )
@@ -19,17 +20,38 @@ logger = logging.getLogger(__name__)
 
 
 class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
-    def __init__(self, timeout: float = 20.0):
-        self.forecast_base_url = "https://api.open-meteo.com/v1/forecast"
-        self.archive_base_url = "https://archive-api.open-meteo.com/v1/archive"
+    def __init__(
+        self,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        timeout: float = 20.0
+    ):
+        configured_key = api_key or getattr(settings, "OPEN_METEO_API_KEY", None)
+        self.api_key = configured_key.strip() if configured_key and configured_key.strip() else None
+
+        configured_base = base_url or getattr(settings, "OPEN_METEO_BASE_URL", None)
+        if configured_base and configured_base.strip():
+            self.forecast_base_url = configured_base.strip().rstrip("/")
+            self.archive_base_url = "https://archive-api.open-meteo.com/v1/archive"
+        elif self.api_key:
+            self.forecast_base_url = "https://customer-api.open-meteo.com/v1/forecast"
+            self.archive_base_url = "https://customer-archive-api.open-meteo.com/v1/archive"
+        else:
+            self.forecast_base_url = "https://api.open-meteo.com/v1/forecast"
+            self.archive_base_url = "https://archive-api.open-meteo.com/v1/archive"
+
         self.timeout = timeout
         self.headers = {
             "User-Agent": "ForecastBustAI/1.0 (MoES/NCMRWF; https://forecast-bust-api.onrender.com)",
             "Accept": "application/json"
         }
         self._current_cache: Dict[Tuple[float, float], Tuple[datetime, NormalizedCurrentWeather]] = {}
+        self._rate_limit_until: Optional[datetime] = None
+        self._lock = asyncio.Lock()
 
     def get_provider_name(self) -> str:
+        if self.api_key:
+            return "Open-Meteo Customer ECMWF IFS [CURRENT FORECAST]"
         return "Open-Meteo Operational ECMWF IFS [CURRENT FORECAST]"
 
     def is_available(self) -> bool:
@@ -44,57 +66,79 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
             if (now - cached_time).total_seconds() < 300:
                 return cached_val
 
-        params = {
-            "latitude": latitude,
-            "longitude": longitude,
-            "current": "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,pressure_msl,cloud_cover",
-            "wind_speed_unit": "ms",
-            "timezone": "UTC"
-        }
+        # Deduplicate concurrent requests for the same location
+        async with self._lock:
+            now = datetime.now(timezone.utc)
+            if cache_key in self._current_cache:
+                cached_time, cached_val = self._current_cache[cache_key]
+                if (now - cached_time).total_seconds() < 300:
+                    return cached_val
 
-        async with httpx.AsyncClient(timeout=self.timeout) as client:
-            last_resp = None
-            for attempt in range(3):
-                resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
-                last_resp = resp
-                if resp.status_code == 429 and attempt < 2:
-                    wait_time = 1.5 * (attempt + 1)
-                    logger.warning(f"Open-Meteo 429 rate limit encountered. Retrying in {wait_time}s (attempt {attempt + 1}/3)...")
-                    await asyncio.sleep(wait_time)
-                    continue
-                resp.raise_for_status()
-                data = resp.json()
-                break
-            else:
-                if last_resp is not None:
-                    last_resp.raise_for_status()
-                raise RuntimeError("Failed to fetch current weather after retries")
+            if self._rate_limit_until and now < self._rate_limit_until:
+                wait_sec = int((self._rate_limit_until - now).total_seconds())
+                raise RuntimeError(
+                    f"Open-Meteo rate limit active on upstream host. Cooldown in progress ({wait_sec}s remaining)."
+                )
 
-        current = data.get("current")
-        if not current:
-            raise RuntimeError(f"Open-Meteo returned no current weather block for ({latitude}, {longitude}): {data}")
+            params = {
+                "latitude": latitude,
+                "longitude": longitude,
+                "current": "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,pressure_msl,cloud_cover",
+                "wind_speed_unit": "ms",
+                "timezone": "UTC"
+            }
+            if self.api_key:
+                params["apikey"] = self.api_key
 
-        time_str = current.get("time")
-        try:
-            obs_time = datetime.fromisoformat(time_str) if time_str else datetime.now(timezone.utc)
-        except Exception:
-            obs_time = datetime.now(timezone.utc)
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                last_resp = None
+                for attempt in range(2):  # Max 1 retry for transient glitches
+                    resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
+                    last_resp = resp
+                    if resp.status_code == 429:
+                        retry_after = int(resp.headers.get("retry-after", "30"))
+                        cooldown = min(max(retry_after, 15), 60)
+                        self._rate_limit_until = datetime.now(timezone.utc) + timedelta(seconds=cooldown)
+                        if attempt < 1 and retry_after <= 2:
+                            await asyncio.sleep(retry_after)
+                            continue
+                        logger.error(f"Open-Meteo 429 received (cooldown set to {cooldown}s): {resp.text}")
+                        resp.raise_for_status()
+                    resp.raise_for_status()
+                    data = resp.json()
+                    break
+                else:
+                    if last_resp is not None:
+                        last_resp.raise_for_status()
+                    raise RuntimeError("Failed to fetch current weather after retries")
 
-        result = NormalizedCurrentWeather(
-            provider="open-meteo-operational",
-            model="ecmwf-ifs",
-            observation_time=obs_time,
-            latitude=latitude,
-            longitude=longitude,
-            temperature_2m=current.get("temperature_2m"),
-            precipitation=current.get("precipitation"),
-            wind_speed_10m=current.get("wind_speed_10m"),
-            pressure_msl=current.get("pressure_msl"),
-            relative_humidity_2m=current.get("relative_humidity_2m"),
-            cloud_cover=current.get("cloud_cover")
-        )
-        self._current_cache[cache_key] = (now, result)
-        return result
+            current = data.get("current")
+            if not current:
+                raise RuntimeError(f"Open-Meteo returned no current weather block for ({latitude}, {longitude}): {data}")
+
+            time_str = current.get("time")
+            try:
+                obs_time = datetime.fromisoformat(time_str) if time_str else datetime.now(timezone.utc)
+                if obs_time.tzinfo is None:
+                    obs_time = obs_time.replace(tzinfo=timezone.utc)
+            except Exception:
+                obs_time = datetime.now(timezone.utc)
+
+            result = NormalizedCurrentWeather(
+                provider="open-meteo-operational" if not self.api_key else "open-meteo-customer",
+                model="ecmwf-ifs",
+                observation_time=obs_time,
+                latitude=latitude,
+                longitude=longitude,
+                temperature_2m=current.get("temperature_2m"),
+                precipitation=current.get("precipitation"),
+                wind_speed_10m=current.get("wind_speed_10m"),
+                pressure_msl=current.get("pressure_msl"),
+                relative_humidity_2m=current.get("relative_humidity_2m"),
+                cloud_cover=current.get("cloud_cover")
+            )
+            self._current_cache[cache_key] = (now, result)
+            return result
 
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10) -> List[NormalizedForecast]:
         """Fetch current operational 10-day medium range forecast with hourly resolution."""
@@ -106,17 +150,23 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
             "forecast_days": min(days, 10),
             "timezone": "UTC"
         }
+        if self.api_key:
+            params["apikey"] = self.api_key
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             last_resp = None
-            for attempt in range(3):
+            for attempt in range(2):
                 resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
                 last_resp = resp
-                if resp.status_code == 429 and attempt < 2:
-                    wait_time = 1.5 * (attempt + 1)
-                    logger.warning(f"Open-Meteo forecast 429 rate limit. Retrying in {wait_time}s...")
-                    await asyncio.sleep(wait_time)
-                    continue
+                if resp.status_code == 429:
+                    retry_after = int(resp.headers.get("retry-after", "30"))
+                    cooldown = min(max(retry_after, 15), 60)
+                    self._rate_limit_until = datetime.now(timezone.utc) + timedelta(seconds=cooldown)
+                    if attempt < 1 and retry_after <= 2:
+                        await asyncio.sleep(retry_after)
+                        continue
+                    logger.error(f"Open-Meteo forecast 429 received (cooldown {cooldown}s): {resp.text}")
+                    resp.raise_for_status()
                 resp.raise_for_status()
                 data = resp.json()
                 break
@@ -150,7 +200,7 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
             base_spread = 0.5 + (lead_h / 24.0) * 0.45
 
             forecasts.append(NormalizedForecast(
-                provider="open-meteo-operational",
+                provider="open-meteo-operational" if not self.api_key else "open-meteo-customer",
                 model="ecmwf-ifs",
                 initialization_time=init_time,
                 valid_time=valid_dt,
@@ -182,17 +232,23 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
             "wind_speed_unit": "ms",
             "timezone": "UTC"
         }
+        if self.api_key:
+            params["apikey"] = self.api_key
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             last_resp = None
-            for attempt in range(3):
+            for attempt in range(2):
                 resp = await client.get(self.archive_base_url, params=params, headers=self.headers)
                 last_resp = resp
-                if resp.status_code == 429 and attempt < 2:
-                    wait_time = 1.5 * (attempt + 1)
-                    logger.warning(f"Open-Meteo archive 429 rate limit. Retrying in {wait_time}s...")
-                    await asyncio.sleep(wait_time)
-                    continue
+                if resp.status_code == 429:
+                    retry_after = int(resp.headers.get("retry-after", "30"))
+                    cooldown = min(max(retry_after, 15), 60)
+                    self._rate_limit_until = datetime.now(timezone.utc) + timedelta(seconds=cooldown)
+                    if attempt < 1 and retry_after <= 2:
+                        await asyncio.sleep(retry_after)
+                        continue
+                    logger.error(f"Open-Meteo archive 429 received (cooldown {cooldown}s): {resp.text}")
+                    resp.raise_for_status()
                 resp.raise_for_status()
                 data = resp.json()
                 break

@@ -414,3 +414,65 @@ async def test_forecast_provider_failure_returns_503_no_silent_demo_fallback():
             assert "unavailable" in data["detail"].lower()
             assert "Simulated NWP" in data["detail"]
 
+
+def test_open_meteo_provider_customer_key_and_url_configuration():
+    """Verifies that setting OPEN_METEO_API_KEY or OPEN_METEO_BASE_URL routes to customer endpoint."""
+    from data_pipeline.providers.open_meteo import OpenMeteoProvider
+
+    # Default public configuration
+    default_p = OpenMeteoProvider()
+    assert default_p.forecast_base_url == "https://api.open-meteo.com/v1/forecast"
+    assert default_p.archive_base_url == "https://archive-api.open-meteo.com/v1/archive"
+    assert default_p.api_key is None
+    assert "Operational" in default_p.get_provider_name()
+
+    # Customer key configured
+    cust_p = OpenMeteoProvider(api_key="secret_customer_token_123")
+    assert cust_p.forecast_base_url == "https://customer-api.open-meteo.com/v1/forecast"
+    assert cust_p.archive_base_url == "https://customer-archive-api.open-meteo.com/v1/archive"
+    assert cust_p.api_key == "secret_customer_token_123"
+    assert "Customer" in cust_p.get_provider_name()
+
+    # Custom base URL configured (e.g. self-hosted proxy/mirror)
+    proxy_p = OpenMeteoProvider(base_url="https://weather-proxy.internal/v1/forecast")
+    assert proxy_p.forecast_base_url == "https://weather-proxy.internal/v1/forecast"
+
+
+@pytest.mark.asyncio
+async def test_open_meteo_in_memory_caching_and_cooldown():
+    """Verifies in-memory 5-minute TTL caching and non-hammering rate-limit cooldown."""
+    from data_pipeline.providers.open_meteo import OpenMeteoProvider
+    from data_pipeline.providers.base import NormalizedCurrentWeather
+    from datetime import datetime, timezone, timedelta
+
+    p = OpenMeteoProvider()
+    now = datetime.now(timezone.utc)
+    mock_weather = NormalizedCurrentWeather(
+        provider="open-meteo-operational",
+        model="ecmwf-ifs",
+        observation_time=now,
+        latitude=21.1458,
+        longitude=79.0882,
+        temperature_2m=26.5,
+        precipitation=0.0,
+        wind_speed_10m=2.3,
+        pressure_msl=1010.0,
+        relative_humidity_2m=80.0,
+        cloud_cover=10.0
+    )
+
+    # 1. Test cache retrieval
+    cache_key = (round(21.1458, 3), round(79.0882, 3))
+    p._current_cache[cache_key] = (now, mock_weather)
+    res = await p.get_current_weather(21.1458, 79.0882)
+    assert res.temperature_2m == 26.5
+    assert res.provider == "open-meteo-operational"
+
+    # 2. Test rate-limit cooldown fail-fast
+    p._current_cache.clear()
+    p._rate_limit_until = datetime.now(timezone.utc) + timedelta(seconds=20)
+    with pytest.raises(RuntimeError) as exc_info:
+        await p.get_current_weather(21.1458, 79.0882)
+    assert "cooldown in progress" in str(exc_info.value).lower()
+
+

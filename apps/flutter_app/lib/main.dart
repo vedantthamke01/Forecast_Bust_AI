@@ -1,13 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:forecast_bust_detection/core/constants.dart';
-import 'package:forecast_bust_detection/screens/home_screen.dart';
-import 'package:forecast_bust_detection/screens/forecast_screen.dart';
-import 'package:forecast_bust_detection/screens/risk_map_screen.dart';
-import 'package:forecast_bust_detection/screens/historical_screen.dart';
-import 'package:forecast_bust_detection/screens/settings_screen.dart';
+import 'core/constants.dart';
+import 'core/theme.dart';
+import 'features/advanced/advanced_screen.dart';
+import 'features/home/home_screen.dart';
+import 'features/risk_map/risk_map_screen.dart';
+import 'features/verification/verification_screen.dart';
+import 'providers/app_providers.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // True full-screen native edge-to-edge Android system UI styling
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+  );
+
   runApp(const ProviderScope(child: ForecastBustApp()));
 }
 
@@ -17,67 +34,115 @@ class ForecastBustApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NCMRWF Forecast Bust Detection',
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppConstants.bgDark,
-        colorScheme: const ColorScheme.dark(
-          primary: AppConstants.accentBlue,
-          surface: AppConstants.cardDark,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF131D31),
-          elevation: 0,
-        ),
-      ),
+      theme: AppTheme.darkTheme,
       home: const MainNavigationScaffold(),
     );
   }
 }
 
-class MainNavigationScaffold extends StatefulWidget {
+class MainNavigationScaffold extends ConsumerStatefulWidget {
   const MainNavigationScaffold({super.key});
 
   @override
-  State<MainNavigationScaffold> createState() => _MainNavigationScaffoldState();
+  ConsumerState<MainNavigationScaffold> createState() => _MainNavigationScaffoldState();
 }
 
-class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
+class _MainNavigationScaffoldState extends ConsumerState<MainNavigationScaffold> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    ForecastScreen(),
     RiskMapScreen(),
-    HistoricalScreen(),
-    SettingsScreen(),
+    VerificationScreen(),
+    AdvancedScreen(),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _initAppLocation();
+  }
+
+  Future<void> _initAppLocation() async {
+    try {
+      final locService = ref.read(locationServiceProvider);
+      final initialLoc = await locService.getInitialLocation();
+      if (mounted) {
+        ref.read(activeLocationProvider.notifier).state = initialLoc;
+      }
+    } catch (_) {}
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        backgroundColor: const Color(0xFF131D31),
-        indicatorColor: AppConstants.accentBlue.withOpacity(0.2),
-        onDestinationSelected: (idx) {
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _currentIndex != 0) {
           setState(() {
-            _currentIndex = idx;
+            _currentIndex = 0;
           });
-        },
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Dashboard'),
-          NavigationDestination(icon: Icon(Icons.timeline_outlined), selectedIcon: Icon(Icons.timeline), label: '10-Day NWP'),
-          NavigationDestination(icon: Icon(Icons.map_outlined), selectedIcon: Icon(Icons.map), label: 'Risk Map'),
-          NavigationDestination(icon: Icon(Icons.verified_outlined), selectedIcon: Icon(Icons.verified), label: 'Verification'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
-        ],
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.bg,
+        body: Container(
+          decoration: AppTheme.screenBackgroundDecoration,
+          child: IndexedStack(
+            index: _currentIndex,
+            children: _screens,
+          ),
+        ),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.bgDark,
+            border: Border(
+              top: BorderSide(color: AppColors.stroke, width: 1),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedItemColor: AppColors.green,
+              unselectedItemColor: AppColors.textFaint,
+              selectedFontSize: 11.0,
+              unselectedFontSize: 10.0,
+              type: BottomNavigationBarType.fixed,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined, size: 22),
+                  activeIcon: Icon(Icons.home, size: 22),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map_outlined, size: 22),
+                  activeIcon: Icon(Icons.map, size: 22),
+                  label: 'Risk Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.fact_check_outlined, size: 22),
+                  activeIcon: Icon(Icons.fact_check, size: 22),
+                  label: 'Verify',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.science_outlined, size: 22),
+                  activeIcon: Icon(Icons.science, size: 22),
+                  label: 'Advanced',
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -49,12 +49,31 @@ class GeocodedLocation(BaseModel):
     elevation: float = 0.0
 
 
+class NormalizedCurrentWeather(BaseModel):
+    provider: str
+    model: str
+    observation_time: datetime
+    latitude: float
+    longitude: float
+    temperature_2m: Optional[float] = None          # °C
+    precipitation: Optional[float] = None           # mm
+    wind_speed_10m: Optional[float] = None          # m/s (guaranteed)
+    pressure_msl: Optional[float] = None            # hPa
+    relative_humidity_2m: Optional[float] = None    # %
+    cloud_cover: Optional[float] = None             # %
+
+
 class ForecastProvider(ABC):
     """Interface for operational and live Numerical Weather Prediction forecasts."""
 
     @abstractmethod
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10) -> List[NormalizedForecast]:
         """Retrieve operational multi-day forecast up to 240 hours."""
+        pass
+
+    @abstractmethod
+    async def get_current_weather(self, latitude: float, longitude: float) -> NormalizedCurrentWeather:
+        """Retrieve authentic real-time current weather observation."""
         pass
 
     @abstractmethod

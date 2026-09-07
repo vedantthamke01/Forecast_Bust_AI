@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/api_client.dart';
 import '../../core/constants.dart';
 import '../../providers/app_providers.dart';
 import 'qr_scanner_screen.dart';
@@ -47,9 +48,14 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
         _isTesting = false;
         _latencyMs = latency;
         _isConnected = latency != null;
-        _statusMessage = _isConnected
-            ? 'Connected successfully ($latency ms)'
-            : 'Server unreachable at $candidateUrl. Verify host IP, port 8000, and same Wi-Fi.';
+        if (_isConnected) {
+          _statusMessage = 'Connected successfully ($latency ms)';
+        } else if (candidateUrl.contains('onrender.com')) {
+          _statusMessage =
+              'Connecting to Render Cloud... The free instance may be waking from sleep (takes ~30s). Please wait and retry.';
+        } else {
+          _statusMessage = 'Server unreachable at $candidateUrl. Verify URL and network connectivity.';
+        }
       });
     }
   }
@@ -70,6 +76,11 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
     }
   }
 
+  void _setProductionUrl() {
+    _urlController.text = ApiClient.productionApiBaseUrl;
+    _saveUrl();
+  }
+
   void _invalidateAllProviders() {
     ref.invalidate(currentWeatherProvider);
     ref.invalidate(forecastTimelineProvider);
@@ -82,6 +93,9 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final client = ref.watch(apiClientProvider);
+    final isRenderProd = client.baseUrl == ApiClient.productionApiBaseUrl;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
@@ -109,13 +123,18 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'SERVER STATUS',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textDim,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            isRenderProd ? 'RENDER CLOUD (PRODUCTION)' : 'SERVER STATUS',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: isRenderProd ? AppColors.green : AppColors.textDim,
+                              letterSpacing: 0.05,
+                            ),
+                          ),
+                        ],
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -138,7 +157,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                   Text(
                     _urlController.text,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w700,
                       color: AppColors.text,
                       fontFamily: 'monospace',
@@ -147,7 +166,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                   if (_latencyMs != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      'Latency: $_latencyMs ms',
+                      'Latency: $_latencyMs ms (HTTPS / Cloudflare edge)',
                       style: const TextStyle(fontSize: 11, color: AppColors.green),
                     ),
                   ],
@@ -158,6 +177,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                       style: TextStyle(
                         fontSize: 11,
                         color: _isConnected ? AppColors.textDim : AppColors.red,
+                        height: 1.3,
                       ),
                     ),
                   ],
@@ -165,6 +185,31 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Quick Switch to Render Production
+            if (!isRenderProd) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.green.withOpacity(0.15),
+                    foregroundColor: AppColors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: AppColors.green, width: 1.2),
+                    ),
+                  ),
+                  icon: const Icon(Icons.cloud_done, size: 18),
+                  label: const Text(
+                    'RESET TO RENDER PRODUCTION CLOUD',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+                  ),
+                  onPressed: _setProductionUrl,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // Server Input & QR
             const Text(
@@ -177,7 +222,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
               controller: _urlController,
               style: const TextStyle(color: AppColors.text, fontSize: 13, fontFamily: 'monospace'),
               decoration: InputDecoration(
-                hintText: 'e.g. http://192.168.1.100:8000',
+                hintText: 'e.g. https://forecast-bust-api.onrender.com',
                 hintStyle: const TextStyle(color: AppColors.textFaint),
                 filled: true,
                 fillColor: AppColors.card2,
@@ -214,7 +259,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                           )
                         : const Icon(Icons.network_check, size: 16),
                     label: const Text('TEST', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                    onPressed: _isTesting ? null : _runTest,
+                    onPressed: _isTesting ? null : () => _runTest(),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -264,7 +309,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
             ),
             const SizedBox(height: 20),
 
-            // LAN Troubleshooting Guide
+            // Cloud & Local Information
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -276,15 +321,15 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
-                    '💡 LAN SETUP INSTRUCTIONS',
+                    '☁️ CLOUD BACKEND SPECIFICATION',
                     style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AppColors.green),
                   ),
                   SizedBox(height: 6),
                   Text(
-                    '1. Ensure phone and developer PC are connected to the same Wi-Fi network.\n'
-                    '2. Find your PC IPv4 address (Windows: run "ipconfig", look for Wireless LAN IPv4).\n'
-                    '3. Start FastAPI backend with: "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000".\n'
-                    '4. Enter "http://<PC_IP>:8000" above or scan the server QR code.',
+                    '• Production Host: https://forecast-bust-api.onrender.com\n'
+                    '• Fully independent from local laptop. Works on any Wi-Fi or mobile data.\n'
+                    '• Cold-Start Note: Render Free puts instances to sleep during inactivity. First request after idle takes ~30 seconds to wake up uvicorn.\n'
+                    '• For offline local testing only, enter "http://<PC_IP>:8000".',
                     style: TextStyle(fontSize: 10, color: AppColors.textDim, height: 1.4),
                   ),
                 ],

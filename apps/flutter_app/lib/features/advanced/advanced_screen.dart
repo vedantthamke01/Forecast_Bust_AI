@@ -296,16 +296,42 @@ class AdvancedScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.settings_ethernet, color: AppColors.green, size: 22),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(
+                                  client.baseUrl.contains('onrender.com') ? Icons.cloud_done : Icons.settings_ethernet,
+                                  color: AppColors.green,
+                                  size: 20,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.green.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    client.baseUrl.contains('onrender.com') ? 'PRODUCTION' : 'DEV LAN',
+                                    style: const TextStyle(
+                                      fontSize: 8.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.green,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'Server Connection',
-                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.text),
+                            Text(
+                              client.baseUrl.contains('onrender.com') ? 'Production Server' : 'Server Connection',
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.text),
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              client.baseUrl,
-                              style: const TextStyle(fontSize: 10.5, color: AppColors.textDim, fontFamily: 'monospace'),
+                              client.baseUrl.contains('onrender.com')
+                                  ? 'https://forecast-bust-api.onrender.com'
+                                  : client.baseUrl,
+                              style: const TextStyle(fontSize: 10, color: AppColors.textDim, fontFamily: 'monospace'),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

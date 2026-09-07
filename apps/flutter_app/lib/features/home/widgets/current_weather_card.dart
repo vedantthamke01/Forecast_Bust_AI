@@ -67,27 +67,35 @@ class CurrentWeatherCard extends StatelessWidget {
                   letterSpacing: 0.05,
                 ),
               ),
-              Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: AppColors.green,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  const Text(
-                    'LIVE CONDITIONS',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.green,
-                      letterSpacing: 0.03,
-                    ),
-                  ),
-                ],
+              Builder(
+                builder: (context) {
+                  final isDemo = weather.provider == 'demo_verified';
+                  final statusColor = isDemo ? AppColors.amber : AppColors.green;
+                  final statusText = isDemo ? 'DEMO BENCHMARK (OFFLINE)' : 'LIVE CONDITIONS';
+
+                  return Row(
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        statusText,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: statusColor,
+                          letterSpacing: 0.03,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),

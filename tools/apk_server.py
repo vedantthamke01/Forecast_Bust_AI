@@ -67,7 +67,7 @@ class ApkDistributionHandler(http.server.BaseHTTPRequestHandler):
         apk_available = os.path.exists(apk_path)
         apk_size_mb = f"{os.path.getsize(apk_path) / (1024*1024):.1f} MB" if apk_available else "Not built yet"
         download_url = f"http://{lan_ip}:{PORT}/forecast-bust-ai.apk"
-        backend_url = f"http://{lan_ip}:8000"
+        backend_url = "https://forecast-bust-api.onrender.com (Production Cloud)"
 
         html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -181,7 +181,7 @@ def run_server():
     print(f"Local Host:    http://127.0.0.1:{PORT}/")
     print(f"LAN Portal:    http://{lan_ip}:{PORT}/")
     print(f"Direct APK:    http://{lan_ip}:{PORT}/forecast-bust-ai.apk")
-    print(f"Backend Server:http://{lan_ip}:8000")
+    print("Cloud Backend: https://forecast-bust-api.onrender.com (Production)")
     print(f"APK Status:    {'FOUND (' + str(round(os.path.getsize(apk_path)/(1024*1024), 1)) + ' MB)' if apk_found else 'NOT FOUND'}")
     print("=" * 60)
     print(f"Open http://{lan_ip}:{PORT}/ in your phone browser to install.")

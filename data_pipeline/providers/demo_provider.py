@@ -5,11 +5,11 @@ for air-gapped SIH evaluation, offline testing, and demonstrability.
 Tags all records explicitly with DEMO MODE metadata.
 """
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import math
 from data_pipeline.providers.base import (
     ForecastProvider, ReferenceWeatherProvider, HistoricalForecastProvider,
-    NormalizedForecast, NormalizedReference
+    NormalizedForecast, NormalizedReference, NormalizedCurrentWeather
 )
 
 
@@ -22,6 +22,28 @@ class DemoProvider(ForecastProvider, HistoricalForecastProvider, ReferenceWeathe
 
     def is_available(self) -> bool:
         return True
+
+    async def get_current_weather(self, latitude: float, longitude: float) -> NormalizedCurrentWeather:
+        """Generate current baseline conditions explicitly tagged as demo mode at current time (T0)."""
+        now = datetime.now(timezone.utc)
+        is_coastal = abs(longitude - 72.8) < 1.0 or abs(longitude - 80.2) < 1.0 or abs(longitude - 85.8) < 1.0
+        is_mountain = latitude > 30.0
+        base_temp = 20.0 if is_mountain else (30.0 if not is_coastal else 32.0)
+        base_pressure = 950.0 if is_mountain else 1010.0
+
+        return NormalizedCurrentWeather(
+            provider="demo_verified",
+            model="ncum-global-demo",
+            observation_time=now,
+            latitude=latitude,
+            longitude=longitude,
+            temperature_2m=round(base_temp, 1),
+            precipitation=0.0,
+            wind_speed_10m=4.5,
+            pressure_msl=base_pressure,
+            relative_humidity_2m=65.0,
+            cloud_cover=25.0
+        )
 
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10, init_time: Optional[datetime] = None) -> List[NormalizedForecast]:
         """Generate physically consistent 10-day forecast series."""

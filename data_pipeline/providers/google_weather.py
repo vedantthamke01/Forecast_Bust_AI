@@ -7,7 +7,7 @@ from typing import List, Optional
 from datetime import datetime
 import httpx
 from backend.app.config import settings
-from data_pipeline.providers.base import ForecastProvider, NormalizedForecast
+from data_pipeline.providers.base import ForecastProvider, NormalizedForecast, NormalizedCurrentWeather
 
 
 class GoogleWeatherProvider(ForecastProvider):
@@ -20,6 +20,14 @@ class GoogleWeatherProvider(ForecastProvider):
 
     def is_available(self) -> bool:
         return bool(self.api_key and self.api_key.strip())
+
+    async def get_current_weather(self, latitude: float, longitude: float) -> NormalizedCurrentWeather:
+        if not self.is_available():
+            raise RuntimeError(
+                "Google Weather API credentials not configured. "
+                "Set GOOGLE_WEATHER_API_KEY in your .env configuration."
+            )
+        raise NotImplementedError("Google Weather API current conditions lookup not configured.")
 
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10) -> List[NormalizedForecast]:
         if not self.is_available():

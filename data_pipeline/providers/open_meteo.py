@@ -1,30 +1,76 @@
 """
 Open-Meteo Operational Forecast Provider.
-Retrieves live/current operational 10-day medium-range ensemble forecasts (ECMWF IFS)
+Retrieves live/current operational weather observations and 10-day medium-range ensemble forecasts (ECMWF IFS)
 for real-time inference and UI demonstration.
 STRICT SEPARATION:
-This class is for CURRENT OPERATIONAL FORECASTS.
+This class is for CURRENT OPERATIONAL WEATHER AND FORECASTS.
 It does NOT provide historical training forecasts.
 """
 from typing import List, Optional
 from datetime import datetime, timedelta
 import httpx
 from data_pipeline.providers.base import (
-    ForecastProvider, ReferenceWeatherProvider, NormalizedForecast, NormalizedReference
+    ForecastProvider, ReferenceWeatherProvider, NormalizedForecast, NormalizedReference, NormalizedCurrentWeather
 )
 
 
 class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
-    def __init__(self, timeout: float = 15.0):
+    def __init__(self, timeout: float = 20.0):
         self.forecast_base_url = "https://api.open-meteo.com/v1/forecast"
         self.archive_base_url = "https://archive-api.open-meteo.com/v1/archive"
         self.timeout = timeout
+        self.headers = {
+            "User-Agent": "ForecastBustAI/1.0 (MoES/NCMRWF; https://forecast-bust-api.onrender.com)",
+            "Accept": "application/json"
+        }
 
     def get_provider_name(self) -> str:
         return "Open-Meteo Operational ECMWF IFS [CURRENT FORECAST]"
 
     def is_available(self) -> bool:
         return True
+
+    async def get_current_weather(self, latitude: float, longitude: float) -> NormalizedCurrentWeather:
+        """Fetch authentic real-time current weather observation using Open-Meteo current API."""
+        params = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "current": [
+                "temperature_2m", "relative_humidity_2m", "precipitation",
+                "wind_speed_10m", "pressure_msl", "cloud_cover"
+            ],
+            "wind_speed_unit": "ms",
+            "timezone": "UTC"
+        }
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
+            resp.raise_for_status()
+            data = resp.json()
+
+        current = data.get("current")
+        if not current:
+            raise RuntimeError(f"Open-Meteo returned no current weather block for ({latitude}, {longitude}): {data}")
+
+        time_str = current.get("time")
+        try:
+            obs_time = datetime.fromisoformat(time_str) if time_str else datetime.utcnow()
+        except Exception:
+            obs_time = datetime.utcnow()
+
+        return NormalizedCurrentWeather(
+            provider="open-meteo-operational",
+            model="ecmwf-ifs",
+            observation_time=obs_time,
+            latitude=latitude,
+            longitude=longitude,
+            temperature_2m=current.get("temperature_2m"),
+            precipitation=current.get("precipitation"),
+            wind_speed_10m=current.get("wind_speed_10m"),
+            pressure_msl=current.get("pressure_msl"),
+            relative_humidity_2m=current.get("relative_humidity_2m"),
+            cloud_cover=current.get("cloud_cover")
+        )
 
     async def get_forecast(self, latitude: float, longitude: float, days: int = 10) -> List[NormalizedForecast]:
         """Fetch current operational 10-day medium range forecast with hourly resolution."""
@@ -35,12 +81,13 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
                 "temperature_2m", "precipitation", "wind_speed_10m",
                 "pressure_msl", "relative_humidity_2m", "cloud_cover"
             ],
+            "wind_speed_unit": "ms",
             "forecast_days": min(days, 10),
             "timezone": "UTC"
         }
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
-            resp = await client.get(self.forecast_base_url, params=params)
+            resp = await client.get(self.forecast_base_url, params=params, headers=self.headers)
             resp.raise_for_status()
             data = resp.json()
 
@@ -99,11 +146,12 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
                 "temperature_2m", "precipitation", "wind_speed_10m",
                 "pressure_msl", "relative_humidity_2m"
             ],
+            "wind_speed_unit": "ms",
             "timezone": "UTC"
         }
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
-            resp = await client.get(self.archive_base_url, params=params)
+            resp = await client.get(self.archive_base_url, params=params, headers=self.headers)
             resp.raise_for_status()
             data = resp.json()
 

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forecast_bust_detection/core/constants.dart';
+import 'package:forecast_bust_detection/core/api_client.dart';
 import 'package:forecast_bust_detection/models/weather_models.dart';
 import 'package:forecast_bust_detection/models/risk_models.dart';
 import 'package:forecast_bust_detection/models/verification_models.dart';
@@ -157,6 +158,14 @@ void main() {
       expect(find.text('Risk Map'), findsOneWidget);
       expect(find.text('Verify'), findsOneWidget);
       expect(find.text('Advanced'), findsOneWidget);
+    });
+
+    test('ApiClient defaults to Render HTTPS production backend', () {
+      expect(ApiClient.productionApiBaseUrl, 'https://forecast-bust-api.onrender.com');
+      expect(ApiClient.defaultBaseUrl, 'https://forecast-bust-api.onrender.com');
+      final client = ApiClient();
+      expect(client.baseUrl, 'https://forecast-bust-api.onrender.com');
+      expect(client.isProduction, true);
     });
   });
 }

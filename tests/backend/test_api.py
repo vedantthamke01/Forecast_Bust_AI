@@ -356,7 +356,61 @@ async def test_current_weather_endpoint():
         assert "cloud_cover_percent" in data
         assert "provider" in data
         assert "model" in data
+        assert "observation_time" in data
+        assert data["provider"] == "open-meteo-operational"
+        # Wind speed must be in m/s (under 60 m/s for typical terrestrial atmospheric conditions)
+        assert 0.0 <= data["wind_speed_mps"] <= 60.0
 
         # Out-of-bounds coordinates
         bad_resp = await client.get("/api/weather/current?lat=195.0&lon=73.8567")
         assert bad_resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_current_weather_demo_mode_explicit():
+    """Verifies explicit demo=true returns demo_verified provider with fresh timestamp."""
+    from datetime import datetime, timezone
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        resp = await client.get("/api/weather/current?lat=21.1458&lon=79.0882&demo=true")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["provider"] == "demo_verified"
+        assert data["model"] == "ncum-global-demo"
+        obs_time = datetime.fromisoformat(data["observation_time"])
+        now = datetime.now(timezone.utc)
+        diff_seconds = abs((now - obs_time.replace(tzinfo=timezone.utc if obs_time.tzinfo is None else obs_time.tzinfo)).total_seconds())
+        # Must be within 60 seconds (current T0 time, not shifted by +24 hours)
+        assert diff_seconds < 60
+
+
+@pytest.mark.asyncio
+async def test_weather_provider_failure_returns_503_no_silent_demo_fallback():
+    """Scientific Integrity Regression Test: Verifies that when live Open-Meteo fails and
+    DEMO_MODE=false, backend returns HTTP 503 and NEVER silently substitutes DemoProvider.
+    """
+    from unittest.mock import patch
+
+    with patch("data_pipeline.providers.open_meteo.OpenMeteoProvider.get_current_weather", side_effect=RuntimeError("Simulated Open-Meteo network timeout")):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            resp = await client.get("/api/weather/current?lat=21.1458&lon=79.0882&demo=false")
+            assert resp.status_code == 503
+            data = resp.json()
+            assert "unavailable" in data["detail"].lower()
+            assert "Simulated Open-Meteo" in data["detail"]
+
+
+@pytest.mark.asyncio
+async def test_forecast_provider_failure_returns_503_no_silent_demo_fallback():
+    """Scientific Integrity Regression Test: Verifies that when live Open-Meteo forecast fails and
+    DEMO_MODE=false, backend returns HTTP 503 and NEVER silently substitutes DemoProvider.
+    """
+    from unittest.mock import patch
+
+    with patch("data_pipeline.providers.open_meteo.OpenMeteoProvider.get_forecast", side_effect=RuntimeError("Simulated NWP service outage")):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            resp = await client.get("/api/weather/forecast?lat=21.1458&lon=79.0882&days=3&demo=false")
+            assert resp.status_code == 503
+            data = resp.json()
+            assert "unavailable" in data["detail"].lower()
+            assert "Simulated NWP" in data["detail"]
+

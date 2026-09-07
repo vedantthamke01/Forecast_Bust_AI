@@ -60,6 +60,7 @@ class AppConstants {
   static const String appName = 'Forecast Bust AI';
   static const String appSubtitle = 'Reliability Intelligence · Days 3–10';
   static const String appVersion = '1.0.0';
+  static const String productionBackendUrl = 'https://forecast-bust-api.onrender.com';
 
   // Lead Hours Definition
   // Day 3 = 72h, Day 4 = 96h, Day 5 = 120h, Day 6 = 144h, Day 7 = 168h, Day 8 = 192h, Day 9 = 216h, Day 10 = 240h

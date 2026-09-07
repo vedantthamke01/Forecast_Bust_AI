@@ -37,13 +37,10 @@ async def get_current_weather(
     lon: float = Query(..., ge=-180, le=180),
     demo: bool = Query(False, description="Force demo mode benchmark")
 ):
-    forecasts = await weather_service.get_forecast(lat, lon, days=1, demo_mode=demo)
-    if not forecasts:
-        raise HTTPException(status_code=503, detail="Current weather observation unavailable.")
-    current = forecasts[0]
+    current = await weather_service.get_current_weather(lat, lon, demo_mode=demo)
     return {
         "location": {"latitude": lat, "longitude": lon},
-        "observation_time": current.valid_time.isoformat(),
+        "observation_time": current.observation_time.isoformat(),
         "temperature_c": current.temperature_2m,
         "precipitation_mm": current.precipitation,
         "wind_speed_mps": current.wind_speed_10m,

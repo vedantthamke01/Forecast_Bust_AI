@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../../core/api_client.dart';
 import '../../core/constants.dart';
 import '../../providers/app_providers.dart';
 
@@ -11,9 +12,10 @@ class InstallGuideScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(apiClientProvider);
-    // Derive APK download URL from server URL or default to port 8080
+    // Derive APK distribution portal host (uses local LAN distributor if connected to cloud)
     final uri = Uri.tryParse(client.baseUrl);
-    final host = uri?.host ?? '192.168.1.100';
+    final isCloud = client.baseUrl.contains('onrender.com');
+    final host = (isCloud || uri?.host == null || uri!.host.isEmpty) ? ApiClient.devLanIp : uri.host;
     final apkUrl = 'http://$host:8080/forecast-bust-ai.apk';
     final webUrl = 'http://$host:8080/';
 

@@ -6,7 +6,7 @@ class ApiClient {
   static const String _prefKeyBaseUrl = 'forecast_bust_base_url';
 
   /// Production Render Cloud Backend (HTTPS)
-  static const String productionApiBaseUrl = 'https://forecast-bust-api.onrender.com';
+  static const String productionApiBaseUrl = 'https://forecast-bust-ai.onrender.com';
 
   /// Local LAN fallback for optional development only
   static const String devLanIp = '10.238.246.67';

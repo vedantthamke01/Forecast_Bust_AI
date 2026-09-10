@@ -31,9 +31,12 @@ datasets/processed/*
 datasets/training/*
 !datasets/training/.gitkeep
 !datasets/training/dataset_v001.csv
+!datasets/training/dataset_real_v002.csv
 models/*.joblib
 models/*/*.joblib
 models/**/*.joblib
+!models/model_v001/model_bundle.joblib
+!models/model_real_v002/model_bundle.joblib
 models/*.bin
 models/*.pt
 !models/.gitkeep

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: forecast-bust-api
+    runtime: docker
+    dockerfilePath: docker/Dockerfile.backend
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: OPEN_METEO_ENABLED
+        value: "true"
+      - key: DEMO_MODE
+        value: "false"

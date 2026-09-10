@@ -1,0 +1,29 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application sources
+COPY backend/ ./backend/
+COPY data_pipeline/ ./data_pipeline/
+COPY ml_pipeline/ ./ml_pipeline/
+COPY datasets/ ./datasets/
+COPY models/ ./models/
+COPY config/ ./config/
+COPY apps/admin_dashboard/ ./apps/admin_dashboard/
+
+EXPOSE 8000
+
+CMD ["sh", "-c", "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

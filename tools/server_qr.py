@@ -2,14 +2,14 @@
 """
 Server Configuration QR Generator
 Generates connection payload and instructions for instant mobile app pairing.
-Defaults to the production Render cloud backend (https://forecast-bust-api.onrender.com).
+Defaults to the production Render cloud backend (https://forecast-bust-ai.onrender.com).
 """
 import socket
 import json
 import sys
 import argparse
 
-RENDER_PRODUCTION_URL = "https://forecast-bust-api.onrender.com"
+RENDER_PRODUCTION_URL = "https://forecast-bust-ai.onrender.com"
 
 def get_lan_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

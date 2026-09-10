@@ -42,7 +42,7 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
 
         self.timeout = timeout
         self.headers = {
-            "User-Agent": "ForecastBustAI/1.0 (MoES/NCMRWF; https://forecast-bust-api.onrender.com)",
+            "User-Agent": "ForecastBustAI/1.0 (MoES/NCMRWF; https://forecast-bust-ai.onrender.com)",
             "Accept": "application/json"
         }
         self._current_cache: Dict[Tuple[float, float], Tuple[datetime, NormalizedCurrentWeather]] = {}

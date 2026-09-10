@@ -222,7 +222,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
               controller: _urlController,
               style: const TextStyle(color: AppColors.text, fontSize: 13, fontFamily: 'monospace'),
               decoration: InputDecoration(
-                hintText: 'e.g. https://forecast-bust-api.onrender.com',
+                hintText: 'e.g. https://forecast-bust-ai.onrender.com',
                 hintStyle: const TextStyle(color: AppColors.textFaint),
                 filled: true,
                 fillColor: AppColors.card2,
@@ -326,7 +326,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                   ),
                   SizedBox(height: 6),
                   Text(
-                    '• Production Host: https://forecast-bust-api.onrender.com\n'
+                    '• Production Host: https://forecast-bust-ai.onrender.com\n'
                     '• Fully independent from local laptop. Works on any Wi-Fi or mobile data.\n'
                     '• Cold-Start Note: Render Free puts instances to sleep during inactivity. First request after idle takes ~30 seconds to wake up uvicorn.\n'
                     '• For offline local testing only, enter "http://<PC_IP>:8000".',

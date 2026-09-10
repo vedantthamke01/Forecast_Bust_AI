@@ -329,7 +329,7 @@ class AdvancedScreen extends ConsumerWidget {
                             const SizedBox(height: 2),
                             Text(
                               client.baseUrl.contains('onrender.com')
-                                  ? 'https://forecast-bust-api.onrender.com'
+                                  ? 'https://forecast-bust-ai.onrender.com'
                                   : client.baseUrl,
                               style: const TextStyle(fontSize: 10, color: AppColors.textDim, fontFamily: 'monospace'),
                               maxLines: 1,

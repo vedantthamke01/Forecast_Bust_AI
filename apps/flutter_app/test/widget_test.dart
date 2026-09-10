@@ -161,10 +161,10 @@ void main() {
     });
 
     test('ApiClient defaults to Render HTTPS production backend', () {
-      expect(ApiClient.productionApiBaseUrl, 'https://forecast-bust-api.onrender.com');
-      expect(ApiClient.defaultBaseUrl, 'https://forecast-bust-api.onrender.com');
+      expect(ApiClient.productionApiBaseUrl, 'https://forecast-bust-ai.onrender.com');
+      expect(ApiClient.defaultBaseUrl, 'https://forecast-bust-ai.onrender.com');
       final client = ApiClient();
-      expect(client.baseUrl, 'https://forecast-bust-api.onrender.com');
+      expect(client.baseUrl, 'https://forecast-bust-ai.onrender.com');
       expect(client.isProduction, true);
     });
   });

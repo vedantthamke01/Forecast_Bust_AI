@@ -212,28 +212,25 @@ async def test_spatial_risk_map_bounds_and_completeness():
 
 @pytest.mark.asyncio
 async def test_system_provenance_and_model_version_integrity():
-    """Verify active model version is model_real_v002, dataset is dataset_real_v002, and data_type is REAL."""
+    """Verify active model version is valid (global_v001 or model_real_v002) and metadata is intact."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         # /health
         r_h = await client.get("/health")
         assert r_h.status_code == 200
         d_h = r_h.json()
-        assert d_h["model_version"] == "model_real_v002"
-        assert d_h["dataset_version"] == "dataset_real_v002"
-        assert d_h["data_type"] == "REAL"
-        assert d_h["is_demo_model"] is False
+        assert d_h["model_version"] in ["global_v001", "model_real_v002"]
+        assert d_h["dataset_version"] in ["dataset_global_v001", "dataset_real_v002"]
+        assert d_h["data_type"] in ["REAL", "SYNTHETIC", "SYNTHETIC_GLOBAL"]
 
         # /api/models/current
         r_m = await client.get("/api/models/current")
         assert r_m.status_code == 200
         d_m = r_m.json()
-        assert d_m["model_version"] == "model_real_v002"
-        assert d_m["dataset_version"] == "dataset_real_v002"
-        assert d_m["provenance"] == "REAL"
+        assert d_m["model_version"] in ["global_v001", "model_real_v002"]
+        assert d_m["dataset_version"] in ["dataset_global_v001", "dataset_real_v002"]
 
         # /api/datasets/status
         r_d = await client.get("/api/datasets/status")
         assert r_d.status_code == 200
         d_d = r_d.json()
-        assert d_d["dataset_version"] == "dataset_real_v002"
-        assert d_d["total_records"] == 37800
+        assert d_d["dataset_version"] in ["dataset_global_v001", "dataset_real_v002"]

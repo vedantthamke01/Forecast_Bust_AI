@@ -1,0 +1,19 @@
+{
+  "total_records": 63000,
+  "bust_count": 6714,
+  "bust_prevalence_pct": 10.66,
+  "roc_auc": 0.7898,
+  "pr_auc": 0.3786,
+  "brier_score": 0.0808,
+  "expected_calibration_error": 0.0161,
+  "accuracy": 0.9002,
+  "precision": 0.6393,
+  "recall": 0.1463,
+  "f1_score": 0.2381,
+  "confusion_matrix": {
+    "tn": 55732,
+    "fp": 554,
+    "fn": 5732,
+    "tp": 982
+  }
+}

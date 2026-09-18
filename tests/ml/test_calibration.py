@@ -44,3 +44,38 @@ def test_realistic_evaluation_non_trivial_metrics():
     # Must be strictly non-zero (proving no trivial overfit or synthetic leakage)
     assert brier > 0.001, f"Suspiciously zero Brier score: {brier}"
     assert ece > 0.001, f"Suspiciously zero ECE: {ece}"
+
+
+def test_beta_calibrator_bounds_and_fit():
+    """Verify that BetaCalibrator outputs valid probabilities in (0, 1)."""
+    from ml_pipeline.calibration import BetaCalibrator
+    np.random.seed(42)
+    raw_probs = np.clip(np.random.uniform(0.05, 0.95, size=80), 0.01, 0.99)
+    y = (raw_probs + np.random.normal(0, 0.1, size=80) > 0.5).astype(int)
+
+    beta_cal = BetaCalibrator()
+    beta_cal.fit(raw_probs, y)
+    calibrated = beta_cal.predict_proba(raw_probs)
+
+    assert len(calibrated) == len(raw_probs)
+    assert np.all(calibrated >= 0.0) and np.all(calibrated <= 1.0)
+
+
+def test_compare_calibration_methods():
+    """Verify that calibration comparison evaluates on validation data."""
+    from ml_pipeline.calibration import compare_calibration_methods
+    from sklearn.linear_model import LogisticRegression
+
+    np.random.seed(42)
+    X = np.random.randn(100, 4)
+    y = (X[:, 0] + X[:, 1] > 0).astype(int)
+
+    base = LogisticRegression()
+    base.fit(X[:60], y[:60])
+
+    comp = compare_calibration_methods(base, X[60:], y[60:])
+    assert "validation_comparison" in comp
+    assert "selected_method" in comp
+    assert comp["selected_method"] in ["isotonic", "sigmoid", "beta"]
+    assert comp["best_calibrator"] is not None
+

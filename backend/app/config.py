@@ -41,8 +41,8 @@ class Settings(BaseSettings):
     DEFAULT_REGION_EAST: float = 97.5
 
     # ML Pipeline Settings
-    DATASET_VERSION_DEFAULT: str = "dataset_real_v002"
-    MODEL_VERSION_DEFAULT: str = "model_real_v002"
+    DATASET_VERSION_DEFAULT: str = "dataset_global_v001"
+    MODEL_VERSION_DEFAULT: str = "global_v001"
     MIN_SAMPLES_FOR_RETRAIN: int = 500
 
     # Model Acceptance Gate
@@ -54,6 +54,16 @@ class Settings(BaseSettings):
     VARIABLES: List[str] = Field(
         default=["temperature", "precipitation", "wind", "pressure", "humidity", "cloud_cover"]
     )
+
+    # Controlled Canary & Deployment Settings
+    CANARY_ENABLED: bool = False
+    CANARY_PERCENTAGE: float = 100.0
+    CANARY_MODEL: str = "global_v001"
+    PRODUCTION_MODEL: str = "global_v001"
+    ROLLBACK_MODEL: str = "model_real_v002"
+    CANARY_MAX_ERROR_RATE: float = 0.01
+    CANARY_MAX_P95_LATENCY_MULTIPLIER: float = 2.0
+    CANARY_LATENCY_BREACH_WINDOW: int = 3
 
 
 settings = Settings()

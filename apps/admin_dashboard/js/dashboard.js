@@ -6,7 +6,7 @@
  */
 
 const API_BASE = (window.location.origin.includes("vercel.app") || window.location.origin.includes("github.io"))
-  ? "https://forecast-bust-ai.onrender.com"
+  ? "https://forecast-bust-api.onrender.com"
   : window.location.origin;
 
 // Global Application State

@@ -69,7 +69,7 @@ Before this phase, running `python -m data_pipeline.download --source era5` trig
 ```
 
 - **Operational Budget**: ₹0 (No paid APIs, no Google Weather requirement, no paid LLM dependencies).
-- **Credentials Configured**: Official Copernicus CDS API Key (`8e294557-852f-4212-a3dd-e4ba6fc0c7af`) in `%USERPROFILE%\.cdsapirc` and `.env`.
+- **Credentials Configured**: Official Copernicus CDS API Key (configured securely via `CDS_API_KEY` environment variable and `.cdsapirc`).
 
 ---
 

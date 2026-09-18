@@ -1,0 +1,126 @@
+{
+  "full_dataset_37800": {
+    "old_model": {
+      "total_records": 37800,
+      "bust_count": 4488,
+      "bust_prevalence_pct": 11.87,
+      "roc_auc": 0.904,
+      "pr_auc": 0.5547,
+      "brier_score": 0.0686,
+      "expected_calibration_error": 0.0185,
+      "accuracy": 0.9046,
+      "precision": 0.7922,
+      "recall": 0.2658,
+      "f1_score": 0.3981,
+      "confusion_matrix": {
+        "tn": 32999,
+        "fp": 313,
+        "fn": 3295,
+        "tp": 1193
+      }
+    },
+    "new_model": {
+      "total_records": 37800,
+      "bust_count": 4488,
+      "bust_prevalence_pct": 11.87,
+      "roc_auc": 0.8922,
+      "pr_auc": 0.6082,
+      "brier_score": 0.0688,
+      "expected_calibration_error": 0.0191,
+      "accuracy": 0.9112,
+      "precision": 0.7783,
+      "recall": 0.3527,
+      "f1_score": 0.4854,
+      "confusion_matrix": {
+        "tn": 32861,
+        "fp": 451,
+        "fn": 2905,
+        "tp": 1583
+      }
+    },
+    "comparison": {
+      "roc_auc": {
+        "metric_label": "ROC-AUC",
+        "old_model": 0.904,
+        "new_model": 0.8922,
+        "difference": -0.0118
+      },
+      "pr_auc": {
+        "metric_label": "Average Precision (AP)",
+        "old_model": 0.5547,
+        "new_model": 0.6082,
+        "difference": 0.0535
+      },
+      "brier_score": {
+        "metric_label": "Brier Score (lower is better)",
+        "old_model": 0.0686,
+        "new_model": 0.0688,
+        "difference": 0.0002
+      },
+      "expected_calibration_error": {
+        "metric_label": "Expected Calibration Error",
+        "old_model": 0.0185,
+        "new_model": 0.0191,
+        "difference": 0.0006
+      },
+      "accuracy": {
+        "metric_label": "Accuracy",
+        "old_model": 0.9046,
+        "new_model": 0.9112,
+        "difference": 0.0066
+      },
+      "recall": {
+        "metric_label": "Recall",
+        "old_model": 0.2658,
+        "new_model": 0.3527,
+        "difference": 0.0869
+      },
+      "f1_score": {
+        "metric_label": "F1-Score",
+        "old_model": 0.3981,
+        "new_model": 0.4854,
+        "difference": 0.0873
+      }
+    }
+  },
+  "chrono_slice_5670": {
+    "old_model": {
+      "total_records": 5670,
+      "bust_count": 340,
+      "bust_prevalence_pct": 6.0,
+      "roc_auc": 0.868,
+      "pr_auc": 0.2849,
+      "brier_score": 0.0479,
+      "expected_calibration_error": 0.0227,
+      "accuracy": 0.94,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "confusion_matrix": {
+        "tn": 5330,
+        "fp": 0,
+        "fn": 340,
+        "tp": 0
+      }
+    },
+    "new_model": {
+      "total_records": 5670,
+      "bust_count": 340,
+      "bust_prevalence_pct": 6.0,
+      "roc_auc": 0.8911,
+      "pr_auc": 0.5353,
+      "brier_score": 0.0413,
+      "expected_calibration_error": 0.0241,
+      "accuracy": 0.9492,
+      "precision": 0.9643,
+      "recall": 0.1588,
+      "f1_score": 0.2727,
+      "confusion_matrix": {
+        "tn": 5328,
+        "fp": 2,
+        "fn": 286,
+        "tp": 54
+      }
+    }
+  }
+}

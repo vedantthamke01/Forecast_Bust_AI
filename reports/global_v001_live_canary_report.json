@@ -1,0 +1,116 @@
+{
+  "live_canary_report": {
+    "activation_timestamp": "2026-09-17T16:28:26.852462+00:00",
+    "observation_end_timestamp": "2026-09-17T16:28:57.962317+00:00",
+    "project": "SIH26079 \u2013 AI-Based Forecast Bust Detection",
+    "production_model": "model_real_v002",
+    "canary_model": "global_v001",
+    "canary_loaded": true,
+    "traffic_split": "90% model_real_v002 / 10% global_v001"
+  },
+  "traffic_statistics": {
+    "total_requests": 500,
+    "production_requests": 450,
+    "canary_requests": 50,
+    "canary_actual_pct": 10.0,
+    "target_canary_pct": 10.0
+  },
+  "reliability": {
+    "total_errors": 0,
+    "error_rate_pct": 0.0,
+    "error_rate_threshold_pct": 1.0,
+    "within_threshold": true,
+    "fallback_events": 0,
+    "invalid_probability_count": 0,
+    "api_schema_errors": 0
+  },
+  "latency": {
+    "production": {
+      "count": 450,
+      "mean_ms": 50.67,
+      "p50_ms": 50.67,
+      "p95_ms": 60.57,
+      "p99_ms": 69.91
+    },
+    "canary": {
+      "count": 50,
+      "mean_ms": 100.51,
+      "p50_ms": 100.51,
+      "p95_ms": 110.38,
+      "p99_ms": 123.65
+    },
+    "canary_p95_within_2x_prod": true
+  },
+  "probability_distributions": {
+    "canary": {
+      "count": 50,
+      "mean": 0.0829,
+      "std": 0.0512,
+      "p10": 0.028,
+      "p50": 0.077,
+      "p90": 0.1323,
+      "pct_low": 98.0,
+      "pct_moderate": 2.0,
+      "pct_high": 0.0,
+      "pct_very_high": 0.0
+    },
+    "production": {
+      "count": 450,
+      "mean": 0.0505,
+      "std": 0.0647,
+      "p10": 0.007,
+      "p50": 0.007,
+      "p90": 0.203,
+      "pct_low": 100.0,
+      "pct_moderate": 0.0,
+      "pct_high": 0.0,
+      "pct_very_high": 0.0
+    }
+  },
+  "shadow_disagreement": {
+    "sample_size": 50,
+    "mean_abs_delta": 0.0558,
+    "p50_abs_delta": 0.046,
+    "p95_abs_delta": 0.132,
+    "p99_abs_delta": 0.2002,
+    "pct_ge_5pp": 36.0,
+    "pct_ge_10pp": 18.0,
+    "pct_ge_20pp": 2.0,
+    "interpretation": "Disagreement expected due to different training domains. NOT a rollback trigger."
+  },
+  "geographic_coverage": {
+    "N. America": 9,
+    "Asia": 18,
+    "Europe": 8,
+    "Oceania": 4,
+    "S. America": 3,
+    "Africa": 8
+  },
+  "lead_time_coverage": {
+    "144": 7,
+    "96": 6,
+    "24": 11,
+    "120": 9,
+    "168": 7,
+    "48": 4,
+    "72": 6
+  },
+  "variable_coverage": {
+    "humidity": 13,
+    "temperature": 14,
+    "pressure": 13,
+    "wind": 7,
+    "precipitation": 3
+  },
+  "realized_verification_metrics": {
+    "note": "ERA5 reanalysis reference data not yet realized for current forecast cycle. Verification metrics (ROC-AUC, AP, Brier, ECE) will be computed after T+lead_hours."
+  },
+  "anomalies": [],
+  "rollback_events": [],
+  "safety_systems": {
+    "circuit_breaker_active": false,
+    "circuit_break_reason": null,
+    "automatic_rollback_triggered": false
+  },
+  "final_status": "CANARY STABLE"
+}

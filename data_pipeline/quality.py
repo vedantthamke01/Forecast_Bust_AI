@@ -34,11 +34,17 @@ INDIA_BOUNDS = {
     "lon_min": 68.0, "lon_max": 98.0
 }
 
+GLOBAL_BOUNDS = {
+    "lat_min": -90.0, "lat_max": 90.0,
+    "lon_min": -180.0, "lon_max": 180.0
+}
+
 
 def assess_dataframe_quality(
     df: pd.DataFrame,
     dataset_name: str = "dataset",
-    alignment_stats: Optional[Dict[str, Any]] = None
+    alignment_stats: Optional[Dict[str, Any]] = None,
+    is_global: bool = False
 ) -> dict:
     total_records = len(df)
     if total_records == 0:
@@ -74,13 +80,15 @@ def assess_dataframe_quality(
     overall_missing_pct = round(float(df.isnull().mean().mean() * 100), 2)
 
     # 4. Coordinate validation
+    use_global = is_global or ("global" in dataset_name.lower())
+    active_bounds = GLOBAL_BOUNDS if use_global else INDIA_BOUNDS
     invalid_coords_count = 0
     if "latitude" in df.columns and "longitude" in df.columns:
         invalid_coords = (
-            (df["latitude"] < INDIA_BOUNDS["lat_min"]) |
-            (df["latitude"] > INDIA_BOUNDS["lat_max"]) |
-            (df["longitude"] < INDIA_BOUNDS["lon_min"]) |
-            (df["longitude"] > INDIA_BOUNDS["lon_max"])
+            (df["latitude"] < active_bounds["lat_min"]) |
+            (df["latitude"] > active_bounds["lat_max"]) |
+            (df["longitude"] < active_bounds["lon_min"]) |
+            (df["longitude"] > active_bounds["lon_max"])
         )
         invalid_coords_count = int(invalid_coords.sum())
     coords_invalid_pct = round((invalid_coords_count / total_records) * 100, 2)

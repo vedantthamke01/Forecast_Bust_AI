@@ -1,0 +1,26 @@
+{
+  "features": [
+    "lead_hours",
+    "latitude",
+    "longitude",
+    "forecast_temperature",
+    "forecast_precipitation",
+    "forecast_wind",
+    "forecast_pressure",
+    "forecast_humidity",
+    "forecast_cloud_cover",
+    "ensemble_spread",
+    "run_revision",
+    "sin_day_of_year",
+    "cos_day_of_year",
+    "month",
+    "is_monsoon_season",
+    "pressure_anomaly",
+    "temp_dew_depression_proxy",
+    "solar_zenith_noon",
+    "climate_regime_code",
+    "is_mountain",
+    "lead_scaling_norm"
+  ],
+  "count": 21
+}

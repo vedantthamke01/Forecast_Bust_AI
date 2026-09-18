@@ -1,0 +1,131 @@
+{
+  "report_metadata": {
+    "project": "SIH26079 \u2013 AI-Based Forecast Bust Detection",
+    "report_name": "GLOBAL_V001 50% CANARY OPERATIONAL REPORT",
+    "observation_window_start": "2026-09-17T17:18:44.108874+00:00",
+    "observation_window_end": "2026-09-17T17:25:12.374430+00:00",
+    "duration_seconds": 388.27,
+    "production_model": "model_real_v002",
+    "canary_model": "global_v001"
+  },
+  "traffic_allocation": {
+    "configured_split": "50% production / 50% candidate",
+    "total_requests": 5000,
+    "production_requests": 2506,
+    "production_percentage": 50.12,
+    "canary_requests": 2494,
+    "canary_percentage": 49.88,
+    "cumulative_operational_requests_to_date": 12500,
+    "cumulative_canary_requests_to_date": 3537
+  },
+  "safety_metrics": {
+    "errors": 0,
+    "error_rate_pct": 0.0,
+    "fallbacks": 0,
+    "invalid_probabilities": 0,
+    "schema_violations": 0,
+    "circuit_breaker_tripped": false,
+    "circuit_breaker_state": "ARMED_AND_INACTIVE"
+  },
+  "latency_metrics": {
+    "production": {
+      "mean_ms": 67.2,
+      "p50_ms": 63.06,
+      "p95_ms": 103.12,
+      "p99_ms": 123.15
+    },
+    "canary": {
+      "mean_ms": 88.02,
+      "p50_ms": 82.97,
+      "p95_ms": 123.59,
+      "p99_ms": 146.27
+    },
+    "ratio_p95": 1.198,
+    "ratio_p50": 1.316,
+    "hard_threshold_ratio": 2.0,
+    "target_ratio": 1.5,
+    "latency_status": "PASS"
+  },
+  "probability_distribution": {
+    "mean_probability": 0.0898,
+    "median_p50": 0.077,
+    "p90": 0.144,
+    "p95": 0.21,
+    "max_probability": 0.268,
+    "pct_ge_25": 2.29,
+    "pct_ge_50": 0.0,
+    "pct_ge_75": 0.0,
+    "mean_reliability_score": 0.9102,
+    "median_reliability_score": 0.923
+  },
+  "paired_disagreement": {
+    "mean_abs_delta": 0.0587,
+    "median_abs_delta": 0.046,
+    "p95_abs_delta": 0.158,
+    "pct_ge_5pp": 44.6,
+    "pct_ge_10pp": 18.33,
+    "pct_ge_20pp": 3.65
+  },
+  "geographic_coverage": {
+    "continents": {
+      "North America": 373,
+      "Europe": 562,
+      "Asia": 677,
+      "Oceania": 186,
+      "South America": 294,
+      "Africa": 402
+    },
+    "climate_regimes": {
+      "Tropical": 676,
+      "Polar/Alpine": 265,
+      "Continental": 389,
+      "Temperate": 865,
+      "Arid": 299
+    },
+    "lead_hours": {
+      "72": 375,
+      "168": 369,
+      "24": 338,
+      "144": 344,
+      "120": 363,
+      "48": 346,
+      "96": 359
+    },
+    "variables": {
+      "humidity": 510,
+      "pressure": 521,
+      "precipitation": 491,
+      "wind": 470,
+      "temperature": 502
+    }
+  },
+  "operational_verification": {
+    "verified_new_predictions": 0,
+    "status": "Unverified live operational calls monitored for stability and latency",
+    "historical_verified_evidence": {
+      "source": "ERA5 reanalysis reference",
+      "verified_predictions_count": 42000,
+      "candidate_global_v001": {
+        "ap": 0.4975,
+        "roc_auc": 0.8494,
+        "brier": 0.0727,
+        "ece": 0.0156,
+        "calibration_assessment": "low aggregate calibration error",
+        "precision_at_0_50": 0.7618,
+        "recall_at_0_50": 0.2301
+      },
+      "production_model_real_v002": {
+        "ap": 0.2009,
+        "roc_auc": 0.6704,
+        "brier": 0.1138,
+        "ece": 0.1039
+      }
+    }
+  },
+  "regression_status": {
+    "passed": 96,
+    "skipped": 1,
+    "failed": 0
+  },
+  "final_status": "CANARY STABLE"
+}

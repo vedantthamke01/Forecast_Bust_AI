@@ -45,9 +45,35 @@ def test_extract_features_raises_on_leakage():
     })
     # If a developer mistakenly added actual_temperature to FEATURE_COLUMNS, extract_features must stop it
     with pytest.raises(ValueError, match="CRITICAL SAFETY VIOLATION"):
-        # Temporarily mock contaminated column into feature extraction check
-        from ml_pipeline.features import check_data_leakage
         bad_cols = list(FEATURE_COLUMNS) + ["actual_temperature"]
-        res = check_data_leakage(bad_cols)
-        if res:
-            raise ValueError(f"CRITICAL SAFETY VIOLATION: Future data leakage detected! {res}")
+        extract_features(df, is_training=False, feature_columns=bad_cols)
+
+
+def test_global_features_pass_leakage_check():
+    """Verify that extended 21 global features pass cleanly."""
+    from ml_pipeline.features import GLOBAL_FEATURE_COLUMNS
+    leakages = check_data_leakage(GLOBAL_FEATURE_COLUMNS)
+    assert len(leakages) == 0, f"False positive in global features: {leakages}"
+
+
+@pytest.mark.parametrize("forbidden_col", [
+    "future_precipitation",
+    "verification_status",
+    "ground_truth_wind",
+    "delta_obs_temp",
+    "forecast_error_magnitude",
+    "is_bust",
+    "bust_severity"
+])
+def test_adversarial_injection_rejected(forbidden_col):
+    """Adversarial testing: ensures that injecting any post-T0 feature fails safely."""
+    df = pd.DataFrame({
+        "lead_hours": [72],
+        "latitude": [40.71],
+        "longitude": [-74.0],
+        "forecast_temperature": [22.0],
+        forbidden_col: [1.0]
+    })
+    with pytest.raises(ValueError, match="CRITICAL SAFETY VIOLATION"):
+        extract_features(df, is_training=False, feature_columns=list(FEATURE_COLUMNS) + [forbidden_col])
+

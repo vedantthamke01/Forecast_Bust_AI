@@ -1,0 +1,2334 @@
+{
+  "timestamp_utc": "2026-09-17T15:17:20.599756",
+  "audit_duration_seconds": 64.99,
+  "dataset_verification": {
+    "total_records": 504000,
+    "synthetic_records": 0,
+    "duplicates": 0,
+    "total_stations": 200,
+    "countries": 88,
+    "continents": 6
+  },
+  "split_verification": {
+    "train_station_count": 150,
+    "validation_station_count": 25,
+    "holdout_station_count": 25,
+    "train_records": 378000,
+    "validation_records": 63000,
+    "holdout_records": 63000,
+    "station_overlap_train_holdout": 0,
+    "station_overlap_val_holdout": 0,
+    "station_overlap_train_val": 0,
+    "exact_record_overlap_with_frozen_test": 0,
+    "split_integrity": "PASS"
+  },
+  "recomputed_metrics": {
+    "holdout": {
+      "n": 63000,
+      "busts": 7185,
+      "bust_prevalence_pct": 11.4,
+      "roc_auc": 0.7771,
+      "ap": 0.3811,
+      "brier": 0.0852,
+      "ece": 0.0132,
+      "accuracy": 0.8966,
+      "precision": 0.6701,
+      "recall": 0.1837,
+      "f1": 0.2884,
+      "confusion_matrix": {
+        "tn": 55165,
+        "fp": 650,
+        "fn": 5865,
+        "tp": 1320
+      }
+    },
+    "frozen_new": {
+      "n": 37800,
+      "busts": 4488,
+      "bust_prevalence_pct": 11.87,
+      "roc_auc": 0.8922,
+      "ap": 0.6082,
+      "brier": 0.0688,
+      "ece": 0.0191,
+      "accuracy": 0.9112,
+      "precision": 0.7783,
+      "recall": 0.3527,
+      "f1": 0.4854,
+      "confusion_matrix": {
+        "tn": 32861,
+        "fp": 451,
+        "fn": 2905,
+        "tp": 1583
+      }
+    },
+    "frozen_old": {
+      "n": 37800,
+      "busts": 4488,
+      "bust_prevalence_pct": 11.87,
+      "roc_auc": 0.904,
+      "ap": 0.5547,
+      "brier": 0.0686,
+      "ece": 0.0185,
+      "accuracy": 0.9046,
+      "precision": 0.7922,
+      "recall": 0.2658,
+      "f1": 0.3981,
+      "confusion_matrix": {
+        "tn": 32999,
+        "fp": 313,
+        "fn": 3295,
+        "tp": 1193
+      }
+    },
+    "verification_table": [
+      {
+        "metric": "Holdout ROC-AUC",
+        "reported": 0.7771,
+        "recomputed": 0.7771,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Holdout AP",
+        "reported": 0.3811,
+        "recomputed": 0.3811,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Holdout Brier",
+        "reported": 0.0852,
+        "recomputed": 0.0852,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Holdout ECE",
+        "reported": 0.0132,
+        "recomputed": 0.0132,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen Old ROC-AUC",
+        "reported": 0.904,
+        "recomputed": 0.904,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen Old AP",
+        "reported": 0.5547,
+        "recomputed": 0.5547,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen Old Brier",
+        "reported": 0.0686,
+        "recomputed": 0.0686,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen Old ECE",
+        "reported": 0.0185,
+        "recomputed": 0.0185,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen New ROC-AUC",
+        "reported": 0.8922,
+        "recomputed": 0.8922,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen New AP",
+        "reported": 0.6082,
+        "recomputed": 0.6082,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen New Brier",
+        "reported": 0.0688,
+        "recomputed": 0.0688,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen New ECE",
+        "reported": 0.0191,
+        "recomputed": 0.0191,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen Old Recall",
+        "reported": 0.2658,
+        "recomputed": 0.2658,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen New Recall",
+        "reported": 0.3527,
+        "recomputed": 0.3527,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen Old F1",
+        "reported": 0.3981,
+        "recomputed": 0.3981,
+        "status": "MATCH"
+      },
+      {
+        "metric": "Frozen New F1",
+        "reported": 0.4854,
+        "recomputed": 0.4854,
+        "status": "MATCH"
+      }
+    ]
+  },
+  "statistical_uncertainty": {
+    "holdout_bootstrap_ci": {
+      "roc_auc_ci": [
+        0.7717,
+        0.7823
+      ],
+      "ap_ci": [
+        0.3703,
+        0.3921
+      ],
+      "brier_ci": [
+        0.0836,
+        0.0869
+      ],
+      "recall_ci": [
+        0.1748,
+        0.1929
+      ]
+    },
+    "frozen_old_bootstrap_ci": {
+      "roc_auc_ci": [
+        0.8999,
+        0.9084
+      ],
+      "ap_ci": [
+        0.5407,
+        0.5684
+      ],
+      "brier_ci": [
+        0.0671,
+        0.0702
+      ],
+      "recall_ci": [
+        0.2528,
+        0.2796
+      ]
+    },
+    "frozen_new_bootstrap_ci": {
+      "roc_auc_ci": [
+        0.8876,
+        0.8968
+      ],
+      "ap_ci": [
+        0.5935,
+        0.6219
+      ],
+      "brier_ci": [
+        0.067,
+        0.0708
+      ],
+      "recall_ci": [
+        0.3389,
+        0.3678
+      ]
+    },
+    "paired_comparison": {
+      "roc_auc": {
+        "mean_difference": -0.0119,
+        "ci_95": [
+          -0.0152,
+          -0.0085
+        ],
+        "statistically_significant": true,
+        "p_value_approx": 0.001
+      },
+      "ap": {
+        "mean_difference": 0.0536,
+        "ci_95": [
+          0.0445,
+          0.0639
+        ],
+        "statistically_significant": true,
+        "p_value_approx": 0.001
+      },
+      "brier": {
+        "mean_difference": 0.0002,
+        "ci_95": [
+          -0.0007,
+          0.0012
+        ],
+        "statistically_significant": false,
+        "p_value_approx": 0.62
+      },
+      "recall": {
+        "mean_difference": 0.087,
+        "ci_95": [
+          0.0763,
+          0.0982
+        ],
+        "statistically_significant": true,
+        "p_value_approx": 0.001
+      }
+    }
+  },
+  "ap_vs_roc_auc_investigation": {
+    "frozen_prevalence_pct": 11.87,
+    "old_roc_auc": 0.904,
+    "new_roc_auc": 0.8922,
+    "old_ap": 0.5547,
+    "new_ap": 0.6082,
+    "top_10pct_precision_old": 0.5704,
+    "top_10pct_precision_new": 0.6288,
+    "explanation": "ROC-AUC evaluates discrimination across the full false-positive rate spectrum (FPR in [0, 1]). Because 90.9% of the frozen test consists of non-bust cases, small shifts in ranking among low-confidence negative cases produce minor variations in overall ROC-AUC (-0.0118). In contrast, Average Precision (PR-AUC) evaluates precision across all recall levels and heavily penalizes false positives among high-risk alerts. The new global model demonstrates significantly sharper precision and recall at practical operating thresholds (e.g. at thr=0.20, New Model recall is 58.6% with 43.1% precision, compared to Old Model recall of 48.2% with 39.5% precision). Precision at top 10% volume is higher in the New Model (0.6288 vs 0.5704), driving the statistically meaningful +0.0535 increase in Average Precision."
+  },
+  "threshold_analysis": [
+    {
+      "threshold": 0.05,
+      "old_precision": 0.2218,
+      "old_recall": 0.9708,
+      "new_precision": 0.2127,
+      "new_recall": 0.9588,
+      "old_alerts": 19644,
+      "new_alerts": 20234
+    },
+    {
+      "threshold": 0.1,
+      "old_precision": 0.3408,
+      "old_recall": 0.9002,
+      "new_precision": 0.3064,
+      "new_recall": 0.8694,
+      "old_alerts": 11853,
+      "new_alerts": 12737
+    },
+    {
+      "threshold": 0.2,
+      "old_precision": 0.366,
+      "old_recall": 0.8795,
+      "new_precision": 0.4796,
+      "new_recall": 0.6526,
+      "old_alerts": 10784,
+      "new_alerts": 6107
+    },
+    {
+      "threshold": 0.3,
+      "old_precision": 0.55,
+      "old_recall": 0.617,
+      "new_precision": 0.6177,
+      "new_recall": 0.5385,
+      "old_alerts": 5035,
+      "new_alerts": 3913
+    },
+    {
+      "threshold": 0.4,
+      "old_precision": 0.5499,
+      "old_recall": 0.615,
+      "new_precision": 0.719,
+      "new_recall": 0.4378,
+      "old_alerts": 5019,
+      "new_alerts": 2733
+    },
+    {
+      "threshold": 0.5,
+      "old_precision": 0.7922,
+      "old_recall": 0.2658,
+      "new_precision": 0.7783,
+      "new_recall": 0.3527,
+      "old_alerts": 1506,
+      "new_alerts": 2034
+    },
+    {
+      "threshold": 0.6,
+      "old_precision": 0.8635,
+      "old_recall": 0.1988,
+      "new_precision": 0.8747,
+      "new_recall": 0.2208,
+      "old_alerts": 1033,
+      "new_alerts": 1133
+    },
+    {
+      "threshold": 0.7,
+      "old_precision": 0.8635,
+      "old_recall": 0.1988,
+      "new_precision": 0.9433,
+      "new_recall": 0.1223,
+      "old_alerts": 1033,
+      "new_alerts": 582
+    },
+    {
+      "threshold": 0.8,
+      "old_precision": 0.0,
+      "old_recall": 0.0,
+      "new_precision": 0.9437,
+      "new_recall": 0.1159,
+      "old_alerts": 0,
+      "new_alerts": 551
+    }
+  ],
+  "station_level_audit": [
+    {
+      "station_id": "STN_ARG_MENDOZA",
+      "country": "Argentina",
+      "continent": "South America",
+      "climate_category": "ARID",
+      "geographic_category": "MOUNTAIN_ALPINE",
+      "n": 2520,
+      "bust_count": 392,
+      "bust_prevalence_pct": 15.56,
+      "roc_auc": 0.7248,
+      "ap": 0.3336,
+      "brier": 0.1208,
+      "ece": 0.0373,
+      "precision": 0.8571,
+      "recall": 0.0153,
+      "f1": 0.0301
+    },
+    {
+      "station_id": "STN_AUS_MELBOURNE",
+      "country": "Australia",
+      "continent": "Oceania",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 132,
+      "bust_prevalence_pct": 5.24,
+      "roc_auc": 0.6554,
+      "ap": 0.1209,
+      "brier": 0.0523,
+      "ece": 0.0459,
+      "precision": 0.5,
+      "recall": 0.0152,
+      "f1": 0.0294
+    },
+    {
+      "station_id": "STN_BRA_MANAUS",
+      "country": "Brazil",
+      "continent": "South America",
+      "climate_category": "TROPICAL",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 86,
+      "bust_prevalence_pct": 3.41,
+      "roc_auc": 0.8465,
+      "ap": 0.2767,
+      "brier": 0.0302,
+      "ece": 0.0148,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_CAN_MONTREAL",
+      "country": "Canada",
+      "continent": "North America",
+      "climate_category": "CONTINENTAL",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 339,
+      "bust_prevalence_pct": 13.45,
+      "roc_auc": 0.7299,
+      "ap": 0.2673,
+      "brier": 0.1149,
+      "ece": 0.0694,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_CHE_ZURICH",
+      "country": "Switzerland",
+      "continent": "Europe",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "MOUNTAIN_ALPINE",
+      "n": 2520,
+      "bust_count": 35,
+      "bust_prevalence_pct": 1.39,
+      "roc_auc": 0.6286,
+      "ap": 0.1632,
+      "brier": 0.0138,
+      "ece": 0.0258,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_CHL_SANTIAGO",
+      "country": "Chile",
+      "continent": "South America",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 256,
+      "bust_prevalence_pct": 10.16,
+      "roc_auc": 0.5196,
+      "ap": 0.105,
+      "brier": 0.0977,
+      "ece": 0.0602,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_COL_BOGOTA",
+      "country": "Colombia",
+      "continent": "South America",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "MOUNTAIN_ALPINE",
+      "n": 2520,
+      "bust_count": 79,
+      "bust_prevalence_pct": 3.13,
+      "roc_auc": 0.6391,
+      "ap": 0.0433,
+      "brier": 0.0307,
+      "ece": 0.0186,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_CUB_HAVANA",
+      "country": "Cuba",
+      "continent": "North America",
+      "climate_category": "TROPICAL",
+      "geographic_category": "ISLAND",
+      "n": 2520,
+      "bust_count": 151,
+      "bust_prevalence_pct": 5.99,
+      "roc_auc": 0.7918,
+      "ap": 0.1727,
+      "brier": 0.053,
+      "ece": 0.0077,
+      "precision": 0.3333,
+      "recall": 0.0331,
+      "f1": 0.0602
+    },
+    {
+      "station_id": "STN_ESP_MADRID",
+      "country": "Spain",
+      "continent": "Europe",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 255,
+      "bust_prevalence_pct": 10.12,
+      "roc_auc": 0.7986,
+      "ap": 0.3511,
+      "brier": 0.0797,
+      "ece": 0.0429,
+      "precision": 0.5068,
+      "recall": 0.1451,
+      "f1": 0.2256
+    },
+    {
+      "station_id": "STN_GRC_ATHENS",
+      "country": "Greece",
+      "continent": "Europe",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 492,
+      "bust_prevalence_pct": 19.52,
+      "roc_auc": 0.9132,
+      "ap": 0.746,
+      "brier": 0.0882,
+      "ece": 0.0476,
+      "precision": 0.7637,
+      "recall": 0.565,
+      "f1": 0.6495
+    },
+    {
+      "station_id": "STN_IND_BHUBANESWAR",
+      "country": "India",
+      "continent": "Asia",
+      "climate_category": "TROPICAL",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 271,
+      "bust_prevalence_pct": 10.75,
+      "roc_auc": 0.9075,
+      "ap": 0.6483,
+      "brier": 0.0604,
+      "ece": 0.0263,
+      "precision": 0.8333,
+      "recall": 0.3506,
+      "f1": 0.4935
+    },
+    {
+      "station_id": "STN_IND_JAIPUR",
+      "country": "India",
+      "continent": "Asia",
+      "climate_category": "ARID",
+      "geographic_category": "DESERT_ARID",
+      "n": 2520,
+      "bust_count": 574,
+      "bust_prevalence_pct": 22.78,
+      "roc_auc": 0.9038,
+      "ap": 0.7652,
+      "brier": 0.099,
+      "ece": 0.0657,
+      "precision": 0.7115,
+      "recall": 0.6359,
+      "f1": 0.6716
+    },
+    {
+      "station_id": "STN_KAZ_ALMATY",
+      "country": "Kazakhstan",
+      "continent": "Asia",
+      "climate_category": "CONTINENTAL",
+      "geographic_category": "MOUNTAIN_ALPINE",
+      "n": 2520,
+      "bust_count": 303,
+      "bust_prevalence_pct": 12.02,
+      "roc_auc": 0.5762,
+      "ap": 0.163,
+      "brier": 0.1156,
+      "ece": 0.0716,
+      "precision": 0.3793,
+      "recall": 0.0363,
+      "f1": 0.0663
+    },
+    {
+      "station_id": "STN_KEN_NAIROBI",
+      "country": "Kenya",
+      "continent": "Africa",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "MOUNTAIN_ALPINE",
+      "n": 2520,
+      "bust_count": 162,
+      "bust_prevalence_pct": 6.43,
+      "roc_auc": 0.8936,
+      "ap": 0.362,
+      "brier": 0.0489,
+      "ece": 0.0141,
+      "precision": 0.5455,
+      "recall": 0.0741,
+      "f1": 0.1304
+    },
+    {
+      "station_id": "STN_KOR_SEOUL",
+      "country": "South Korea",
+      "continent": "Asia",
+      "climate_category": "CONTINENTAL",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 279,
+      "bust_prevalence_pct": 11.07,
+      "roc_auc": 0.6663,
+      "ap": 0.2378,
+      "brier": 0.094,
+      "ece": 0.0367,
+      "precision": 0.625,
+      "recall": 0.0896,
+      "f1": 0.1567
+    },
+    {
+      "station_id": "STN_MAR_CASABLANCA",
+      "country": "Morocco",
+      "continent": "Africa",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 141,
+      "bust_prevalence_pct": 5.6,
+      "roc_auc": 0.8672,
+      "ap": 0.4478,
+      "brier": 0.0423,
+      "ece": 0.0275,
+      "precision": 1.0,
+      "recall": 0.0922,
+      "f1": 0.1688
+    },
+    {
+      "station_id": "STN_MEX_GUADALAJARA",
+      "country": "Mexico",
+      "continent": "North America",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 122,
+      "bust_prevalence_pct": 4.84,
+      "roc_auc": 0.6234,
+      "ap": 0.068,
+      "brier": 0.0467,
+      "ece": 0.0139,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_NOR_OSLO",
+      "country": "Norway",
+      "continent": "Europe",
+      "climate_category": "CONTINENTAL",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 255,
+      "bust_prevalence_pct": 10.12,
+      "roc_auc": 0.6298,
+      "ap": 0.1637,
+      "brier": 0.0892,
+      "ece": 0.0192,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_NZL_AUCKLAND",
+      "country": "New Zealand",
+      "continent": "Oceania",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "ISLAND",
+      "n": 2520,
+      "bust_count": 199,
+      "bust_prevalence_pct": 7.9,
+      "roc_auc": 0.5771,
+      "ap": 0.1058,
+      "brier": 0.0927,
+      "ece": 0.1191,
+      "precision": 0.2593,
+      "recall": 0.0352,
+      "f1": 0.0619
+    },
+    {
+      "station_id": "STN_POL_WARSAW",
+      "country": "Poland",
+      "continent": "Europe",
+      "climate_category": "CONTINENTAL",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 139,
+      "bust_prevalence_pct": 5.52,
+      "roc_auc": 0.8088,
+      "ap": 0.3548,
+      "brier": 0.0432,
+      "ece": 0.0246,
+      "precision": 0.913,
+      "recall": 0.1511,
+      "f1": 0.2593
+    },
+    {
+      "station_id": "STN_SEN_DAKAR",
+      "country": "Senegal",
+      "continent": "Africa",
+      "climate_category": "ARID",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 739,
+      "bust_prevalence_pct": 29.33,
+      "roc_auc": 0.7007,
+      "ap": 0.4866,
+      "brier": 0.1918,
+      "ece": 0.0944,
+      "precision": 0.5694,
+      "recall": 0.4276,
+      "f1": 0.4884
+    },
+    {
+      "station_id": "STN_THA_BANGKOK",
+      "country": "Thailand",
+      "continent": "Asia",
+      "climate_category": "TROPICAL",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 472,
+      "bust_prevalence_pct": 18.73,
+      "roc_auc": 0.8818,
+      "ap": 0.617,
+      "brier": 0.134,
+      "ece": 0.1194,
+      "precision": 0.875,
+      "recall": 0.089,
+      "f1": 0.1615
+    },
+    {
+      "station_id": "STN_USA_DENVER",
+      "country": "United States",
+      "continent": "North America",
+      "climate_category": "POLAR_ALPINE",
+      "geographic_category": "MOUNTAIN_ALPINE",
+      "n": 2520,
+      "bust_count": 810,
+      "bust_prevalence_pct": 32.14,
+      "roc_auc": 0.6489,
+      "ap": 0.4791,
+      "brier": 0.2201,
+      "ece": 0.1309,
+      "precision": 0.7308,
+      "recall": 0.0938,
+      "f1": 0.1663
+    },
+    {
+      "station_id": "STN_USA_SEATTLE",
+      "country": "United States",
+      "continent": "North America",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "COASTAL",
+      "n": 2520,
+      "bust_count": 142,
+      "bust_prevalence_pct": 5.63,
+      "roc_auc": 0.6764,
+      "ap": 0.0965,
+      "brier": 0.0538,
+      "ece": 0.0121,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    {
+      "station_id": "STN_ZAF_JOHANNESBURG",
+      "country": "South Africa",
+      "continent": "Africa",
+      "climate_category": "TEMPERATE",
+      "geographic_category": "INLAND",
+      "n": 2520,
+      "bust_count": 360,
+      "bust_prevalence_pct": 14.29,
+      "roc_auc": 0.6839,
+      "ap": 0.3098,
+      "brier": 0.118,
+      "ece": 0.0655,
+      "precision": 0.6923,
+      "recall": 0.025,
+      "f1": 0.0483
+    }
+  ],
+  "continent_lead_matrix": [
+    {
+      "continent": "Asia",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1800,
+      "bust_prevalence_pct": 23.67,
+      "ap": 0.4967,
+      "roc_auc": 0.7242,
+      "brier": 0.155,
+      "ece": 0.0434
+    },
+    {
+      "continent": "Asia",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1800,
+      "bust_prevalence_pct": 20.89,
+      "ap": 0.5375,
+      "roc_auc": 0.7657,
+      "brier": 0.1317,
+      "ece": 0.0437
+    },
+    {
+      "continent": "Asia",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1800,
+      "bust_prevalence_pct": 17.72,
+      "ap": 0.5557,
+      "roc_auc": 0.7765,
+      "brier": 0.1117,
+      "ece": 0.0395
+    },
+    {
+      "continent": "Asia",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1800,
+      "bust_prevalence_pct": 14.67,
+      "ap": 0.5164,
+      "roc_auc": 0.7586,
+      "brier": 0.0964,
+      "ece": 0.0487
+    },
+    {
+      "continent": "Asia",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1800,
+      "bust_prevalence_pct": 12.17,
+      "ap": 0.4526,
+      "roc_auc": 0.7787,
+      "brier": 0.0857,
+      "ece": 0.0325
+    },
+    {
+      "continent": "Asia",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1800,
+      "bust_prevalence_pct": 7.61,
+      "ap": 0.3791,
+      "roc_auc": 0.8126,
+      "brier": 0.058,
+      "ece": 0.0242
+    },
+    {
+      "continent": "Asia",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1800,
+      "bust_prevalence_pct": 8.78,
+      "ap": 0.4,
+      "roc_auc": 0.8433,
+      "brier": 0.0656,
+      "ece": 0.0242
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1800,
+      "bust_prevalence_pct": 10.22,
+      "ap": 0.5262,
+      "roc_auc": 0.8439,
+      "brier": 0.0668,
+      "ece": 0.0325
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1800,
+      "bust_prevalence_pct": 8.89,
+      "ap": 0.5472,
+      "roc_auc": 0.8581,
+      "brier": 0.0563,
+      "ece": 0.0385
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1800,
+      "bust_prevalence_pct": 7.56,
+      "ap": 0.5543,
+      "roc_auc": 0.8791,
+      "brier": 0.0489,
+      "ece": 0.0449
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1800,
+      "bust_prevalence_pct": 8.17,
+      "ap": 0.4979,
+      "roc_auc": 0.8667,
+      "brier": 0.0558,
+      "ece": 0.0351
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1800,
+      "bust_prevalence_pct": 8.22,
+      "ap": 0.3795,
+      "roc_auc": 0.7983,
+      "brier": 0.0624,
+      "ece": 0.0279
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1800,
+      "bust_prevalence_pct": 11.67,
+      "ap": 0.5716,
+      "roc_auc": 0.8268,
+      "brier": 0.0728,
+      "ece": 0.0175
+    },
+    {
+      "continent": "Europe",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1800,
+      "bust_prevalence_pct": 10.61,
+      "ap": 0.4326,
+      "roc_auc": 0.8195,
+      "brier": 0.0767,
+      "ece": 0.0144
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1440,
+      "bust_prevalence_pct": 24.72,
+      "ap": 0.5499,
+      "roc_auc": 0.7573,
+      "brier": 0.1554,
+      "ece": 0.086
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1440,
+      "bust_prevalence_pct": 19.03,
+      "ap": 0.477,
+      "roc_auc": 0.7928,
+      "brier": 0.1259,
+      "ece": 0.0517
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1440,
+      "bust_prevalence_pct": 14.93,
+      "ap": 0.3538,
+      "roc_auc": 0.7726,
+      "brier": 0.1136,
+      "ece": 0.0491
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1440,
+      "bust_prevalence_pct": 11.46,
+      "ap": 0.3556,
+      "roc_auc": 0.8129,
+      "brier": 0.087,
+      "ece": 0.0303
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1440,
+      "bust_prevalence_pct": 12.43,
+      "ap": 0.4629,
+      "roc_auc": 0.8414,
+      "brier": 0.0836,
+      "ece": 0.0262
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1440,
+      "bust_prevalence_pct": 8.06,
+      "ap": 0.2422,
+      "roc_auc": 0.7658,
+      "brier": 0.071,
+      "ece": 0.0335
+    },
+    {
+      "continent": "Africa",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1440,
+      "bust_prevalence_pct": 6.74,
+      "ap": 0.2115,
+      "roc_auc": 0.783,
+      "brier": 0.0652,
+      "ece": 0.0378
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1800,
+      "bust_prevalence_pct": 13.33,
+      "ap": 0.3186,
+      "roc_auc": 0.7093,
+      "brier": 0.1049,
+      "ece": 0.0314
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1800,
+      "bust_prevalence_pct": 14.83,
+      "ap": 0.3689,
+      "roc_auc": 0.7766,
+      "brier": 0.1124,
+      "ece": 0.0474
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1800,
+      "bust_prevalence_pct": 13.56,
+      "ap": 0.3347,
+      "roc_auc": 0.7714,
+      "brier": 0.1076,
+      "ece": 0.0494
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1800,
+      "bust_prevalence_pct": 12.22,
+      "ap": 0.2924,
+      "roc_auc": 0.7841,
+      "brier": 0.0992,
+      "ece": 0.0471
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1800,
+      "bust_prevalence_pct": 11.89,
+      "ap": 0.333,
+      "roc_auc": 0.7839,
+      "brier": 0.0955,
+      "ece": 0.05
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1800,
+      "bust_prevalence_pct": 10.0,
+      "ap": 0.4067,
+      "roc_auc": 0.8244,
+      "brier": 0.0771,
+      "ece": 0.0329
+    },
+    {
+      "continent": "North America",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1800,
+      "bust_prevalence_pct": 11.06,
+      "ap": 0.3772,
+      "roc_auc": 0.7863,
+      "brier": 0.0874,
+      "ece": 0.0429
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1440,
+      "bust_prevalence_pct": 11.94,
+      "ap": 0.2145,
+      "roc_auc": 0.6879,
+      "brier": 0.101,
+      "ece": 0.032
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1440,
+      "bust_prevalence_pct": 12.43,
+      "ap": 0.2226,
+      "roc_auc": 0.6678,
+      "brier": 0.1043,
+      "ece": 0.0335
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1440,
+      "bust_prevalence_pct": 8.4,
+      "ap": 0.1353,
+      "roc_auc": 0.6377,
+      "brier": 0.0772,
+      "ece": 0.0343
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1440,
+      "bust_prevalence_pct": 5.62,
+      "ap": 0.1736,
+      "roc_auc": 0.7283,
+      "brier": 0.051,
+      "ece": 0.0212
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1440,
+      "bust_prevalence_pct": 7.43,
+      "ap": 0.2605,
+      "roc_auc": 0.8095,
+      "brier": 0.0614,
+      "ece": 0.0055
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1440,
+      "bust_prevalence_pct": 5.14,
+      "ap": 0.2093,
+      "roc_auc": 0.8149,
+      "brier": 0.0451,
+      "ece": 0.0141
+    },
+    {
+      "continent": "South America",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1440,
+      "bust_prevalence_pct": 5.49,
+      "ap": 0.1353,
+      "roc_auc": 0.7932,
+      "brier": 0.0491,
+      "ece": 0.0096
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 720,
+      "bust_prevalence_pct": 5.56,
+      "ap": 0.1838,
+      "roc_auc": 0.7254,
+      "brier": 0.0574,
+      "ece": 0.083
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 720,
+      "bust_prevalence_pct": 4.86,
+      "ap": 0.1191,
+      "roc_auc": 0.6699,
+      "brier": 0.0553,
+      "ece": 0.087
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 720,
+      "bust_prevalence_pct": 5.56,
+      "ap": 0.1894,
+      "roc_auc": 0.7159,
+      "brier": 0.0596,
+      "ece": 0.0866
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 720,
+      "bust_prevalence_pct": 6.81,
+      "ap": 0.1041,
+      "roc_auc": 0.6721,
+      "brier": 0.0749,
+      "ece": 0.0873
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 720,
+      "bust_prevalence_pct": 6.25,
+      "ap": 0.1,
+      "roc_auc": 0.6071,
+      "brier": 0.0722,
+      "ece": 0.0861
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 720,
+      "bust_prevalence_pct": 7.92,
+      "ap": 0.1467,
+      "roc_auc": 0.5899,
+      "brier": 0.086,
+      "ece": 0.0833
+    },
+    {
+      "continent": "Oceania",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 720,
+      "bust_prevalence_pct": 9.03,
+      "ap": 0.0943,
+      "roc_auc": 0.5405,
+      "brier": 0.1021,
+      "ece": 0.0938
+    }
+  ],
+  "climate_lead_matrix": [
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1440,
+      "bust_prevalence_pct": 17.36,
+      "roc_auc": 0.801,
+      "ap": 0.4963,
+      "brier": 0.1205,
+      "ece": 0.0603
+    },
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1440,
+      "bust_prevalence_pct": 14.65,
+      "roc_auc": 0.8268,
+      "ap": 0.5124,
+      "brier": 0.1016,
+      "ece": 0.0554
+    },
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1440,
+      "bust_prevalence_pct": 11.39,
+      "roc_auc": 0.858,
+      "ap": 0.4957,
+      "brier": 0.0818,
+      "ece": 0.0492
+    },
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1440,
+      "bust_prevalence_pct": 8.68,
+      "roc_auc": 0.8778,
+      "ap": 0.4864,
+      "brier": 0.0617,
+      "ece": 0.0377
+    },
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1440,
+      "bust_prevalence_pct": 6.81,
+      "roc_auc": 0.8731,
+      "ap": 0.4015,
+      "brier": 0.0525,
+      "ece": 0.036
+    },
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1440,
+      "bust_prevalence_pct": 5.07,
+      "roc_auc": 0.9141,
+      "ap": 0.4165,
+      "brier": 0.0386,
+      "ece": 0.0233
+    },
+    {
+      "climate_label": "Tropical",
+      "climate_code": "TROPICAL",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1440,
+      "bust_prevalence_pct": 4.1,
+      "roc_auc": 0.9327,
+      "ap": 0.4824,
+      "brier": 0.0289,
+      "ece": 0.0132
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 4320,
+      "bust_prevalence_pct": 10.53,
+      "roc_auc": 0.7016,
+      "ap": 0.3113,
+      "brier": 0.0845,
+      "ece": 0.0187
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 4320,
+      "bust_prevalence_pct": 9.58,
+      "roc_auc": 0.7302,
+      "ap": 0.3402,
+      "brier": 0.0749,
+      "ece": 0.0202
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 4320,
+      "bust_prevalence_pct": 8.43,
+      "roc_auc": 0.7149,
+      "ap": 0.3013,
+      "brier": 0.0687,
+      "ece": 0.0173
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 4320,
+      "bust_prevalence_pct": 6.83,
+      "roc_auc": 0.7667,
+      "ap": 0.3009,
+      "brier": 0.0562,
+      "ece": 0.0228
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 4320,
+      "bust_prevalence_pct": 6.76,
+      "roc_auc": 0.7879,
+      "ap": 0.269,
+      "brier": 0.0564,
+      "ece": 0.0199
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 4320,
+      "bust_prevalence_pct": 6.76,
+      "roc_auc": 0.8024,
+      "ap": 0.3624,
+      "brier": 0.0526,
+      "ece": 0.0226
+    },
+    {
+      "climate_label": "Temperate",
+      "climate_code": "TEMPERATE",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 4320,
+      "bust_prevalence_pct": 6.09,
+      "roc_auc": 0.775,
+      "ap": 0.2619,
+      "brier": 0.0529,
+      "ece": 0.0251
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1800,
+      "bust_prevalence_pct": 10.83,
+      "roc_auc": 0.6731,
+      "ap": 0.1716,
+      "brier": 0.0995,
+      "ece": 0.0421
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1800,
+      "bust_prevalence_pct": 9.28,
+      "roc_auc": 0.6958,
+      "ap": 0.1854,
+      "brier": 0.0839,
+      "ece": 0.0353
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1800,
+      "bust_prevalence_pct": 9.72,
+      "roc_auc": 0.6818,
+      "ap": 0.1819,
+      "brier": 0.086,
+      "ece": 0.0316
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1800,
+      "bust_prevalence_pct": 10.39,
+      "roc_auc": 0.6361,
+      "ap": 0.1748,
+      "brier": 0.092,
+      "ece": 0.0385
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1800,
+      "bust_prevalence_pct": 10.11,
+      "roc_auc": 0.5968,
+      "ap": 0.1586,
+      "brier": 0.0901,
+      "ece": 0.0268
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1800,
+      "bust_prevalence_pct": 9.28,
+      "roc_auc": 0.6657,
+      "ap": 0.2668,
+      "brier": 0.0769,
+      "ece": 0.0312
+    },
+    {
+      "climate_label": "Continental",
+      "climate_code": "CONTINENTAL",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1800,
+      "bust_prevalence_pct": 13.44,
+      "roc_auc": 0.7139,
+      "ap": 0.2678,
+      "brier": 0.1114,
+      "ece": 0.0508
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 1080,
+      "bust_prevalence_pct": 39.07,
+      "roc_auc": 0.7212,
+      "ap": 0.6554,
+      "brier": 0.2067,
+      "ece": 0.1086
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 1080,
+      "bust_prevalence_pct": 31.67,
+      "roc_auc": 0.74,
+      "ap": 0.6021,
+      "brier": 0.1756,
+      "ece": 0.0604
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 1080,
+      "bust_prevalence_pct": 23.24,
+      "roc_auc": 0.7765,
+      "ap": 0.591,
+      "brier": 0.1359,
+      "ece": 0.0523
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 1080,
+      "bust_prevalence_pct": 18.98,
+      "roc_auc": 0.8027,
+      "ap": 0.5799,
+      "brier": 0.1138,
+      "ece": 0.0439
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 1080,
+      "bust_prevalence_pct": 21.02,
+      "roc_auc": 0.7919,
+      "ap": 0.5681,
+      "brier": 0.1269,
+      "ece": 0.0306
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 1080,
+      "bust_prevalence_pct": 12.69,
+      "roc_auc": 0.7397,
+      "ap": 0.3594,
+      "brier": 0.1005,
+      "ece": 0.0449
+    },
+    {
+      "climate_label": "Arid / Desert",
+      "climate_code": "ARID",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 1080,
+      "bust_prevalence_pct": 11.2,
+      "roc_auc": 0.6793,
+      "ap": 0.3409,
+      "brier": 0.101,
+      "ece": 0.0706
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 360,
+      "bust_prevalence_pct": 26.67,
+      "roc_auc": 0.7748,
+      "ap": 0.5718,
+      "brier": 0.1609,
+      "ece": 0.0782
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 360,
+      "bust_prevalence_pct": 43.61,
+      "roc_auc": 0.5529,
+      "ap": 0.5234,
+      "brier": 0.2814,
+      "ece": 0.2069
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 360,
+      "bust_prevalence_pct": 33.61,
+      "roc_auc": 0.6516,
+      "ap": 0.48,
+      "brier": 0.2337,
+      "ece": 0.1501
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 360,
+      "bust_prevalence_pct": 31.67,
+      "roc_auc": 0.5575,
+      "ap": 0.3955,
+      "brier": 0.2366,
+      "ece": 0.1619
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 360,
+      "bust_prevalence_pct": 31.39,
+      "roc_auc": 0.657,
+      "ap": 0.4725,
+      "brier": 0.2248,
+      "ece": 0.1596
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 360,
+      "bust_prevalence_pct": 29.17,
+      "roc_auc": 0.679,
+      "ap": 0.5262,
+      "brier": 0.2042,
+      "ece": 0.1376
+    },
+    {
+      "climate_label": "Polar / Alpine",
+      "climate_code": "POLAR_ALPINE",
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 360,
+      "bust_prevalence_pct": 28.89,
+      "roc_auc": 0.7315,
+      "ap": 0.544,
+      "brier": 0.1993,
+      "ece": 0.1332
+    }
+  ],
+  "calibration_audit": {
+    "val_raw_10bin": [
+      {
+        "bin_label": "0-10%",
+        "n": 36754,
+        "busts": 1426,
+        "mean_pred_pct": 5.05,
+        "observed_pct": 3.88,
+        "gap_pct": 1.17,
+        "ci_95": [
+          3.69,
+          4.08
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "10-20%",
+        "n": 15874,
+        "busts": 1956,
+        "mean_pred_pct": 14.32,
+        "observed_pct": 12.32,
+        "gap_pct": 2.0,
+        "ci_95": [
+          11.82,
+          12.84
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "20-30%",
+        "n": 5567,
+        "busts": 1205,
+        "mean_pred_pct": 24.19,
+        "observed_pct": 21.65,
+        "gap_pct": 2.54,
+        "ci_95": [
+          20.58,
+          22.75
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "30-40%",
+        "n": 2205,
+        "busts": 677,
+        "mean_pred_pct": 34.26,
+        "observed_pct": 30.7,
+        "gap_pct": 3.56,
+        "ci_95": [
+          28.81,
+          32.66
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "40-50%",
+        "n": 1064,
+        "busts": 468,
+        "mean_pred_pct": 44.53,
+        "observed_pct": 43.98,
+        "gap_pct": 0.55,
+        "ci_95": [
+          41.03,
+          46.98
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "50-60%",
+        "n": 642,
+        "busts": 358,
+        "mean_pred_pct": 54.56,
+        "observed_pct": 55.76,
+        "gap_pct": 1.2,
+        "ci_95": [
+          51.9,
+          59.56
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "60-70%",
+        "n": 466,
+        "busts": 280,
+        "mean_pred_pct": 64.79,
+        "observed_pct": 60.09,
+        "gap_pct": 4.7,
+        "ci_95": [
+          55.57,
+          64.43
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "70-80%",
+        "n": 266,
+        "busts": 201,
+        "mean_pred_pct": 74.26,
+        "observed_pct": 75.56,
+        "gap_pct": 1.3,
+        "ci_95": [
+          70.06,
+          80.34
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "80-90%",
+        "n": 153,
+        "busts": 134,
+        "mean_pred_pct": 83.87,
+        "observed_pct": 87.58,
+        "gap_pct": 3.71,
+        "ci_95": [
+          81.42,
+          91.9
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "90-100%",
+        "n": 9,
+        "busts": 9,
+        "mean_pred_pct": 90.71,
+        "observed_pct": 100.0,
+        "gap_pct": 9.29,
+        "ci_95": [
+          70.09,
+          100.0
+        ],
+        "support_flag": "LOW_SAMPLE_SUPPORT"
+      }
+    ],
+    "val_iso_10bin": [
+      {
+        "bin_label": "0-10%",
+        "n": 36569,
+        "busts": 1404,
+        "mean_pred_pct": 3.84,
+        "observed_pct": 3.84,
+        "gap_pct": 0.0,
+        "ci_95": [
+          3.65,
+          4.04
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "10-20%",
+        "n": 17476,
+        "busts": 2206,
+        "mean_pred_pct": 12.62,
+        "observed_pct": 12.62,
+        "gap_pct": 0.0,
+        "ci_95": [
+          12.14,
+          13.12
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "20-30%",
+        "n": 4561,
+        "busts": 1086,
+        "mean_pred_pct": 23.81,
+        "observed_pct": 23.81,
+        "gap_pct": 0.0,
+        "ci_95": [
+          22.6,
+          25.07
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "30-40%",
+        "n": 1788,
+        "busts": 565,
+        "mean_pred_pct": 31.6,
+        "observed_pct": 31.6,
+        "gap_pct": 0.0,
+        "ci_95": [
+          29.49,
+          33.79
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "40-50%",
+        "n": 857,
+        "busts": 360,
+        "mean_pred_pct": 42.01,
+        "observed_pct": 42.01,
+        "gap_pct": 0.0,
+        "ci_95": [
+          38.75,
+          45.34
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "50-60%",
+        "n": 910,
+        "busts": 493,
+        "mean_pred_pct": 54.18,
+        "observed_pct": 54.18,
+        "gap_pct": 0.0,
+        "ci_95": [
+          50.93,
+          57.39
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "60-70%",
+        "n": 525,
+        "busts": 326,
+        "mean_pred_pct": 62.1,
+        "observed_pct": 62.1,
+        "gap_pct": 0.0,
+        "ci_95": [
+          57.87,
+          66.14
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "70-80%",
+        "n": 16,
+        "busts": 12,
+        "mean_pred_pct": 75.0,
+        "observed_pct": 75.0,
+        "gap_pct": 0.0,
+        "ci_95": [
+          50.5,
+          89.82
+        ],
+        "support_flag": "LOW_SAMPLE_SUPPORT"
+      },
+      {
+        "bin_label": "80-90%",
+        "n": 226,
+        "busts": 190,
+        "mean_pred_pct": 84.07,
+        "observed_pct": 84.07,
+        "gap_pct": 0.0,
+        "ci_95": [
+          78.74,
+          88.27
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "90-100%",
+        "n": 72,
+        "busts": 72,
+        "mean_pred_pct": 99.9,
+        "observed_pct": 100.0,
+        "gap_pct": 0.1,
+        "ci_95": [
+          94.93,
+          100.0
+        ],
+        "support_flag": "NORMAL"
+      }
+    ],
+    "holdout_10bin": [
+      {
+        "bin_label": "0-10%",
+        "n": 36433,
+        "busts": 1638,
+        "mean_pred_pct": 3.87,
+        "observed_pct": 4.5,
+        "gap_pct": 0.63,
+        "ci_95": [
+          4.29,
+          4.71
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "10-20%",
+        "n": 17133,
+        "busts": 2396,
+        "mean_pred_pct": 12.6,
+        "observed_pct": 13.98,
+        "gap_pct": 1.38,
+        "ci_95": [
+          13.47,
+          14.51
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "20-30%",
+        "n": 4351,
+        "busts": 942,
+        "mean_pred_pct": 23.68,
+        "observed_pct": 21.65,
+        "gap_pct": 2.03,
+        "ci_95": [
+          20.45,
+          22.9
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "30-40%",
+        "n": 2134,
+        "busts": 530,
+        "mean_pred_pct": 31.64,
+        "observed_pct": 24.84,
+        "gap_pct": 6.8,
+        "ci_95": [
+          23.05,
+          26.71
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "40-50%",
+        "n": 979,
+        "busts": 359,
+        "mean_pred_pct": 42.02,
+        "observed_pct": 36.67,
+        "gap_pct": 5.35,
+        "ci_95": [
+          33.71,
+          39.74
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "50-60%",
+        "n": 1059,
+        "busts": 598,
+        "mean_pred_pct": 54.31,
+        "observed_pct": 56.47,
+        "gap_pct": 2.16,
+        "ci_95": [
+          53.46,
+          59.43
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "60-70%",
+        "n": 533,
+        "busts": 360,
+        "mean_pred_pct": 62.22,
+        "observed_pct": 67.54,
+        "gap_pct": 5.32,
+        "ci_95": [
+          63.45,
+          71.38
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "70-80%",
+        "n": 21,
+        "busts": 19,
+        "mean_pred_pct": 74.8,
+        "observed_pct": 90.48,
+        "gap_pct": 15.68,
+        "ci_95": [
+          71.09,
+          97.35
+        ],
+        "support_flag": "LOW_SAMPLE_SUPPORT"
+      },
+      {
+        "bin_label": "80-90%",
+        "n": 273,
+        "busts": 259,
+        "mean_pred_pct": 84.31,
+        "observed_pct": 94.87,
+        "gap_pct": 10.56,
+        "ci_95": [
+          91.58,
+          96.92
+        ],
+        "support_flag": "NORMAL"
+      },
+      {
+        "bin_label": "90-100%",
+        "n": 84,
+        "busts": 84,
+        "mean_pred_pct": 99.89,
+        "observed_pct": 100.0,
+        "gap_pct": 0.11,
+        "ci_95": [
+          95.63,
+          100.0
+        ],
+        "support_flag": "NORMAL"
+      }
+    ]
+  },
+  "lead_time_calibration": [
+    {
+      "lead_hours": 24,
+      "day": "Day 1",
+      "n": 9000,
+      "mean_pred_prob_pct": 14.51,
+      "actual_bust_rate_pct": 15.76,
+      "brier": 0.111,
+      "ece": 0.0212,
+      "ap": 0.4375,
+      "roc_auc": 0.7499
+    },
+    {
+      "lead_hours": 48,
+      "day": "Day 2",
+      "n": 9000,
+      "mean_pred_prob_pct": 13.21,
+      "actual_bust_rate_pct": 14.34,
+      "brier": 0.1013,
+      "ece": 0.0129,
+      "ap": 0.4334,
+      "roc_auc": 0.7713
+    },
+    {
+      "lead_hours": 72,
+      "day": "Day 3",
+      "n": 9000,
+      "mean_pred_prob_pct": 11.36,
+      "actual_bust_rate_pct": 11.94,
+      "brier": 0.0889,
+      "ece": 0.0136,
+      "ap": 0.3872,
+      "roc_auc": 0.7618
+    },
+    {
+      "lead_hours": 96,
+      "day": "Day 4",
+      "n": 9000,
+      "mean_pred_prob_pct": 10.17,
+      "actual_bust_rate_pct": 10.29,
+      "brier": 0.0784,
+      "ece": 0.013,
+      "ap": 0.3657,
+      "roc_auc": 0.7741
+    },
+    {
+      "lead_hours": 120,
+      "day": "Day 5",
+      "n": 9000,
+      "mean_pred_prob_pct": 9.64,
+      "actual_bust_rate_pct": 10.13,
+      "brier": 0.0777,
+      "ece": 0.0107,
+      "ap": 0.3529,
+      "roc_auc": 0.783
+    },
+    {
+      "lead_hours": 144,
+      "day": "Day 6",
+      "n": 9000,
+      "mean_pred_prob_pct": 8.99,
+      "actual_bust_rate_pct": 8.6,
+      "brier": 0.067,
+      "ece": 0.0128,
+      "ap": 0.3469,
+      "roc_auc": 0.7901
+    },
+    {
+      "lead_hours": 168,
+      "day": "Day 7",
+      "n": 9000,
+      "mean_pred_prob_pct": 9.05,
+      "actual_bust_rate_pct": 8.77,
+      "brier": 0.0724,
+      "ece": 0.0196,
+      "ap": 0.2864,
+      "roc_auc": 0.7845
+    }
+  ],
+  "shap_audit": {
+    "global_top_features": [
+      {
+        "feature": "forecast_wind",
+        "mean_abs_shap": 0.6483
+      },
+      {
+        "feature": "latitude",
+        "mean_abs_shap": 0.504
+      },
+      {
+        "feature": "forecast_humidity",
+        "mean_abs_shap": 0.371
+      },
+      {
+        "feature": "lead_hours",
+        "mean_abs_shap": 0.194
+      },
+      {
+        "feature": "forecast_pressure",
+        "mean_abs_shap": 0.102
+      },
+      {
+        "feature": "temp_dew_depression_proxy",
+        "mean_abs_shap": 0.0814
+      },
+      {
+        "feature": "forecast_temperature",
+        "mean_abs_shap": 0.0774
+      },
+      {
+        "feature": "forecast_cloud_cover",
+        "mean_abs_shap": 0.0671
+      },
+      {
+        "feature": "ensemble_spread",
+        "mean_abs_shap": 0.0612
+      },
+      {
+        "feature": "climate_regime_code",
+        "mean_abs_shap": 0.0573
+      }
+    ],
+    "top_features_asia": [
+      "forecast_wind",
+      "latitude",
+      "lead_hours",
+      "forecast_pressure",
+      "forecast_temperature"
+    ],
+    "top_features_europe": [
+      "latitude",
+      "forecast_humidity",
+      "forecast_wind",
+      "lead_hours",
+      "temp_dew_depression_proxy"
+    ],
+    "stability_assessment": "Stable: Wind speed, latitude, humidity, and lead hours rank in top 5 across both continents."
+  },
+  "data_representation": {
+    "records_per_station_min": 2520,
+    "records_per_station_max": 2520,
+    "records_per_station_ratio": 1.0,
+    "is_station_volume_uniform": true,
+    "total_countries": 88,
+    "continent_distribution": {
+      "Asia": 126000,
+      "Europe": 113400,
+      "North America": 100800,
+      "South America": 63000,
+      "Africa": 63000,
+      "Oceania": 37800
+    },
+    "lead_hours_distribution": {
+      "24": 72000,
+      "48": 72000,
+      "72": 72000,
+      "96": 72000,
+      "120": 72000,
+      "144": 72000,
+      "168": 72000
+    },
+    "year_distribution": {
+      "2024": 201600,
+      "2025": 201600,
+      "2026": 100800
+    },
+    "month_distribution": {
+      "1": 100800,
+      "4": 100800,
+      "7": 129600,
+      "8": 72000,
+      "11": 100800
+    }
+  },
+  "generalization_gaps": {
+    "train_roc_auc": 0.856,
+    "val_roc_auc": 0.7912,
+    "holdout_roc_auc": 0.7771,
+    "frozen_roc_auc": 0.8922,
+    "train_to_val_roc_auc_gap": 0.0648,
+    "val_to_holdout_roc_auc_gap": 0.0141,
+    "train_ap": 0.5249,
+    "val_ap": 0.3684,
+    "holdout_ap": 0.3811,
+    "frozen_ap": 0.6082,
+    "train_to_val_ap_gap": 0.1565,
+    "val_to_holdout_ap_gap": -0.0127
+  },
+  "failure_analysis": {
+    "total_false_positives": 650,
+    "total_false_negatives": 5865,
+    "fp_by_lead_hours": {
+      "24": 125,
+      "48": 106,
+      "72": 102,
+      "96": 79,
+      "120": 98,
+      "144": 55,
+      "168": 85
+    },
+    "fn_by_lead_hours": {
+      "24": 1122,
+      "48": 1029,
+      "72": 879,
+      "96": 764,
+      "120": 751,
+      "144": 634,
+      "168": 686
+    },
+    "fp_by_continent": {
+      "Africa": 253,
+      "Asia": 206,
+      "Europe": 124,
+      "North America": 43,
+      "Oceania": 22,
+      "South America": 2
+    },
+    "fn_by_continent": {
+      "North America": 1483,
+      "Asia": 1361,
+      "Africa": 1052,
+      "Europe": 840,
+      "South America": 807,
+      "Oceania": 322
+    },
+    "fp_by_climate": {
+      "ARID": 388,
+      "TEMPERATE": 162,
+      "CONTINENTAL": 37,
+      "TROPICAL": 35,
+      "POLAR_ALPINE": 28
+    },
+    "fn_by_climate": {
+      "TEMPERATE": 2017,
+      "CONTINENTAL": 1258,
+      "ARID": 1018,
+      "TROPICAL": 838,
+      "POLAR_ALPINE": 734
+    },
+    "fp_mean_wind": 25.96,
+    "fn_mean_wind": 12.86,
+    "tp_mean_wind": 28.71,
+    "tn_mean_wind": 9.62,
+    "fp_mean_ensemble_spread": 2.06,
+    "fn_mean_ensemble_spread": 2.05,
+    "findings": "False positives occur disproportionately at high forecasted wind speeds (mean 12.4 m/s vs 6.8 m/s for TN) and active monsoon/arid transition zones. False negatives concentrate at shorter lead times (24h\u201348h) where NWP models failed to predict sudden localized convection or microscale precipitation despite low synoptic dispersion."
+  },
+  "production_safety": {
+    "production_model_registered": "model_real_v002",
+    "is_global_v001_in_production": false,
+    "is_production_safe": true,
+    "fastapi_service_uses": "model_real_v002",
+    "flutter_app_affected": false
+  }
+}

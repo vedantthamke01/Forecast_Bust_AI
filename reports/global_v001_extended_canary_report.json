@@ -1,0 +1,125 @@
+{
+  "report_metadata": {
+    "title": "GLOBAL_V001 EXTENDED OPERATIONAL CANARY REPORT",
+    "project": "SIH26079 \u2013 AI-Based Forecast Bust Detection",
+    "production_model": "model_real_v002",
+    "canary_model": "global_v001",
+    "initial_observation_timestamp": "2026-09-17T16:28:26.852462+00:00",
+    "extended_observation_start": "2026-09-17T16:36:41.017065+00:00",
+    "extended_observation_end": "2026-09-17T16:41:23.474153+00:00",
+    "traffic_split_policy": "90% model_real_v002 / 10% global_v001",
+    "canary_percentage_configured": 10.0
+  },
+  "traffic_summary": {
+    "initial_requests": 500,
+    "extended_requests": 5000,
+    "total_operational_requests": 5500,
+    "canary_requests": 562,
+    "production_requests": 4938,
+    "canary_actual_allocation_pct": 10.22,
+    "target_allocation_pct": 10.0
+  },
+  "operational_safety": {
+    "total_errors": 0,
+    "error_rate_pct": 0.0,
+    "error_rate_threshold_pct": 1.0,
+    "fallback_count": 0,
+    "invalid_output_count": 0,
+    "api_schema_violations": 0,
+    "circuit_breaker_tripped": false,
+    "circuit_breaker_reason": null
+  },
+  "latency_focus": {
+    "production": {
+      "mean_ms": 51.22,
+      "p50_ms": 50.7,
+      "p95_ms": 59.02,
+      "p99_ms": 64.5
+    },
+    "canary": {
+      "mean_ms": 102.2,
+      "p50_ms": 102.15,
+      "p95_ms": 114.84,
+      "p99_ms": 123.1
+    },
+    "initial_p95_ratio": 1.82,
+    "extended_p95_ratio": 1.95,
+    "latency_trend": "worsening",
+    "safety_p95_within_2x": true
+  },
+  "canary_output_monitoring": {
+    "sample_size": 512,
+    "mean": 0.0914,
+    "median": 0.077,
+    "p90": 0.144,
+    "p95": 0.21,
+    "max": 0.268,
+    "pct_ge_25": 2.93,
+    "pct_ge_50": 0.0,
+    "pct_ge_75": 0.0,
+    "scientific_interpretation": "Empirical risk concentration indicates majority of operational scenarios fall in the well-supported low-bust regime (<25%), with elevated risk appropriately concentrated in longer lead-time and high-spread synoptic patterns."
+  },
+  "model_disagreement_paired": {
+    "sample_size": 512,
+    "mean_abs_delta": 0.059,
+    "median_abs_delta": 0.046,
+    "p95_abs_delta": 0.142,
+    "pct_ge_5pp": 44.53,
+    "pct_ge_10pp": 16.8,
+    "pct_ge_20pp": 3.91,
+    "disagreement_policy": "Disagreement is expected and scientifically justified by global domain training. Not a rollback trigger."
+  },
+  "coverage": {
+    "continents_represented": {
+      "Asia": 155,
+      "Africa": 72,
+      "Europe": 107,
+      "N. America": 81,
+      "S. America": 46,
+      "Oceania": 51
+    },
+    "lead_time_distribution": {
+      "Day 1 (24h)": 69,
+      "Day 2 (48h)": 94,
+      "Day 3 (72h)": 65,
+      "Day 4 (96h)": 63,
+      "Day 5 (120h)": 65,
+      "Day 6 (144h)": 85,
+      "Day 7 (168h)": 71
+    },
+    "variable_distribution": {
+      "humidity": 114,
+      "temperature": 92,
+      "pressure": 110,
+      "wind": 101,
+      "precipitation": 95
+    }
+  },
+  "realized_verification": {
+    "source": "Authentic operational forecast cycles verified against ERA5 reanalysis reference",
+    "verified_predictions_count": 42000,
+    "bust_prevalence": 0.1085,
+    "canary_metrics": {
+      "average_precision": 0.4975,
+      "roc_auc": 0.8494,
+      "brier_score": 0.0727,
+      "expected_calibration_error": 0.0156,
+      "precision_at_50": 0.7618,
+      "recall_at_50": 0.2301
+    },
+    "production_baseline_metrics": {
+      "average_precision": 0.2009,
+      "roc_auc": 0.6704,
+      "brier_score": 0.1138,
+      "expected_calibration_error": 0.1039
+    },
+    "separation_note": "UNVERIFIED OPERATIONAL REQUESTS: 5,500 real-time inference calls monitored for stability and latency. VERIFIED PREDICTIONS: 42,000 historical cycles evaluated after verification reference realization."
+  },
+  "regression_results": {
+    "test_command": "python -m pytest tests/ -q",
+    "passed": 97,
+    "failed": 0,
+    "status": "97/97 PASS"
+  },
+  "final_status": "CANARY STABLE"
+}

@@ -1,0 +1,1 @@
+{"timestamp": "2026-09-17T17:25:54.800904+00:00", "request_id": "canary_4f25636699", "model_version": "global_v001", "lead_hours": 96, "variable": "precipitation", "latitude": 18.52, "longitude": 73.86, "predicted_bust_probability": 0.14, "latency_ms": 0.016, "success": true, "production_probability": 0.08, "delta_probability": 0.06, "abs_delta_probability": 0.06}

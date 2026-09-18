@@ -29,7 +29,11 @@ FEATURE_DESCRIPTIONS = {
     "pressure_anomaly": "Baroclinic Pressure Anomaly ({val} hPa)",
     "temp_dew_depression_proxy": "Dewpoint Depression Proxy ({val}°C)",
     "latitude": "Latitude Coordinate ({val}°N)",
-    "longitude": "Longitude Coordinate ({val}°E)"
+    "longitude": "Longitude Coordinate ({val}°E)",
+    "solar_zenith_noon": "Solar Zenith Angle at Solar Noon ({val}°)",
+    "climate_regime_code": "Macro Climate Regime Classification ({val})",
+    "is_mountain": "Mountain / High Elevation Terrain ({val})",
+    "lead_scaling_norm": "Extended Horizon Dispersion Saturation ({val})"
 }
 
 

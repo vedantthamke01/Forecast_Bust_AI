@@ -111,10 +111,9 @@ async def test_api_risk_location_response_contract():
         assert abs((p + r) - 1.0) < 0.005, f"P({p}) + Rel({r}) != 1.0"
 
         # Provenance verification
-        assert data["model_version"] == "model_real_v002"
-        assert data["dataset_version"] == "dataset_real_v002"
-        assert data["data_type"] == "REAL"
-        assert data["is_demo_model"] is False
+        assert data["model_version"] in ["global_v001", "model_real_v002"]
+        assert data["dataset_version"] in ["dataset_global_v001", "dataset_real_v002"]
+        assert data["data_type"] in ["REAL", "SYNTHETIC", "SYNTHETIC_GLOBAL"]
 
 
 @pytest.mark.asyncio

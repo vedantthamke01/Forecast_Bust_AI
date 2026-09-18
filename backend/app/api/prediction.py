@@ -1,7 +1,8 @@
 """
 Forecast Bust Risk & Explainability API Router.
 Provides calibrated probability inference, geographic risk maps,
-historical forecast-vs-reference verification, and SHAP explainability.
+historical forecast-vs-reference verification, SHAP explainability,
+and controlled canary deployment status monitoring.
 """
 import math
 from typing import Optional
@@ -20,7 +21,7 @@ ALLOWED_VARIABLES = {"precipitation", "temperature", "wind", "pressure", "humidi
 async def get_risk_by_location(
     lat: float = Query(..., ge=-90, le=90, description="Latitude (-90 to 90)"),
     lon: float = Query(..., ge=-180, le=180, description="Longitude (-180 to 180)"),
-    lead_hours: int = Query(96, ge=24, le=240, description="Lead time in hours (24 to 240)"),
+    lead_hours: int = Query(96, ge=24, le=720, description="Lead time in hours (24 to 720 / Day 1 to Day 30)"),
     variable: str = Query("precipitation", description="Target variable: precipitation, temperature, wind, pressure"),
     forecast_value: Optional[float] = Query(None, description="Optional forecasted value override"),
     ensemble_spread: Optional[float] = Query(None, ge=0.0, le=50.0, description="NWP Ensemble Spread (dispersion, 0 to 50)")
@@ -146,13 +147,72 @@ async def get_risk_by_location(
         run_revision=rev,
         forecast_source=fc_src
     )
-    return result
+
+    # Record prediction event in verification registry
+    try:
+        from backend.app.services.verification_service import VerificationService
+        import uuid
+        pred_id = f"pred_{uuid.uuid4().hex[:10]}"
+        v_service = VerificationService()
+        v_service.record_t0_prediction(
+            prediction_id=pred_id,
+            initialization_time=result["initialization_time"],
+            valid_time=result["valid_time"],
+            latitude=lat,
+            longitude=lon,
+            lead_hours=lead_hours,
+            variable=var_clean,
+            forecast_value=float(result["forecast_value"]),
+            bust_probability=float(result["bust_probability"]),
+            operational_threshold=25.0,
+            model_version=result["model_version"]
+        )
+        result["prediction_id"] = pred_id
+    except Exception:
+        pass
+
+    # Build explicitly categorized sections per Phase 12 guidelines
+    response = {
+        "LIVE_CONDITIONS": {
+            "source": fc_src,
+            "forecast_value": round(float(result["forecast_value"]), 1),
+            "variable": var_clean
+        },
+        "FORECAST": {
+            "initialization_time": result["initialization_time"],
+            "valid_time": result["valid_time"],
+            "lead_hours": lead_hours,
+            "lead_time_group": result.get("lead_time_group", "Day 3-5"),
+            "forecast_day": result["forecast_day"]
+        },
+        "AI_BUST_RISK": {
+            "bust_probability": result["bust_probability"],
+            "bust_probability_percentage": result["bust_probability_percentage"],
+            "reliability_score": result["reliability_score"],
+            "reliability_percentage": result["reliability_percentage"],
+            "risk_level": result["risk_level"],
+            "risk_badge": result["risk_badge"],
+            "explanation": result["explanation"],
+            "scientific_governance": result.get("scientific_governance")
+        },
+        "HISTORICAL_VERIFICATION": {
+            "reference_source": result["reference_source"],
+            "model_version": result["model_version"],
+            "dataset_version": result["dataset_version"],
+            "data_type": result["data_type"],
+            "disclaimer": result["disclaimer"]
+        }
+    }
+    # Preserve flat fields for backward compatibility
+    response.update(result)
+    return response
 
 
 @router.get("/risk/map")
 async def get_risk_map(
-    lead_hours: int = Query(96, ge=24, le=240, description="Lead horizon (e.g. 96 for Day 4)"),
-    variable: str = Query("precipitation", description="Weather variable: precipitation, temperature, wind, pressure")
+    lead_hours: int = Query(96, ge=24, le=720, description="Lead horizon (24 to 720 / Day 1 to Day 30)"),
+    variable: str = Query("precipitation", description="Weather variable: precipitation, temperature, wind, pressure"),
+    region: str = Query("india", description="Synoptic domain: 'india' or 'global'")
 ):
     var_clean = (variable or "").lower().strip()
     if var_clean not in ALLOWED_VARIABLES:
@@ -161,10 +221,13 @@ async def get_risk_map(
             detail=f"Unsupported variable '{variable}'. Supported variables: {', '.join(sorted(ALLOWED_VARIABLES))}."
         )
 
-    grid = bust_service.get_spatial_risk_grid(lead_hours=lead_hours, variable=var_clean)
+    from data_pipeline.labeler import get_lead_time_group
+    grid = bust_service.get_spatial_risk_grid(lead_hours=lead_hours, variable=var_clean, region=region)
     return {
         "forecast_horizon_hours": lead_hours,
         "forecast_day": int(lead_hours // 24),
+        "lead_time_group": get_lead_time_group(lead_hours),
+        "region_scope": region.upper(),
         "variable": var_clean,
         "data_type": getattr(bust_service, "data_type", "REAL"),
         "model_version": bust_service.model_version,
@@ -179,6 +242,31 @@ async def get_risk_map(
             "VERY_HIGH": {"badge": "🔴 VERY HIGH", "threshold": "> 75%", "color": "#ef4444"}
         }
     }
+
+
+@router.get("/verification/audit")
+async def get_verification_audit():
+    """Returns historical forecast verification audit summary across realized forecasts."""
+    from backend.app.services.verification_service import VerificationService
+    v_service = VerificationService()
+    return v_service.get_verification_summary()
+
+
+@router.post("/verification/verify")
+async def verify_forecast_outcome(
+    prediction_id: str = Query(..., description="Prediction identifier"),
+    reference_value: float = Query(..., description="Realized ground-truth reference value")
+):
+    """Verifies a realized forecast outcome against ERA5 reanalysis reference."""
+    from backend.app.services.verification_service import VerificationService
+    v_service = VerificationService()
+    target = v_service.verify_prediction(prediction_id, reference_value)
+    if not target:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Prediction ID '{prediction_id}' not found in verification registry."
+        )
+    return target
 
 
 @router.get("/risk/history")
@@ -253,4 +341,22 @@ async def get_forecast_explanation(
         "amplifiers": risk["explanation"].get("top_amplifiers", []),
         "mitigators": risk["explanation"].get("top_mitigators", []),
         "scientific_summary": risk["explanation"].get("summary_text")
+    }
+
+
+@router.get("/canary/status")
+async def get_canary_status():
+    """
+    Returns real-time canary deployment telemetry: routing configuration,
+    traffic split, error rates, latency percentiles, circuit breaker state,
+    and shadow disagreement metrics.
+    Operational monitoring only. No model weights or artifacts are exposed.
+    """
+    from backend.app.services.canary_service import CanaryRoutingService
+    canary_router = CanaryRoutingService()
+    telemetry = canary_router.get_telemetry()
+    return {
+        "status": "ok",
+        "governance": "CANARY_MONITORING_ONLY — No user-facing predictions are served from this endpoint.",
+        **telemetry
     }

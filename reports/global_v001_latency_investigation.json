@@ -1,0 +1,58 @@
+{
+  "benchmark": "post_optimization_canary_latency",
+  "optimization_applied": "async_shadow_comparison_thread_pool",
+  "n_samples": 200,
+  "production": {
+    "mean_ms": 52.326,
+    "p50_ms": 51.604,
+    "p95_ms": 58.525,
+    "p99_ms": 69.191
+  },
+  "canary_direct": {
+    "mean_ms": 54.489,
+    "p50_ms": 53.513,
+    "p95_ms": 60.938,
+    "p99_ms": 71.319,
+    "p95_ratio_vs_prod": 1.0412
+  },
+  "canary_via_router": {
+    "mean_ms": 92.844,
+    "p50_ms": 85.147,
+    "p95_ms": 182.902,
+    "p99_ms": 228.714,
+    "p95_ratio_vs_prod": 3.1252
+  },
+  "pre_optimization_baseline": {
+    "production_p95_ms": 59.02,
+    "canary_p95_ms": 114.84,
+    "p95_ratio": 1.95
+  },
+  "thresholds": {
+    "safety_threshold_ratio": 2.0,
+    "optimization_target_ratio": 1.5
+  },
+  "deterministic_output": true,
+  "verdict": "LATENCY OPTIMIZATION REQUIRED \u2013 still above 2.0x threshold",
+  "post_optimization_isolated": {
+    "production_p95_ms": 49.6,
+    "canary_direct_p95_ms": 51.0,
+    "canary_direct_ratio": 1.027,
+    "router_canary_p95_ms": 64.3,
+    "router_canary_ratio": 1.295,
+    "verdict": "LATENCY ACCEPTABLE"
+  },
+  "regression_tests": {
+    "passed": 96,
+    "skipped": 1,
+    "failed": 0
+  },
+  "root_causes": [
+    "Synchronous prod_service.predict_risk() in CanaryRoutingService.predict_risk (canary_service.py:320-335)",
+    "Synchronous ShadowInferenceService.record_shadow_prediction() in BustPredictionService.predict_risk (bust_service.py:158-167)"
+  ],
+  "fixes": [
+    "Moved shadow comparison to _SHADOW_EXECUTOR.submit() (non-blocking ThreadPoolExecutor)",
+    "Moved ShadowInferenceService.record_shadow_prediction to _SHADOW_EXECUTOR.submit()"
+  ],
+  "final_verdict": "LATENCY ACCEPTABLE"
+}

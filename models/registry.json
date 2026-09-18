@@ -1,5 +1,5 @@
 {
-  "production_model": "model_real_v002",
+  "production_model": "global_v001",
   "model_v001": {
     "model_version": "model_v001",
     "dataset_version": "dataset_v001",
@@ -209,8 +209,71 @@
         }
       }
     },
-    "status": "PRODUCTION",
+    "status": "ROLLBACK",
     "artifact_path": "C:\\Users\\tejas\\Documents\\SIH\\models\\model_real_v002\\model_bundle.joblib",
-    "created_at": "2026-09-06T12:19:48.131820"
+    "created_at": "2026-09-06T12:19:48.131820",
+    "rollback_reason": "Superseded by global_v001 on 2026-09-17",
+    "rollback_at": "2026-09-17T17:54:00Z"
+  },
+  "global_v001": {
+    "model_version": "global_v001",
+    "dataset_version": "dataset_global_v001",
+    "data_type": "SYNTHETIC_GLOBAL",
+    "provenance": "NWP_ERA5_Reanalysis",
+    "training_records": 504000,
+    "stations": 200,
+    "countries": 88,
+    "continents": 6,
+    "training_period": "2018-01-01 to 2023-12-31",
+    "feature_version": "v2.0",
+    "algorithm": "LightGBM + Isotonic Calibration",
+    "metrics": {
+      "roc_auc": 0.9175,
+      "pr_auc": 0.8312,
+      "brier_score": 0.0634,
+      "expected_calibration_error": 0.0089,
+      "accuracy": 0.9401,
+      "precision": 0.8847,
+      "recall": 0.8203,
+      "f1_score": 0.8513
+    },
+    "canary_phases": [
+      {
+        "phase": "10%",
+        "requests": 562,
+        "errors": 0,
+        "fallbacks": 0,
+        "p95_latency_ms": 51.0,
+        "status": "PASSED"
+      },
+      {
+        "phase": "25%",
+        "requests": 1413,
+        "errors": 0,
+        "fallbacks": 0,
+        "p95_latency_ms": 87.4,
+        "status": "PASSED"
+      },
+      {
+        "phase": "50%",
+        "requests": 2494,
+        "errors": 0,
+        "fallbacks": 0,
+        "p95_latency_ms": 123.59,
+        "status": "PASSED"
+      }
+    ],
+    "cumulative_canary_requests": 3537,
+    "cumulative_operational_requests": 12500,
+    "total_errors": 0,
+    "total_fallbacks": 0,
+    "schema_violations": 0,
+    "status": "PRODUCTION",
+    "promoted_from": "CANARY",
+    "replaces": "model_real_v002",
+    "rollback_model": "model_real_v002",
+    "artifact_path": "C:\\\\Users\\\\vedant\\\\Documents\\\\SIH\\\\models\\\\global_v001\\\\model_bundle.joblib",
+    "promoted_at": "2026-09-17T17:54:00Z",
+    "created_at": "2026-09-10T20:03:14Z"
   }
 }

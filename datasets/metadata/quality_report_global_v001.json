@@ -1,0 +1,620 @@
+{
+  "dataset_name": "dataset_global_v001.csv",
+  "evaluation_timestamp": "2026-09-17T14:49:12.850224+00:00",
+  "status": "PASS",
+  "dataset_classification": "DATASET EXPANSION SUCCESS",
+  "dataset_size": {
+    "old_dataset_records": 37800,
+    "new_dataset_records": 504000,
+    "additional_records": 466200,
+    "multiplier": 13.33,
+    "percentage_increase": 1233.33,
+    "target_minimum": 100000,
+    "target_ideal": 500000,
+    "target_level_achieved": "LEVEL 3 (500,000+ IDEAL TARGET ACHIEVED: 504,000 Authentic Records)"
+  },
+  "data_authenticity": {
+    "synthetic_records_count": 0,
+    "nwp_forecast_source": "Open-Meteo Previous Runs NWP Archive (GFS Seamless)",
+    "reference_reanalysis_source": "ECMWF ERA5 Reanalysis (Copernicus CDS)",
+    "data_types": {
+      "REAL": 504000
+    },
+    "forecast_providers": {
+      "open-meteo-previous-runs": 504000
+    },
+    "reference_sources": {
+      "era5-reanalysis": 504000
+    }
+  },
+  "duplicate_audit": {
+    "deduplication_key": "station_id + forecast_model + initialization_time + lead_hours",
+    "total_records": 504000,
+    "unique_keys": 504000,
+    "duplicate_records": 0,
+    "duplicate_percentage": 0.0
+  },
+  "spatio_temporal_alignment": {
+    "alignment_rule": "forecast.valid_time == reference.valid_time (UTC) AND lead_hours == valid_time - T0",
+    "alignment_errors": 0,
+    "spatial_offset_deg": 0.0
+  },
+  "geographic_coverage": {
+    "active_stations_count": 200,
+    "active_countries_count": 88,
+    "active_continents_count": 6,
+    "continents": [
+      "Asia",
+      "Europe",
+      "North America",
+      "South America",
+      "Africa",
+      "Oceania"
+    ],
+    "records_per_continent": {
+      "Asia": 126000,
+      "Europe": 113400,
+      "North America": 100800,
+      "South America": 63000,
+      "Africa": 63000,
+      "Oceania": 37800
+    },
+    "records_per_country": {
+      "India": 63000,
+      "United States": 47880,
+      "Australia": 22680,
+      "Canada": 20160,
+      "Brazil": 17640,
+      "China": 12600,
+      "Mexico": 12600,
+      "Germany": 10080,
+      "Argentina": 10080,
+      "Japan": 7560,
+      "United Kingdom": 7560,
+      "France": 7560,
+      "Italy": 7560,
+      "Spain": 7560,
+      "Chile": 7560,
+      "Nigeria": 7560,
+      "South Africa": 7560,
+      "New Zealand": 7560,
+      "South Korea": 5040,
+      "Saudi Arabia": 5040,
+      "Greece": 5040,
+      "Switzerland": 5040,
+      "Poland": 5040,
+      "Austria": 5040,
+      "Norway": 5040,
+      "Sweden": 5040,
+      "Portugal": 5040,
+      "Turkey": 5040,
+      "Peru": 5040,
+      "Colombia": 5040,
+      "Ecuador": 5040,
+      "Bolivia": 5040,
+      "Egypt": 5040,
+      "Kenya": 5040,
+      "Morocco": 5040,
+      "Thailand": 2520,
+      "Singapore": 2520,
+      "Philippines": 2520,
+      "Vietnam": 2520,
+      "United Arab Emirates": 2520,
+      "Kazakhstan": 2520,
+      "Uzbekistan": 2520,
+      "Nepal": 2520,
+      "Sri Lanka": 2520,
+      "Bangladesh": 2520,
+      "Mongolia": 2520,
+      "Indonesia": 2520,
+      "Malaysia": 2520,
+      "Finland": 2520,
+      "Ireland": 2520,
+      "Czech Republic": 2520,
+      "Hungary": 2520,
+      "Romania": 2520,
+      "Bulgaria": 2520,
+      "Ukraine": 2520,
+      "Iceland": 2520,
+      "Denmark": 2520,
+      "Croatia": 2520,
+      "Serbia": 2520,
+      "Netherlands": 2520,
+      "Belgium": 2520,
+      "Cuba": 2520,
+      "Dominican Republic": 2520,
+      "Jamaica": 2520,
+      "Puerto Rico": 2520,
+      "Guatemala": 2520,
+      "Panama": 2520,
+      "Costa Rica": 2520,
+      "Bahamas": 2520,
+      "Uruguay": 2520,
+      "Paraguay": 2520,
+      "Venezuela": 2520,
+      "Ethiopia": 2520,
+      "Senegal": 2520,
+      "Ghana": 2520,
+      "DR Congo": 2520,
+      "Angola": 2520,
+      "Tanzania": 2520,
+      "Algeria": 2520,
+      "Tunisia": 2520,
+      "Sudan": 2520,
+      "Namibia": 2520,
+      "Madagascar": 2520,
+      "Rwanda": 2520,
+      "Uganda": 2520,
+      "Fiji": 2520,
+      "Papua New Guinea": 2520,
+      "New Caledonia": 2520
+    },
+    "records_per_station": {
+      "Pune": 2520,
+      "New Delhi": 2520,
+      "Noida (NCMRWF)": 2520,
+      "Mumbai": 2520,
+      "Bengaluru": 2520,
+      "Chennai": 2520,
+      "Kolkata": 2520,
+      "Hyderabad": 2520,
+      "Ahmedabad": 2520,
+      "Jaipur": 2520,
+      "Shimla": 2520,
+      "Guwahati": 2520,
+      "Srinagar": 2520,
+      "Thiruvananthapuram": 2520,
+      "Bhubaneswar": 2520,
+      "Bhopal": 2520,
+      "Visakhapatnam": 2520,
+      "Patna": 2520,
+      "Lucknow": 2520,
+      "Nagpur": 2520,
+      "Dehradun": 2520,
+      "Ranchi": 2520,
+      "Chandigarh": 2520,
+      "Panaji": 2520,
+      "Shillong": 2520,
+      "Tokyo": 2520,
+      "Osaka": 2520,
+      "Sapporo": 2520,
+      "Seoul": 2520,
+      "Busan": 2520,
+      "Beijing": 2520,
+      "Shanghai": 2520,
+      "Guangzhou": 2520,
+      "Chengdu": 2520,
+      "Urumqi": 2520,
+      "Bangkok": 2520,
+      "Singapore": 2520,
+      "Manila": 2520,
+      "Hanoi": 2520,
+      "Riyadh": 2520,
+      "Jeddah": 2520,
+      "Dubai": 2520,
+      "Almaty": 2520,
+      "Tashkent": 2520,
+      "Kathmandu": 2520,
+      "Colombo": 2520,
+      "Dhaka": 2520,
+      "Ulaanbaatar": 2520,
+      "London": 2520,
+      "Manchester": 2520,
+      "Jakarta": 2520,
+      "Edinburgh": 2520,
+      "Paris": 2520,
+      "Marseille": 2520,
+      "Kuala Lumpur": 2520,
+      "Berlin": 2520,
+      "Munich": 2520,
+      "Hamburg": 2520,
+      "Rome": 2520,
+      "Milan": 2520,
+      "Naples": 2520,
+      "Madrid": 2520,
+      "Barcelona": 2520,
+      "Seville": 2520,
+      "Athens": 2520,
+      "Frankfurt": 2520,
+      "Thessaloniki": 2520,
+      "Lyon": 2520,
+      "Zurich": 2520,
+      "Krakow": 2520,
+      "Vienna": 2520,
+      "Innsbruck": 2520,
+      "Oslo": 2520,
+      "Bergen": 2520,
+      "Stockholm": 2520,
+      "Gothenburg": 2520,
+      "Helsinki": 2520,
+      "Geneva": 2520,
+      "Warsaw": 2520,
+      "Dublin": 2520,
+      "Lisbon": 2520,
+      "Porto": 2520,
+      "Prague": 2520,
+      "Budapest": 2520,
+      "Bucharest": 2520,
+      "Sofia": 2520,
+      "Kyiv": 2520,
+      "Reykjavik": 2520,
+      "Istanbul": 2520,
+      "Ankara": 2520,
+      "Copenhagen": 2520,
+      "Zagreb": 2520,
+      "Belgrade": 2520,
+      "New York": 2520,
+      "Chicago": 2520,
+      "Miami": 2520,
+      "Los Angeles": 2520,
+      "Seattle": 2520,
+      "Amsterdam": 2520,
+      "Brussels": 2520,
+      "Phoenix": 2520,
+      "Houston": 2520,
+      "Boston": 2520,
+      "San Francisco": 2520,
+      "Washington D.C.": 2520,
+      "Dallas": 2520,
+      "Minneapolis": 2520,
+      "New Orleans": 2520,
+      "Las Vegas": 2520,
+      "Anchorage": 2520,
+      "Honolulu": 2520,
+      "Salt Lake City": 2520,
+      "Montreal": 2520,
+      "Toronto": 2520,
+      "Denver": 2520,
+      "Vancouver": 2520,
+      "Calgary": 2520,
+      "Edmonton": 2520,
+      "Atlanta": 2520,
+      "Ottawa": 2520,
+      "Mexico City": 2520,
+      "Guadalajara": 2520,
+      "Monterrey": 2520,
+      "Cancun": 2520,
+      "Tijuana": 2520,
+      "Havana": 2520,
+      "Santo Domingo": 2520,
+      "Kingston": 2520,
+      "San Juan": 2520,
+      "Guatemala City": 2520,
+      "Winnipeg": 2520,
+      "Panama City": 2520,
+      "San Jose": 2520,
+      "Halifax": 2520,
+      "Sao Paulo": 2520,
+      "Nassau": 2520,
+      "Rio de Janeiro": 2520,
+      "Brasilia": 2520,
+      "Manaus": 2520,
+      "Porto Alegre": 2520,
+      "Fortaleza": 2520,
+      "Salvador": 2520,
+      "Buenos Aires": 2520,
+      "Cordoba": 2520,
+      "Mendoza": 2520,
+      "Santiago": 2520,
+      "Ushuaia": 2520,
+      "Antofagasta": 2520,
+      "Punta Arenas": 2520,
+      "Lima": 2520,
+      "Cusco": 2520,
+      "Bogota": 2520,
+      "Medellin": 2520,
+      "Quito": 2520,
+      "Guayaquil": 2520,
+      "La Paz": 2520,
+      "Santa Cruz": 2520,
+      "Montevideo": 2520,
+      "Asuncion": 2520,
+      "Caracas": 2520,
+      "Cairo": 2520,
+      "Alexandria": 2520,
+      "Lagos": 2520,
+      "Abuja": 2520,
+      "Kano": 2520,
+      "Nairobi": 2520,
+      "Mombasa": 2520,
+      "Johannesburg": 2520,
+      "Cape Town": 2520,
+      "Durban": 2520,
+      "Addis Ababa": 2520,
+      "Casablanca": 2520,
+      "Marrakech": 2520,
+      "Dakar": 2520,
+      "Accra": 2520,
+      "Kinshasa": 2520,
+      "Luanda": 2520,
+      "Dar es Salaam": 2520,
+      "Algiers": 2520,
+      "Tunis": 2520,
+      "Khartoum": 2520,
+      "Windhoek": 2520,
+      "Antananarivo": 2520,
+      "Kigali": 2520,
+      "Kampala": 2520,
+      "Sydney": 2520,
+      "Melbourne": 2520,
+      "Brisbane": 2520,
+      "Perth": 2520,
+      "Adelaide": 2520,
+      "Darwin": 2520,
+      "Alice Springs": 2520,
+      "Hobart": 2520,
+      "Cairns": 2520,
+      "Auckland": 2520,
+      "Wellington": 2520,
+      "Christchurch": 2520,
+      "Suva": 2520,
+      "Port Moresby": 2520,
+      "Noumea": 2520
+    },
+    "unpopulated_stations_count": 0,
+    "unpopulated_stations_reason": "None. All 200 global stations fully ingested across all 6 continents."
+  },
+  "climate_and_geographic_diversity": {
+    "records_per_climate_regime": {
+      "TEMPERATE": 186480,
+      "TROPICAL": 151200,
+      "CONTINENTAL": 68040,
+      "ARID": 65520,
+      "POLAR_ALPINE": 32760
+    },
+    "records_per_geographic_category": {
+      "COASTAL": 204120,
+      "INLAND": 166320,
+      "MOUNTAIN_ALPINE": 65520,
+      "ISLAND": 45360,
+      "DESERT_ARID": 22680
+    }
+  },
+  "temporal_coverage": {
+    "min_initialization_time": "2024-07-03 00:00:00",
+    "max_initialization_time": "2026-01-16 23:00:00",
+    "records_per_year": {
+      "2024": 201600,
+      "2025": 201600,
+      "2026": 100800
+    },
+    "records_per_month": {
+      "7": 100800,
+      "11": 100800,
+      "4": 100800,
+      "8": 100800,
+      "1": 100800
+    }
+  },
+  "lead_time_coverage": {
+    "records_per_lead_time": {
+      "24": 72000,
+      "48": 72000,
+      "72": 72000,
+      "96": 72000,
+      "120": 72000,
+      "144": 72000,
+      "168": 72000
+    }
+  },
+  "missing_data_statistics": {
+    "overall_missing_percentage": 0.0,
+    "columns": {
+      "station_id": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "station_name": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "country": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "continent": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "climate_category": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "geographic_category": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "elevation": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "initialization_time": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "valid_time": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "lead_hours": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "latitude": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "longitude": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_provider": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_model": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "reference_source": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "data_type": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_temperature": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_precipitation": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_wind": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_pressure": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_humidity": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "forecast_cloud_cover": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "ensemble_spread": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "run_revision": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "reference_temperature": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "reference_precipitation": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "reference_wind": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "reference_pressure": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "reference_humidity": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "error_temperature": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "error_precipitation": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "error_wind": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "error_pressure": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "error_humidity": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "alignment_method": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "spatial_offset_deg": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "is_bust": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "bust_severity": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "lead_time_group": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "labeling_method": {
+        "null_count": 0,
+        "percentage": 0.0
+      },
+      "operational_threshold": {
+        "null_count": 0,
+        "percentage": 0.0
+      }
+    }
+  },
+  "physical_range_sanity": {
+    "latitude": 0,
+    "longitude": 0,
+    "forecast_temperature": 0,
+    "reference_temperature": 0,
+    "forecast_precipitation": 0,
+    "reference_precipitation": 0,
+    "forecast_wind": 0,
+    "reference_wind": 0,
+    "forecast_pressure": 0,
+    "reference_pressure": 0,
+    "forecast_humidity": 0,
+    "reference_humidity": 0
+  },
+  "bust_distribution": {
+    "overall_bust_count": 55426,
+    "overall_bust_prevalence_pct": 11.0,
+    "bust_rate_by_lead_time": {
+      "24": 15.15,
+      "48": 13.47,
+      "72": 11.45,
+      "96": 10.22,
+      "120": 9.4,
+      "144": 8.66,
+      "168": 8.63
+    },
+    "bust_rate_by_continent": {
+      "Africa": 11.44,
+      "Asia": 13.28,
+      "Europe": 8.92,
+      "North America": 12.0,
+      "Oceania": 11.44,
+      "South America": 7.86
+    }
+  },
+  "data_leakage_audit": {
+    "leakage_test": "PASS",
+    "leaked_features_detected": []
+  },
+  "frozen_test_status": {
+    "frozen_test_path": "datasets/training/dataset_real_v002.csv",
+    "frozen_test_records": 37800,
+    "status": "UNCHANGED"
+  },
+  "ingestion_performance": {
+    "cached_payloads_count": 2000,
+    "concurrency_workers": 3,
+    "total_stations_ingested": 200,
+    "records_per_station": 2520,
+    "runtime_seconds": 404.4
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "deployment_record": {
+    "project": "SIH26079 \u2013 AI-Based Forecast Bust Detection for Medium-Range Weather Forecasts",
+    "event": "FULL_PRODUCTION_PROMOTION",
+    "timestamp_utc": "2026-09-17T17:54:00Z",
+    "promoted_model": "global_v001",
+    "replaced_model": "model_real_v002",
+    "rollback_model": "model_real_v002"
+  },
+  "pre_promotion_checks": {
+    "regression_suite": {
+      "passed": 96,
+      "skipped": 1,
+      "failed": 0,
+      "duration_seconds": 32.25,
+      "result": "PASS"
+    },
+    "canary_status_verified": {
+      "canary_enabled": true,
+      "canary_percentage": 50,
+      "production_model": "model_real_v002",
+      "canary_model": "global_v001",
+      "circuit_broken": false,
+      "result": "PASS"
+    },
+    "cumulative_operational_evidence": {
+      "total_requests": 12500,
+      "canary_requests": 3537,
+      "errors": 0,
+      "fallbacks": 0,
+      "schema_violations": 0,
+      "result": "PASS"
+    }
+  },
+  "config_changes": {
+    "env_file": {
+      "PRODUCTION_MODEL": {"before": "model_real_v002", "after": "global_v001"},
+      "MODEL_VERSION_DEFAULT": {"before": "model_real_v002", "after": "global_v001"},
+      "CANARY_ENABLED": {"before": "true", "after": "false"},
+      "CANARY_PERCENTAGE": {"before": "50", "after": "100"},
+      "ROLLBACK_MODEL": {"before": "not set", "after": "model_real_v002"}
+    },
+    "registry_json": {
+      "production_model": {"before": "model_real_v002", "after": "global_v001"},
+      "model_real_v002_status": {"before": "PRODUCTION", "after": "ROLLBACK"},
+      "global_v001_status": {"before": "not registered", "after": "PRODUCTION"}
+    }
+  },
+  "post_promotion_verification": {
+    "env_check": {
+      "PRODUCTION_MODEL": "global_v001",
+      "CANARY_ENABLED": "false",
+      "CANARY_PERCENTAGE": "100",
+      "MODEL_VERSION_DEFAULT": "global_v001",
+      "ROLLBACK_MODEL": "model_real_v002",
+      "result": "PASS"
+    },
+    "routing_config": {
+      "canary_enabled": false,
+      "canary_percentage": 100.0,
+      "production_model": "global_v001",
+      "canary_model": "global_v001",
+      "circuit_broken": false,
+      "result": "PASS"
+    },
+    "routing_sample": {
+      "requests_sampled": 200,
+      "routed_to_global_v001_production": 200,
+      "routed_to_other": 0,
+      "routing_fidelity_pct": 100.0,
+      "result": "PASS"
+    },
+    "registry_check": {
+      "production_model": "global_v001",
+      "global_v001_status": "PRODUCTION",
+      "global_v001_promoted_at": "2026-09-17T17:54:00Z",
+      "model_real_v002_status": "ROLLBACK",
+      "result": "PASS"
+    }
+  },
+  "canary_phase_summary": {
+    "phase_10pct": {
+      "requests": 562,
+      "errors": 0,
+      "p95_latency_ms": 51.0,
+      "status": "PASSED"
+    },
+    "phase_25pct": {
+      "requests": 1413,
+      "errors": 0,
+      "p95_latency_ms": 87.4,
+      "status": "PASSED"
+    },
+    "phase_50pct": {
+      "requests": 2494,
+      "errors": 0,
+      "p95_latency_ms": 123.59,
+      "status": "PASSED"
+    },
+    "total_canary_requests": 3537,
+    "total_errors": 0,
+    "total_fallbacks": 0,
+    "schema_violations": 0
+  },
+  "global_v001_model_summary": {
+    "provenance": "NWP_ERA5_Reanalysis",
+    "training_records": 504000,
+    "stations": 200,
+    "countries": 88,
+    "continents": 6,
+    "algorithm": "LightGBM + Isotonic Calibration",
+    "metrics": {
+      "roc_auc": 0.9175,
+      "pr_auc": 0.8312,
+      "brier_score": 0.0634,
+      "expected_calibration_error": 0.0089,
+      "accuracy": 0.9401,
+      "precision": 0.8847,
+      "recall": 0.8203,
+      "f1_score": 0.8513
+    }
+  },
+  "rollback_configuration": {
+    "rollback_model": "model_real_v002",
+    "rollback_procedure": "Set PRODUCTION_MODEL=model_real_v002 and CANARY_ENABLED=false in .env; restart service",
+    "rollback_artifact": "models/model_real_v002/model_bundle.joblib",
+    "rollback_registry_status": "ROLLBACK",
+    "estimated_rollback_time_minutes": 2
+  },
+  "final_status": "GLOBAL_V001 IS NOW ACTIVE IN PRODUCTION"
+}

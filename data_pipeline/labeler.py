@@ -9,20 +9,39 @@ Every output record explicitly records its labeling strategy and threshold value
 """
 import argparse
 import glob
+import math
 import os
 import pandas as pd
 import numpy as np
 
 
+def get_lead_time_group(lead_hours: int) -> str:
+    """Classifies forecast horizon into meteorological regimes."""
+    h = int(lead_hours)
+    if h <= 48:
+        return "Day 1-2"
+    elif h <= 120:
+        return "Day 3-5"
+    elif h <= 240:
+        return "Day 6-10"
+    elif h <= 360:
+        return "Day 11-15"
+    elif h <= 480:
+        return "Day 16-20"
+    else:
+        return "Day 21-30"
+
+
 class BustLabeler:
     def __init__(
         self,
-        strategy: str = "lead_time_dynamic",
+        strategy: str = "lead_time_saturation",
         rain_thresh_base: float = 25.0,     # mm
         temp_thresh_base: float = 4.0,      # °C
         wind_thresh_base: float = 8.5,      # m/s
         lead_scaling_factor: float = 0.12,  # +12% threshold allowance per 24h lead
-        percentile_cutoff: float = 95.0
+        percentile_cutoff: float = 95.0,
+        tau_scale_hours: float = 168.0      # 7-day e-folding horizon for non-linear saturation
     ):
         self.strategy = strategy
         self.rain_base = rain_thresh_base
@@ -30,11 +49,21 @@ class BustLabeler:
         self.wind_base = wind_thresh_base
         self.lead_scaling = lead_scaling_factor
         self.percentile = percentile_cutoff
+        self.tau_scale = tau_scale_hours
 
     def get_dynamic_threshold(self, base_thresh: float, lead_hours: int) -> float:
-        """Scales threshold with lead horizon tau (e.g., 24h to 240h)."""
+        """Linear scaling threshold with lead horizon tau (Day 1 to Day 10)."""
         days_beyond_day1 = max(0, (lead_hours - 24) / 24.0)
         return round(base_thresh * (1.0 + self.lead_scaling * days_beyond_day1), 2)
+
+    def get_saturation_threshold(self, base_thresh: float, lead_hours: int, alpha: float = 1.2) -> float:
+        """
+        Non-linear saturation thresholding for extended horizons (Day 3 to Day 30).
+        Prevents unrealistic runaway thresholds beyond Day 10 using smooth tanh growth.
+        """
+        tau_offset = max(0.0, float(lead_hours) - 24.0)
+        scaled_growth = alpha * math.tanh(tau_offset / self.tau_scale)
+        return round(base_thresh * (1.0 + scaled_growth), 2)
 
     def label_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         if df.empty:
@@ -51,12 +80,14 @@ class BustLabeler:
         severity_list = []
         method_list = []
         threshold_val_list = []
+        lead_group_list = []
 
         for _, row in df.iterrows():
             lead_h = int(row.get("lead_hours", 24))
             p_err = row.get("error_precipitation") or 0.0
             t_err = row.get("error_temperature") or 0.0
             w_err = row.get("error_wind") or 0.0
+            lead_group_list.append(get_lead_time_group(lead_h))
 
             if self.strategy == "absolute":
                 rain_th = self.rain_base
@@ -68,15 +99,20 @@ class BustLabeler:
                 temp_th = float(p95_temp)
                 wind_th = float(p95_wind)
                 method = f"PERCENTILE_{int(self.percentile)}TH"
+            elif self.strategy == "lead_time_saturation":
+                rain_th = self.get_saturation_threshold(self.rain_base, lead_h, alpha=1.2)
+                temp_th = self.get_saturation_threshold(self.temp_base, lead_h, alpha=0.85)
+                wind_th = self.get_saturation_threshold(self.wind_base, lead_h, alpha=0.75)
+                method = "SATURATION_HORIZON_SCALED"
             elif self.strategy == "lead_time_dynamic":
                 rain_th = self.get_dynamic_threshold(self.rain_base, lead_h)
                 temp_th = self.get_dynamic_threshold(self.temp_base, lead_h)
                 wind_th = self.get_dynamic_threshold(self.wind_base, lead_h)
-                method = f"DYNAMIC_HORIZON_SCALED"
+                method = "DYNAMIC_HORIZON_SCALED"
             elif self.strategy == "compound":
-                rain_th = self.get_dynamic_threshold(self.rain_base, lead_h)
-                temp_th = self.get_dynamic_threshold(self.temp_base, lead_h)
-                wind_th = self.get_dynamic_threshold(self.wind_base, lead_h)
+                rain_th = self.get_saturation_threshold(self.rain_base, lead_h, alpha=1.2)
+                temp_th = self.get_saturation_threshold(self.temp_base, lead_h, alpha=0.85)
+                wind_th = self.get_saturation_threshold(self.wind_base, lead_h, alpha=0.75)
                 method = "MULTI_VARIABLE_COMPOUND"
             else:
                 rain_th = self.rain_base
@@ -93,7 +129,6 @@ class BustLabeler:
             if self.strategy == "compound":
                 is_bust = bust_rain or (bust_temp and bust_wind)
             else:
-                # By default in medium-range synoptic forecasts, rainfall is primary, with temp/wind high impact
                 is_bust = bust_rain or bust_temp or bust_wind
 
             # Severity determination
@@ -114,6 +149,7 @@ class BustLabeler:
 
         df["is_bust"] = is_bust_list
         df["bust_severity"] = severity_list
+        df["lead_time_group"] = lead_group_list
         df["labeling_method"] = method_list
         df["operational_threshold"] = threshold_val_list
 

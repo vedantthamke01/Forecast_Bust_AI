@@ -272,7 +272,7 @@
     "promoted_from": "CANARY",
     "replaces": "model_real_v002",
     "rollback_model": "model_real_v002",
-    "artifact_path": "C:\\\\Users\\\\vedant\\\\Documents\\\\SIH\\\\models\\\\global_v001\\\\model_bundle.joblib",
+    "artifact_path": "models/global_v001/model_bundle.joblib",
     "promoted_at": "2026-09-17T17:54:00Z",
     "created_at": "2026-09-10T20:03:14Z"
   }

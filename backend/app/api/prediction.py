@@ -234,7 +234,7 @@ async def get_risk_map(
         "variable": var_clean,
         "data_type": getattr(bust_service, "data_type", "REAL"),
         "model_version": bust_service.model_version,
-        "dataset_version": getattr(bust_service, "dataset_version", "dataset_real_v002"),
+        "dataset_version": getattr(bust_service, "dataset_version", "dataset_global_v001"),
         "grid_points_count": len(grid),
         "grid": grid,
         "stations": grid,

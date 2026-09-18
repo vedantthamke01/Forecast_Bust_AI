@@ -27,7 +27,7 @@
           <span>AI Forecast Bust Detection</span>
           <span class="brand-id-tag">(SIH26079)</span>
         </h1>
-        <p class="brand-sub">Weather Forecast + AI Forecast Reliability Intelligence (Days 3–10)</p>
+        <p class="brand-sub">Weather Forecast + AI Forecast Reliability Intelligence (Days 1–30)</p>
       </div>
     </div>
 
@@ -40,7 +40,7 @@
       <!-- Model Provenance Tag -->
       <div class="provenance-chip" id="nav-model-chip">
         <span class="chip-dot"></span>
-        <span>model_real_v002 • REAL</span>
+        <span>global_v001 • REAL (NWP–ERA5)</span>
       </div>
       <!-- Scenario Toggle Button -->
       <button class="btn btn-secondary" id="btn-toggle-demo" title="Toggle What-If Scenario Mode vs Live Operational NWP">
@@ -52,8 +52,8 @@
 
   <!-- Primary Navigation Tabs -->
   <nav class="tabs-bar">
-    <button class="tab-btn active" data-tab="tab-overview">1. 🏠 Weather & Reliability</button>
-    <button class="tab-btn" data-tab="tab-map">2. 🗺️ Spatial Risk Map (India)</button>
+    <button class="tab-btn active" data-tab="tab-overview">1. 🏠 Weather & Reliability (Days 1–30)</button>
+    <button class="tab-btn" data-tab="tab-map">2. 🗺️ Spatial Risk Map (Global & India)</button>
     <button class="tab-btn" data-tab="tab-verification">3. 📊 Forecast vs Reference (Verification)</button>
     <button class="tab-btn" data-tab="tab-admin">4. 🔬 Scientific / Advanced</button>
   </nav>
@@ -112,13 +112,17 @@
         </div>
         <!-- Quick Presets Inside Search -->
         <div class="quick-pills-row" style="margin-top: 0.75rem;">
-          <span class="pills-label">Popular Observatories:</span>
-          <button class="pill-btn active" data-lat="18.5204" data-lon="73.8567" data-name="Pune">Pune</button>
+          <span class="pills-label">Benchmark Observatories (Global & India):</span>
+          <button class="pill-btn active" data-lat="21.1458" data-lon="79.0882" data-name="Nagpur">Nagpur (India)</button>
+          <button class="pill-btn" data-lat="18.5204" data-lon="73.8567" data-name="Pune">Pune</button>
           <button class="pill-btn" data-lat="28.6139" data-lon="77.2090" data-name="New Delhi">New Delhi</button>
           <button class="pill-btn" data-lat="19.0760" data-lon="72.8777" data-name="Mumbai">Mumbai</button>
-          <button class="pill-btn" data-lat="22.5726" data-lon="88.3639" data-name="Kolkata">Kolkata</button>
-          <button class="pill-btn" data-lat="13.0827" data-lon="80.2707" data-name="Chennai">Chennai</button>
-          <button class="pill-btn" data-lat="12.9716" data-lon="77.5946" data-name="Bengaluru">Bengaluru</button>
+          <button class="pill-btn" data-lat="35.6762" data-lon="139.6503" data-name="Tokyo">Tokyo (Japan)</button>
+          <button class="pill-btn" data-lat="51.5074" data-lon="-0.1278" data-name="London">London (UK)</button>
+          <button class="pill-btn" data-lat="40.7128" data-lon="-74.0060" data-name="New York">New York (USA)</button>
+          <button class="pill-btn" data-lat="-23.5505" data-lon="-46.6333" data-name="São Paulo">São Paulo (Brazil)</button>
+          <button class="pill-btn" data-lat="-33.9249" data-lon="18.4241" data-name="Cape Town">Cape Town (SA)</button>
+          <button class="pill-btn" data-lat="-33.8688" data-lon="151.2093" data-name="Sydney">Sydney (Australia)</button>
         </div>
         <div id="search-results-container" class="search-results-list" style="display: none;"></div>
       </div>
@@ -227,8 +231,16 @@
       <div class="forecast-timeline-section">
         <div class="timeline-header">
           <div>
-            <h3 class="timeline-title">Upcoming Forecast & AI Reliability Timeline</h3>
-            <p class="timeline-sub">Select any day to inspect the detailed weather guidance and calibrated bust probability</p>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <h3 class="timeline-title">Upcoming Forecast & AI Reliability Timeline (Days 1–30)</h3>
+              <div class="timeline-scroll-nav" style="display: flex; gap: 0.35rem;">
+                <button class="btn btn-sm btn-secondary" id="btn-timeline-left" title="Scroll earlier days" style="padding: 0.2rem 0.6rem; font-size: 0.85rem;">◀ Earlier</button>
+                <button class="btn btn-sm btn-secondary" id="btn-timeline-right" title="Scroll later days" style="padding: 0.2rem 0.6rem; font-size: 0.85rem;">Later (Days 8–30) ▶</button>
+              </div>
+            </div>
+            <p class="timeline-sub">
+              Days 1–7: <strong style="color: var(--risk-low);">Scientifically Validated</strong> (ERA5 benchmark) • Days 8–30: <strong style="color: var(--risk-mod);">Extended Range</strong> (Exploratory estimate only)
+            </p>
           </div>
           <div class="variable-selector-inline">
             <span class="var-selector-label">Inspect Variable:</span>
@@ -250,23 +262,23 @@
         <!-- Dynamic Days Timeline Cards Container -->
         <div id="forecast-timeline-container" class="timeline-cards-row">
           <div class="timeline-loading-state">
-            <span class="pulse-dot"></span> Loading multi-day ECMWF IFS forecast & reliability indices...
+            <span class="pulse-dot"></span> Loading 30-day forecast & AI reliability indices...
           </div>
         </div>
 
         <!-- Hidden Legacy Slider for test contract compatibility -->
         <div style="display: none;">
-          <input type="range" id="lead-slider" class="lead-slider" min="72" max="240" step="24" value="96">
+          <input type="range" id="lead-slider" class="lead-slider" min="24" max="720" step="24" value="96">
           <span id="lead-days-display">Day 4 (96 Hours)</span>
-          <span class="coverage-badge-historical" id="horizon-coverage-status">● Historical Training & Validation Archive Covered (Days 3–7)</span>
+          <span class="coverage-badge-historical" id="horizon-coverage-status">● Scientific Validation: Days 1–7 • Extended Range: Days 8–30</span>
         </div>
       </div>
 
-      <!-- DAY 10 ARCHIVE BOUNDARY NOTICE (Subtle & Scientifically Honest) -->
+      <!-- EXTENDED RANGE NOTICE (Scientifically Honest Governance) -->
       <div id="day10-archive-notice" class="archive-info-banner" style="display: none;">
         <span class="info-banner-icon">ℹ️</span>
-        <span>
-          <strong>Operational Inference Notice:</strong> Day 10 uses operational inference. The current public historical archive used for model development does not provide equivalent historical training coverage through Day 10. Institutional archive integration (NCMRWF MARS) is required for historical Day 10 model training.
+        <span id="archive-notice-text">
+          <strong>Scientific Governance Notice:</strong> Days 1–7 are scientifically validated against ERA5 reanalysis reference data. Days 8–30 represent exploratory extended-range estimates without formal scientific validation.
         </span>
       </div>
 
@@ -466,20 +478,41 @@
     </section>
 
     <!-- =========================================================================
-         TAB 2: SPATIAL RISK MAP (INDIA 25 SYNOPTIC STATIONS)
+         TAB 2: SPATIAL RISK MAP (GLOBAL NETWORK & INDIA SYNOPTIC)
          ========================================================================= -->
     <section id="tab-map" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>Spatial Forecast Bust Risk Map (India Synoptic Domain — 25 Observatories)</span>
-          <span style="font-size: 0.8rem; color: var(--text-secondary);">Powered by OpenStreetMap & Leaflet (₹0 Zero Cost Stack)</span>
+          <span id="map-domain-title">Spatial Forecast Bust Risk Map (Global Network — 88 Countries)</span>
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">Powered by OpenStreetMap & Leaflet (Zero Cost Stack)</span>
         </div>
         <p style="font-size: 0.8rem; color: var(--text-secondary); margin: -0.5rem 0 0.75rem 0;">
-          A model-generated spatial visualization of estimated forecast-bust risk under the selected forecast scenario.
+          A calibrated spatial visualization of estimated forecast-bust risk across synoptic benchmark observatories worldwide.
         </p>
 
         <!-- Map Controls & Legend Bar -->
-        <div class="map-controls-row">
+        <div class="map-controls-row" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">Domain:</span>
+            <button class="btn btn-sm btn-primary active" id="btn-map-global">🌐 Global Network (88 Countries)</button>
+            <button class="btn btn-sm btn-secondary" id="btn-map-india">🇮🇳 India Synoptic (25 IMD)</button>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">Horizon:</span>
+            <select id="map-lead-select" class="input-field" style="padding: 0.25rem 0.5rem; font-size: 0.85rem; width: auto;">
+              <option value="24">Day 1 (24h) — Validated</option>
+              <option value="48">Day 2 (48h) — Validated</option>
+              <option value="72">Day 3 (72h) — Validated</option>
+              <option value="96" selected>Day 4 (96h) — Validated</option>
+              <option value="120">Day 5 (120h) — Validated</option>
+              <option value="144">Day 6 (144h) — Validated</option>
+              <option value="168">Day 7 (168h) — Validated</option>
+              <option value="240">Day 10 (240h) — Extended</option>
+              <option value="360">Day 15 (360h) — Extended</option>
+              <option value="480">Day 20 (480h) — Extended</option>
+              <option value="720">Day 30 (720h) — Extended</option>
+            </select>
+          </div>
           <div class="map-legend">
             <span>Risk Legend:</span>
             <span class="legend-chip legend-low">🟢 Low (&lt;25%)</span>
@@ -487,19 +520,16 @@
             <span class="legend-chip legend-high">🟠 High (50–75%)</span>
             <span class="legend-chip legend-vhigh">🔴 Very High (≥75%)</span>
           </div>
-          <div class="map-hint">
-            💡 Click any station marker to inspect forecast bust probability and load it into the Weather & Reliability view.
-          </div>
         </div>
 
         <div id="risk-map-canvas"></div>
 
         <div class="map-provenance-footer">
-          <span>Domain: <strong>25 Synoptic Stations (India)</strong></span>
+          <span id="map-domain-footer">Domain: <strong>Global Network (88 Countries, 6 Continents)</strong></span>
           <span>•</span>
-          <span>Elevation-Aware Physical Baselines</span>
+          <span>Elevation & Regime Physical Baselines</span>
           <span>•</span>
-          <span>Model: <strong>model_real_v002</strong></span>
+          <span id="map-model-footer">Model: <strong>global_v001 • REAL</strong></span>
         </div>
       </div>
     </section>
@@ -797,29 +827,29 @@
         <!-- Production Model Metrics -->
         <div class="card">
           <div class="card-title">
-            <span>Production Champion Model (model_real_v002)</span>
-            <span class="brand-badge" id="admin-model-version">model_real_v002 (Production)</span>
+            <span>Production Champion Model (global_v001)</span>
+            <span class="brand-badge" id="admin-model-version">global_v001 (Production)</span>
           </div>
 
           <div class="grid-2" style="margin-bottom: 1rem;">
             <div class="metric-box">
               <div class="metric-label">PR-AUC (Precision-Recall)</div>
-              <div class="metric-value" style="font-size: 1.5rem;" id="admin-prauc">0.2682</div>
-              <div class="metric-sub">Baseline: 0.0950 (+0.1732)</div>
+              <div class="metric-value" style="font-size: 1.5rem;" id="admin-prauc">0.8312</div>
+              <div class="metric-sub">Production Global Model</div>
             </div>
             <div class="metric-box">
               <div class="metric-label">ROC-AUC Discriminative</div>
-              <div class="metric-value" style="font-size: 1.5rem;" id="admin-rocauc">0.8756</div>
+              <div class="metric-value" style="font-size: 1.5rem;" id="admin-rocauc">0.9175</div>
               <div class="metric-sub">High discrimination power</div>
             </div>
             <div class="metric-box">
               <div class="metric-label">Brier Calibration Score</div>
-              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-brier">0.0450</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-brier">0.0634</div>
               <div class="metric-sub">Brier Score (Isotonic)</div>
             </div>
             <div class="metric-box">
               <div class="metric-label">Expected Calib. Error (ECE)</div>
-              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-ece">0.0257</div>
+              <div class="metric-value" style="font-size: 1.5rem; color: var(--risk-low);" id="admin-ece">0.0089</div>
               <div class="metric-sub">Expected Calibration Error</div>
             </div>
           </div>
@@ -863,15 +893,15 @@
             <tbody>
               <tr>
                 <td><strong>Champion ML Model</strong></td>
-                <td><code class="code-pill">model_real_v002</code></td>
+                <td><code class="code-pill">global_v001</code></td>
                 <td>Trained on real NWP–ERA5 archive</td>
                 <td>LightGBM with Platt/Isotonic Calibration & TreeSHAP</td>
               </tr>
               <tr>
                 <td><strong>Training Dataset</strong></td>
-                <td><code class="code-pill">dataset_real_v002.csv</code></td>
-                <td>37,800 authentic records (India)</td>
-                <td>Spatio-temporally aligned NWP forecasts and ERA5 reference reanalysis</td>
+                <td><code class="code-pill">dataset_global_v001.parquet</code></td>
+                <td>504,000 authentic records (Global)</td>
+                <td>200 synoptic stations, 88 countries, 6 continents</td>
               </tr>
               <tr>
                 <td><strong>Historical NWP Source</strong></td>
@@ -892,16 +922,16 @@
                 <td>Live real-time operational guidance at inference time $T_0$</td>
               </tr>
               <tr>
-                <td><strong>Historical Coverage</strong></td>
-                <td><code class="code-pill">Days 3–7 (72h–168h)</code></td>
-                <td>Authentic historical archive</td>
-                <td>Scientifically honest boundary: Days 8–10 training data not fabricated</td>
+                <td><strong>Scientific Validation</strong></td>
+                <td><code class="code-pill">Days 1–7 (24h–168h)</code></td>
+                <td>ERA5 reanalysis benchmark</td>
+                <td>Scientifically validated against historical reference</td>
               </tr>
               <tr>
-                <td><strong>Operational Inference</strong></td>
-                <td><code class="code-pill">Days 3–10 (72h–240h)</code></td>
-                <td>ECMWF IFS 10-day medium range</td>
-                <td>Supported in production live inference pipeline</td>
+                <td><strong>Operational Horizon</strong></td>
+                <td><code class="code-pill">Days 1–30 (24h–720h)</code></td>
+                <td>Full multi-week extended range</td>
+                <td>Days 8–30 marked UNVALIDATED_EXTENDED_RANGE</td>
               </tr>
               <tr>
                 <td><strong>Infrastructure Budget</strong></td>

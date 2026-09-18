@@ -170,7 +170,7 @@ class OpenMeteoProvider(ForecastProvider, ReferenceWeatherProvider):
                 "current": "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,pressure_msl,cloud_cover",
                 "hourly": "temperature_2m,precipitation,wind_speed_10m,pressure_msl,relative_humidity_2m,cloud_cover",
                 "wind_speed_unit": "ms",
-                "forecast_days": min(days, 10),
+                "forecast_days": min(days, 16),
                 "timezone": "UTC"
             }
             if self.api_key:

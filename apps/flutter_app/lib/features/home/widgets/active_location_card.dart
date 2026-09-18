@@ -119,7 +119,7 @@ class _ActiveLocationCardState extends State<ActiveLocationCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'LAT: ${widget.location.latitude.toStringAsFixed(4)}°N',
+                    'LAT: ${AppConstants.formatLat(widget.location.latitude, 4)}',
                     style: const TextStyle(
                       fontSize: 11,
                       color: AppColors.textDim,
@@ -127,7 +127,7 @@ class _ActiveLocationCardState extends State<ActiveLocationCard> {
                     ),
                   ),
                   Text(
-                    'LON: ${widget.location.longitude.toStringAsFixed(4)}°E',
+                    'LON: ${AppConstants.formatLon(widget.location.longitude, 4)}',
                     style: const TextStyle(
                       fontSize: 11,
                       color: AppColors.textDim,
@@ -135,7 +135,7 @@ class _ActiveLocationCardState extends State<ActiveLocationCard> {
                     ),
                   ),
                   const Text(
-                    'IMD SYNOP',
+                    'WMO SYNOP',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,

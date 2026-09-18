@@ -56,7 +56,7 @@ async def get_current_weather(
 async def get_medium_range_forecast(
     lat: float = Query(..., ge=-90, le=90),
     lon: float = Query(..., ge=-180, le=180),
-    days: int = Query(10, ge=1, le=10, description="Forecast days (up to 10 days / 240 hours)"),
+    days: int = Query(10, ge=1, le=30, description="Forecast days (up to 30 days / 720 hours)"),
     demo: bool = Query(False)
 ):
     forecasts = await weather_service.get_forecast(lat, lon, days=days, demo_mode=demo)

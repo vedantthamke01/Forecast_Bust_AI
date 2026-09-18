@@ -28,14 +28,17 @@ final activeLocationProvider = StateProvider<LocationModel>((ref) {
   return const LocationModel(
     name: AppConstants.defaultCity,
     state: AppConstants.defaultState,
-    country: 'India',
+    country: AppConstants.defaultCountry,
     latitude: AppConstants.defaultLat,
     longitude: AppConstants.defaultLon,
   );
 });
 
-// Selected lead hours (e.g. 24, 72, 96, 120, 144, 168, 192, 216, 240)
+// Selected lead hours across full 30-day horizon (24h to 720h)
 final selectedLeadHoursProvider = StateProvider<int>((ref) => 72);
+
+// Map region domain filter ('india' or 'global')
+final mapRegionProvider = StateProvider<String>((ref) => 'india');
 
 // 3. Operational Data Providers (Real backend calls)
 final currentWeatherProvider = FutureProvider.autoDispose<CurrentWeather>((ref) async {
@@ -47,7 +50,7 @@ final currentWeatherProvider = FutureProvider.autoDispose<CurrentWeather>((ref) 
 final forecastTimelineProvider = FutureProvider.autoDispose<List<ForecastHorizon>>((ref) async {
   final loc = ref.watch(activeLocationProvider);
   final api = ref.watch(apiServiceProvider);
-  return api.getForecast(loc.latitude, loc.longitude, days: 10);
+  return api.getForecast(loc.latitude, loc.longitude, days: 30);
 });
 
 final riskPredictionProvider = FutureProvider.autoDispose<RiskPrediction>((ref) async {
@@ -64,8 +67,9 @@ final riskPredictionProvider = FutureProvider.autoDispose<RiskPrediction>((ref) 
 
 final spatialRiskMapProvider = FutureProvider.autoDispose<List<StationRiskPoint>>((ref) async {
   final leadHours = ref.watch(selectedLeadHoursProvider);
+  final region = ref.watch(mapRegionProvider);
   final api = ref.watch(apiServiceProvider);
-  return api.getRiskMap(leadHours: leadHours);
+  return api.getRiskMap(leadHours: leadHours, region: region);
 });
 
 final historicalVerificationProvider = FutureProvider.autoDispose<HistoricalVerification>((ref) async {

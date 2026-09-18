@@ -17,7 +17,7 @@ class ApiService {
     return CurrentWeather.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<List<ForecastHorizon>> getForecast(double lat, double lon, {int days = 10}) async {
+  Future<List<ForecastHorizon>> getForecast(double lat, double lon, {int days = 30}) async {
     final response = await client.dio.get(
       '/api/weather/forecast',
       queryParameters: {'lat': lat, 'lon': lon, 'days': days},
@@ -54,10 +54,11 @@ class ApiService {
   Future<List<StationRiskPoint>> getRiskMap({
     int leadHours = 96,
     String variable = 'precipitation',
+    String region = 'india',
   }) async {
     final response = await client.dio.get(
       '/api/risk/map',
-      queryParameters: {'lead_hours': leadHours, 'variable': variable},
+      queryParameters: {'lead_hours': leadHours, 'variable': variable, 'region': region},
     );
     final data = response.data as Map<String, dynamic>;
     final list = (data['stations'] ?? data['grid']) as List<dynamic>? ?? [];

@@ -192,6 +192,9 @@ async def get_risk_by_location(
             "reliability_percentage": result["reliability_percentage"],
             "risk_level": result["risk_level"],
             "risk_badge": result["risk_badge"],
+            "validation_status": result.get("validation_status", "SCIENTIFICALLY_VALIDATED" if lead_hours <= 168 else "UNVALIDATED_EXTENDED_RANGE"),
+            "is_extended_range": result.get("is_extended_range", lead_hours > 168),
+            "validation_note": result.get("validation_note"),
             "explanation": result["explanation"],
             "scientific_governance": result.get("scientific_governance")
         },

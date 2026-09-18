@@ -14,6 +14,9 @@ class RiskMapScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mapDataAsync = ref.watch(spatialRiskMapProvider);
     final selectedHours = ref.watch(selectedLeadHoursProvider);
+    final currentRegion = ref.watch(mapRegionProvider);
+    final isExtended = AppConstants.isExtendedRange(selectedHours);
+    final dayNum = (selectedHours / 24).round();
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -40,32 +43,52 @@ class RiskMapScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        '25 Indian synoptic stations · Day ${(selectedHours / 24).round()} (${selectedHours}h)',
+                        currentRegion == 'india'
+                            ? 'Indian Synoptic Network (25 IMD Stations) · Day $dayNum'
+                            : 'Global Synoptic Network · Day $dayNum',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 11.5,
                           color: AppColors.textDim,
                         ),
                       ),
                     ],
                   ),
-                  // Horizon selector dropdown
+                  // Horizon selector dropdown (Day 1 to Day 30)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: AppColors.card2,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.stroke),
+                      border: Border.all(
+                        color: isExtended ? AppColors.orange.withOpacity(0.4) : AppColors.stroke,
+                      ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: selectedHours,
                         dropdownColor: AppColors.card,
-                        icon: const Icon(Icons.arrow_drop_down, color: AppColors.green, size: 20),
-                        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.green),
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: isExtended ? AppColors.orange : AppColors.green,
+                          size: 20,
+                        ),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: isExtended ? AppColors.orange : AppColors.green,
+                        ),
                         items: AppConstants.operationalLeadHours.map((h) {
+                          final d = (h / 24).round();
+                          final ext = AppConstants.isExtendedRange(h);
                           return DropdownMenuItem(
                             value: h,
-                            child: Text(AppConstants.dayLabelForHours(h)),
+                            child: Text(
+                              ext ? 'Day $d (Ext)' : 'Day $d',
+                              style: TextStyle(
+                                color: ext ? AppColors.orange : AppColors.green,
+                                fontSize: 11.5,
+                              ),
+                            ),
                           );
                         }).toList(),
                         onChanged: (val) {
@@ -78,9 +101,114 @@ class RiskMapScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
-              // Legend Chips Row (Full Screen Responsive)
+              // Domain Scope Toggle (India Synoptic Grid vs Global Benchmark Network)
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.card2,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.stroke),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          ref.read(mapRegionProvider.notifier).state = 'india';
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 7),
+                          decoration: BoxDecoration(
+                            color: currentRegion == 'india'
+                                ? AppColors.green.withOpacity(0.15)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: currentRegion == 'india'
+                                ? Border.all(color: AppColors.green.withOpacity(0.3))
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '🇮🇳 India Synoptic (25 IMD)',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: currentRegion == 'india' ? AppColors.green : AppColors.textDim,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          ref.read(mapRegionProvider.notifier).state = 'global';
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 7),
+                          decoration: BoxDecoration(
+                            color: currentRegion == 'global'
+                                ? AppColors.green.withOpacity(0.15)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: currentRegion == 'global'
+                                ? Border.all(color: AppColors.green.withOpacity(0.3))
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '🌐 Global Network',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: currentRegion == 'global' ? AppColors.green : AppColors.textDim,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Extended Range Alert Banner for Days 8-30
+              if (isExtended) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.orange.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.orange.withOpacity(0.35)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline, color: AppColors.orange, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Day $dayNum ($selectedHours h): UNVALIDATED EXTENDED RANGE — exploratory estimate only.',
+                          style: const TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.orange,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+
+              // Legend Chips Row
               Row(
                 children: [
                   _buildLegendChip(label: 'Low', color: AppColors.green),
@@ -118,11 +246,18 @@ class RiskMapScreen extends ConsumerWidget {
                             ),
                           ];
 
+                    // Region-dependent initial center and zoom
+                    final initialCenter = currentRegion == 'india'
+                        ? const LatLng(22.0, 79.0) // Center of India
+                        : const LatLng(20.0, 15.0); // Global viewpoint
+                    final initialZoom = currentRegion == 'india' ? 4.5 : 2.0;
+
                     return FlutterMap(
-                      options: const MapOptions(
-                        initialCenter: LatLng(22.0, 79.0), // Center of India
-                        initialZoom: 4.5,
-                        minZoom: 3.5,
+                      key: ValueKey('${currentRegion}_$selectedHours'),
+                      options: MapOptions(
+                        initialCenter: initialCenter,
+                        initialZoom: initialZoom,
+                        minZoom: 1.5,
                         maxZoom: 9.0,
                       ),
                       children: [
@@ -187,10 +322,10 @@ class RiskMapScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
 
-              // Nearby Stations Header
-              const Text(
-                'NEARBY STATIONS',
-                style: TextStyle(
+              // Network Stations Header
+              Text(
+                currentRegion == 'india' ? 'INDIAN SYNOPTIC STATIONS' : 'GLOBAL BENCHMARK STATIONS',
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textDim,
@@ -202,7 +337,7 @@ class RiskMapScreen extends ConsumerWidget {
               // Dynamic Stations List
               mapDataAsync.when(
                 data: (stations) {
-                  final displayList = stations.take(6).toList();
+                  final displayList = stations.take(8).toList();
                   if (displayList.isEmpty) {
                     return const Text(
                       'No stations available for this horizon.',
@@ -245,7 +380,7 @@ class RiskMapScreen extends ConsumerWidget {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      '${st.latitude.toStringAsFixed(2)}°N, ${st.longitude.toStringAsFixed(2)}°E · Bust Risk ${(st.bustProbability * 100).toStringAsFixed(1)}%',
+                                      '${AppConstants.formatCoordinates(st.latitude, st.longitude)} · Bust Risk ${(st.bustProbability * 100).toStringAsFixed(1)}%',
                                       style: const TextStyle(
                                         fontSize: 11,
                                         color: AppColors.textFaint,

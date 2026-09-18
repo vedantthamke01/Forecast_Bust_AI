@@ -44,13 +44,13 @@ const List<PipelineStepInfo> pipelineSteps = [
     step: 5,
     title: 'Train',
     description: 'LightGBM gradient boosted decision trees for bust classification.',
-    details: 'Trained on 37,800 records across 25 Indian synoptic stations with strict chronological validation splits.',
+    details: 'Trained on 504,000 authentic NWP–ERA5 records across 200 global synoptic stations in 88 countries with strict chronological validation splits.',
   ),
   PipelineStepInfo(
     step: 6,
     title: 'Calibrate',
     description: 'Isotonic probability calibration for reliable risk estimation.',
-    details: 'Ensures that a predicted 10% bust probability genuinely corresponds to an observed 10% empirical failure rate (ECE: 0.0257).',
+    details: 'Ensures that a predicted 10% bust probability genuinely corresponds to an observed 10% empirical failure rate (ECE: 0.0089).',
   ),
 ];
 

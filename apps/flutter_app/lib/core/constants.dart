@@ -58,28 +58,52 @@ class AppColors {
 
 class AppConstants {
   static const String appName = 'Forecast Bust AI';
-  static const String appSubtitle = 'Reliability Intelligence · Days 3–10';
+  static const String appSubtitle = 'Reliability Intelligence · Days 1–30';
   static const String appVersion = '1.0.0';
   static const String productionBackendUrl = 'https://forecast-bust-api.onrender.com';
 
-  // Lead Hours Definition
-  // Day 3 = 72h, Day 4 = 96h, Day 5 = 120h, Day 6 = 144h, Day 7 = 168h, Day 8 = 192h, Day 9 = 216h, Day 10 = 240h
+  // Lead Hours Definition for Full 30-Day Operational Horizon
+  // Day 1 = 24h, Day 2 = 48h, ... Day 7 = 168h (Scientifically Validated)
+  // Day 8 = 192h, ... Day 30 = 720h (UNVALIDATED_EXTENDED_RANGE / Exploratory)
   static const List<int> operationalLeadHours = [
-    24, // Tomorrow
-    72, // Day 3
-    96, // Day 4
+    24,  // Day 1
+    48,  // Day 2
+    72,  // Day 3
+    96,  // Day 4
     120, // Day 5
     144, // Day 6
     168, // Day 7
-    192, // Day 8
-    216, // Day 9
-    240, // Day 10
+    192, // Day 8 (Extended)
+    216, // Day 9 (Extended)
+    240, // Day 10 (Extended)
+    264, // Day 11
+    288, // Day 12
+    312, // Day 13
+    336, // Day 14
+    360, // Day 15
+    384, // Day 16
+    408, // Day 17
+    432, // Day 18
+    456, // Day 19
+    480, // Day 20
+    504, // Day 21
+    528, // Day 22
+    552, // Day 23
+    576, // Day 24
+    600, // Day 25
+    624, // Day 26
+    648, // Day 27
+    672, // Day 28
+    696, // Day 29
+    720, // Day 30
   ];
+
+  static bool isExtendedRange(int hours) => hours > 168;
 
   static String dayLabelForHours(int hours) {
     switch (hours) {
       case 24:
-        return 'Tmrw';
+        return 'Day 1';
       case 48:
         return 'Day 2';
       case 72:
@@ -92,34 +116,46 @@ class AppConstants {
         return 'Day 6';
       case 168:
         return 'Day 7';
-      case 192:
-        return 'Day 8';
-      case 216:
-        return 'Day 9';
-      case 240:
-        return 'Day 10';
       default:
         return 'Day ${(hours / 24).round()}';
     }
   }
 
-  // Default Synoptic Station (Nagpur, Central India)
+  // Format latitude with N/S hemisphere indicator
+  static String formatLat(double lat, [int precision = 2]) {
+    final dir = lat >= 0 ? 'N' : 'S';
+    return '${lat.abs().toStringAsFixed(precision)}°$dir';
+  }
+
+  // Format longitude with E/W hemisphere indicator
+  static String formatLon(double lon, [int precision = 2]) {
+    final dir = lon >= 0 ? 'E' : 'W';
+    return '${lon.abs().toStringAsFixed(precision)}°$dir';
+  }
+
+  // Format combined coordinate string
+  static String formatCoordinates(double lat, double lon, [int precision = 2]) {
+    return '${formatLat(lat, precision)}, ${formatLon(lon, precision)}';
+  }
+
+  // Default Synoptic Station (Nagpur, Central India - for demo continuity)
   static const double defaultLat = 21.1458;
   static const double defaultLon = 79.0882;
   static const String defaultCity = 'Nagpur';
   static const String defaultState = 'Maharashtra';
+  static const String defaultCountry = 'India';
 
-  // Preset Indian Cities for quick navigation
+  // Preset Global Benchmark Synoptic Observatories
   static const List<Map<String, dynamic>> presetCities = [
-    {'name': 'Nagpur', 'state': 'Maharashtra', 'lat': 21.1458, 'lon': 79.0882},
-    {'name': 'New Delhi', 'state': 'Delhi NCR', 'lat': 28.6139, 'lon': 77.2090},
-    {'name': 'Pune', 'state': 'Maharashtra', 'lat': 18.5204, 'lon': 73.8567},
-    {'name': 'Mumbai', 'state': 'Maharashtra', 'lat': 19.0760, 'lon': 72.8777},
-    {'name': 'Kolkata', 'state': 'West Bengal', 'lat': 22.5726, 'lon': 88.3639},
-    {'name': 'Bengaluru', 'state': 'Karnataka', 'lat': 12.9716, 'lon': 77.5946},
-    {'name': 'Chennai', 'state': 'Tamil Nadu', 'lat': 13.0827, 'lon': 80.2707},
-    {'name': 'Bhopal', 'state': 'Madhya Pradesh', 'lat': 23.2599, 'lon': 77.4126},
-    {'name': 'Jaipur', 'state': 'Rajasthan', 'lat': 26.9124, 'lon': 75.7873},
-    {'name': 'Guwahati', 'state': 'Assam', 'lat': 26.1445, 'lon': 91.7362},
+    {'name': 'Nagpur', 'state': 'Maharashtra', 'country': 'India', 'lat': 21.1458, 'lon': 79.0882},
+    {'name': 'Tokyo', 'state': 'Tokyo', 'country': 'Japan', 'lat': 35.6762, 'lon': 139.6503},
+    {'name': 'London', 'state': 'England', 'country': 'United Kingdom', 'lat': 51.5074, 'lon': -0.1278},
+    {'name': 'New York', 'state': 'New York', 'country': 'USA', 'lat': 40.7128, 'lon': -74.0060},
+    {'name': 'São Paulo', 'state': 'São Paulo', 'country': 'Brazil', 'lat': -23.5505, 'lon': -46.6333},
+    {'name': 'Cape Town', 'state': 'Western Cape', 'country': 'South Africa', 'lat': -33.9249, 'lon': 18.4241},
+    {'name': 'Sydney', 'state': 'New South Wales', 'country': 'Australia', 'lat': -33.8688, 'lon': 151.2093},
+    {'name': 'New Delhi', 'state': 'Delhi NCR', 'country': 'India', 'lat': 28.6139, 'lon': 77.2090},
+    {'name': 'Mumbai', 'state': 'Maharashtra', 'country': 'India', 'lat': 19.0760, 'lon': 72.8777},
+    {'name': 'Paris', 'state': 'Île-de-France', 'country': 'France', 'lat': 48.8566, 'lon': 2.3522},
   ];
 }

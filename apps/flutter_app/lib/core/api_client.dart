@@ -80,23 +80,7 @@ class ApiClient {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString(_prefKeyBaseUrl);
       if (saved != null && saved.trim().isNotEmpty) {
-        final clean = saved.trim();
-        // In Release mode, purge any legacy local LAN / localhost URLs
-        final isLocalAddress = clean.contains('10.') ||
-            clean.contains('192.168.') ||
-            clean.contains('172.16.') ||
-            clean.contains('127.0.0.1') ||
-            clean.contains('localhost') ||
-            clean.contains(':8000');
-
-        if (kReleaseMode && isLocalAddress) {
-          // Reset to production and persist
-          updateBaseUrl(productionApiBaseUrl);
-        } else {
-          updateBaseUrl(clean);
-        }
-      } else if (kReleaseMode) {
-        updateBaseUrl(productionApiBaseUrl);
+        updateBaseUrl(saved.trim());
       }
     } catch (_) {}
   }

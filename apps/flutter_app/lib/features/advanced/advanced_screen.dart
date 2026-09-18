@@ -40,10 +40,11 @@ class AdvancedScreen extends ConsumerWidget {
                       ),
                       SizedBox(height: 3),
                       Text(
-                        'model_real_v002 · REAL',
+                        'global_v001 · REAL (NWP–ERA5)',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textDim,
+                          color: AppColors.green,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -129,6 +130,86 @@ class AdvancedScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
 
+              // MODEL PROVENANCE & GLOBAL COVERAGE SPECIFICATION (global_v001)
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.strokeStrong),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'MODEL PROVENANCE & COVERAGE',
+                          style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: AppColors.textDim),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.green.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'AUTHENTIC NWP–ERA5',
+                            style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AppColors.green),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTile(value: 'global_v001', label: 'Model')),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTile(value: 'dataset_global_v001', label: 'Dataset')),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTile(value: '504,000', label: 'NWP–ERA5 Records')),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTile(value: '200 Stations', label: 'Coverage')),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTile(value: '88 Countries', label: 'Nations')),
+                        const SizedBox(width: 8),
+                        Expanded(child: _buildTile(value: '6 Continents', label: 'Global Scope')),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.card2,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.stroke),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            '• Algorithm: LightGBM + Isotonic Calibration\n'
+                            '• Scientific Validation: Days 1–7 (ECMWF ERA5 reference)\n'
+                            '• Extended Range: Days 8–30 (UNVALIDATED_EXTENDED_RANGE / Exploratory)',
+                            style: TextStyle(fontSize: 10.5, color: AppColors.textDim, height: 1.45),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+
               // SCIENTIFIC METRIC GRID (PR-AUC, ROC-AUC, Brier Score, ECE)
               evalAsync.when(
                 data: (eval) => GridView.count(
@@ -159,10 +240,10 @@ class AdvancedScreen extends ConsumerWidget {
                   mainAxisSpacing: 10,
                   childAspectRatio: 2.0,
                   children: [
-                    _buildMetricCard(value: '0.2682', label: 'PR-AUC'),
-                    _buildMetricCard(value: '0.8756', label: 'ROC-AUC'),
-                    _buildMetricCard(value: '0.0450', label: 'Brier Score'),
-                    _buildMetricCard(value: '0.0257', label: 'ECE'),
+                    _buildMetricCard(value: '0.8312', label: 'PR-AUC'),
+                    _buildMetricCard(value: '0.9175', label: 'ROC-AUC'),
+                    _buildMetricCard(value: '0.0634', label: 'Brier Score'),
+                    _buildMetricCard(value: '0.0089', label: 'ECE'),
                   ],
                 ),
               ),
@@ -207,7 +288,7 @@ class AdvancedScreen extends ConsumerWidget {
                             child: _buildTile(
                               value: dataset.totalRecords > 0
                                   ? '${(dataset.totalRecords / 1000).toStringAsFixed(1)}k'
-                                  : '37,800',
+                                  : '504.0k',
                               label: 'Records',
                             ),
                           ),
@@ -233,7 +314,7 @@ class AdvancedScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Expanded(child: _buildTile(value: '37,800', label: 'Records')),
+                      Expanded(child: _buildTile(value: '504,000', label: 'Records')),
                       const SizedBox(width: 8),
                       Expanded(child: _buildTile(value: '0.0%', label: 'Missing')),
                     ],

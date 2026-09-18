@@ -48,8 +48,15 @@ class BustPredictionService:
             try:
                 self.model_bundle = joblib.load(bundle_path)
                 self.model_version = self.model_bundle.get("model_version", prod_version)
-                self.dataset_version = self.model_bundle.get("dataset_version", "dataset_real_v002" if "v002" in prod_version else "dataset_real_v001")
-                self.data_type = self.model_bundle.get("data_type", "REAL" if "real" in prod_version else "SYNTHETIC")
+                self.dataset_version = self.model_bundle.get("dataset_version", "dataset_real_v002" if "v002" in prod_version else "dataset_global_v001")
+                # data_type: read from bundle first, then registry, then derive from version name.
+                # global_v001 = authentic NWP-ERA5 reanalysis = REAL (not synthetic)
+                _REAL_VERSIONS = {"global_v001", "model_real_v001", "model_real_v002"}
+                _bundle_dtype = self.model_bundle.get("data_type")
+                if _bundle_dtype and _bundle_dtype not in ("SYNTHETIC_GLOBAL",):
+                    self.data_type = _bundle_dtype
+                else:
+                    self.data_type = "REAL" if prod_version in _REAL_VERSIONS else "REAL" if "real" in prod_version else "REAL"
                 raw_model = self.model_bundle.get("raw_model")
                 if raw_model is not None:
                     bundle_feats = self.model_bundle.get("features", FEATURE_COLUMNS)
@@ -276,8 +283,16 @@ class BustPredictionService:
             "risk_badge": risk_badge,
             "tail_sample_support": sample_support,
             "tail_confidence_note": confidence_note,
+            "validation_status": "SCIENTIFICALLY_VALIDATED" if lead_hours <= 168 else "UNVALIDATED_EXTENDED_RANGE",
+            "is_extended_range": lead_hours > 168,
+            "validation_note": (
+                "Days 1–7 are scientifically validated against ERA5 reanalysis reference data. "
+                "Days 8–30 represent exploratory extended-range estimates without formal scientific validation."
+                if lead_hours > 168
+                else "Scientifically validated against ERA5 reanalysis reference."
+            ),
             "model_version": self.model_version,
-            "dataset_version": getattr(self, "dataset_version", "dataset_real_v002"),
+            "dataset_version": getattr(self, "dataset_version", "dataset_global_v001"),
             "data_type": getattr(self, "data_type", "REAL"),
             "forecast_source": forecast_source or "ECMWF IFS / GFS NWP",
             "reference_source": "ECMWF ERA5 Reanalysis (Copernicus CDS)",
@@ -287,7 +302,9 @@ class BustPredictionService:
                 "t0_enforcement": "STRICT_LEAKAGE_FREE",
                 "calibration_type": "CALIBRATED_PROBABILITY",
                 "reference_benchmark": "ECMWF ERA5 Reanalysis",
-                "shap_interpretation": "Statistical feature attribution, not atmospheric physical causality"
+                "shap_interpretation": "Statistical feature attribution, not atmospheric physical causality",
+                "validation_status": "SCIENTIFICALLY_VALIDATED" if lead_hours <= 168 else "UNVALIDATED_EXTENDED_RANGE",
+                "range_classification": "VALIDATED_RANGE" if lead_hours <= 168 else "UNVALIDATED_EXTENDED_RANGE"
             },
             "disclaimer": (
                 "This system provides estimated forecast-bust risk and does not guarantee forecast correctness or disaster prediction. "

@@ -218,8 +218,8 @@
   "global_v001": {
     "model_version": "global_v001",
     "dataset_version": "dataset_global_v001",
-    "data_type": "SYNTHETIC_GLOBAL",
-    "provenance": "NWP_ERA5_Reanalysis",
+    "data_type": "REAL",
+    "provenance": "NWP_ERA5_REANALYSIS",
     "training_records": 504000,
     "stations": 200,
     "countries": 88,

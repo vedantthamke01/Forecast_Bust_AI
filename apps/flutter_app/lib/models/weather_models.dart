@@ -15,12 +15,21 @@ class LocationModel {
 
   String get displayName {
     if (state != null && state!.isNotEmpty) {
+      if (country != null && country!.isNotEmpty && country != state) {
+        return '$name, $state, $country';
+      }
       return '$name, $state';
     }
     if (country != null && country!.isNotEmpty) {
       return '$name, $country';
     }
     return name;
+  }
+
+  String get formattedCoordinates {
+    final latDir = latitude >= 0 ? 'N' : 'S';
+    final lonDir = longitude >= 0 ? 'E' : 'W';
+    return '${latitude.abs().toStringAsFixed(2)}°$latDir, ${longitude.abs().toStringAsFixed(2)}°$lonDir';
   }
 
   factory LocationModel.fromJson(Map<String, dynamic> json) {

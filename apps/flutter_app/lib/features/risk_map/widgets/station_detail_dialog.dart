@@ -58,7 +58,7 @@ class StationDetailDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${station.latitude.toStringAsFixed(2)}°N, ${station.longitude.toStringAsFixed(2)}°E · Synoptic Observatory',
+              '${AppConstants.formatCoordinates(station.latitude, station.longitude)} · Synoptic Observatory',
               style: const TextStyle(fontSize: 10, color: AppColors.textDim),
             ),
             const SizedBox(height: 14),
@@ -138,7 +138,8 @@ class StationDetailDialog extends ConsumerWidget {
                     // Set as active location and switch to Home
                     final loc = LocationModel(
                       name: station.stationName,
-                      state: 'India',
+                      state: AppConstants.formatLat(station.latitude),
+                      country: AppConstants.formatLon(station.longitude),
                       latitude: station.latitude,
                       longitude: station.longitude,
                     );

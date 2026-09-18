@@ -68,9 +68,9 @@ class LocationService {
       }
 
       return LocationModel(
-        name: '${position.latitude.toStringAsFixed(2)}°N',
-        state: '${position.longitude.toStringAsFixed(2)}°E',
-        country: 'India',
+        name: AppConstants.formatLat(position.latitude),
+        state: AppConstants.formatLon(position.longitude),
+        country: null,
         latitude: position.latitude,
         longitude: position.longitude,
       );

@@ -78,6 +78,66 @@ void main() {
       expect(risk.explanation, isNotNull);
       expect(risk.explanation!.topMitigators.length, 1);
       expect(risk.explanation!.topMitigators.first.feature, 'ensemble_spread');
+      expect(risk.isScientificallyValidated, true);
+      expect(risk.isExtendedRange, false);
+      expect(risk.validationStatus, 'SCIENTIFICALLY_VALIDATED');
+    });
+
+    test('RiskPrediction correctly identifies Days 8-30 as UNVALIDATED_EXTENDED_RANGE', () {
+      final json = {
+        'latitude': 35.6762,
+        'longitude': 139.6503,
+        'lead_hours': 360, // Day 15
+        'variable': 'precipitation',
+        'forecast_value': 12.0,
+        'bust_probability': 0.32,
+        'reliability_score': 0.68,
+        'risk_level': 'MODERATE',
+        'forecast_source': 'ECMWF IFS (Operational NWP)',
+        'scientific_governance': {
+          'validation_status': 'UNVALIDATED_EXTENDED_RANGE'
+        }
+      };
+
+      final risk = RiskPrediction.fromJson(json);
+      expect(risk.leadHours, 360);
+      expect(risk.isExtendedRange, true);
+      expect(risk.isScientificallyValidated, false);
+      expect(risk.validationStatus, 'UNVALIDATED_EXTENDED_RANGE');
+      expect(risk.validationBadgeLabel, 'UNVALIDATED EXTENDED RANGE');
+    });
+
+    test('LocationModel formats global coordinates with N/S and E/W correctly', () {
+      const tokyo = LocationModel(
+        name: 'Tokyo',
+        latitude: 35.6762,
+        longitude: 139.6503,
+      );
+      expect(tokyo.formattedCoordinates, '35.68°N, 139.65°E');
+
+      const sydney = LocationModel(
+        name: 'Sydney',
+        latitude: -33.8688,
+        longitude: 151.2093,
+      );
+      expect(sydney.formattedCoordinates, '33.87°S, 151.21°E');
+
+      const newYork = LocationModel(
+        name: 'New York',
+        latitude: 40.7128,
+        longitude: -74.0060,
+      );
+      expect(newYork.formattedCoordinates, '40.71°N, 74.01°W');
+    });
+
+    test('AppConstants operationalLeadHours contains 30 full days', () {
+      expect(AppConstants.operationalLeadHours.length, 30);
+      expect(AppConstants.operationalLeadHours.first, 24);
+      expect(AppConstants.operationalLeadHours.last, 720);
+      expect(AppConstants.isExtendedRange(24), false);
+      expect(AppConstants.isExtendedRange(168), false);
+      expect(AppConstants.isExtendedRange(192), true);
+      expect(AppConstants.isExtendedRange(720), true);
     });
 
     test('HistoricalVerification parses ERA5 comparison records', () {
@@ -151,7 +211,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Forecast Bust AI'), findsOneWidget);
-      expect(find.text('Reliability Intelligence · Days 3–10'), findsOneWidget);
+      expect(find.text('Reliability Intelligence · Days 1–30'), findsOneWidget);
 
       // Verify 4 tabs in bottom navigation
       expect(find.text('Home'), findsOneWidget);

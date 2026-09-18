@@ -21,7 +21,13 @@ class NwpReliabilityCard extends StatelessWidget {
     final wind = horizon?.windSpeed10m ?? 6.8;
 
     final relScore = prediction.reliabilityScore;
-    final riskColor = AppColors.forRiskLevel(prediction.riskLevel);
+    final isExtended = prediction.isExtendedRange;
+    final dayNum = (prediction.leadHours / 24).round();
+
+    // Days 8–30 must NEVER use green validated color
+    final riskColor = isExtended
+        ? AppColors.orange
+        : AppColors.forRiskLevel(prediction.riskLevel);
 
     return Column(
       children: [
@@ -77,7 +83,7 @@ class NwpReliabilityCard extends StatelessWidget {
                         border: Border.all(color: AppColors.stroke),
                       ),
                       child: Text(
-                        'Day ${(prediction.leadHours / 24).round()} (${prediction.leadHours}h)',
+                        'Day $dayNum (${prediction.leadHours}h)',
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -91,14 +97,16 @@ class NwpReliabilityCard extends StatelessWidget {
             ),
             const SizedBox(width: 10),
 
-            // RIGHT CARD: Bust Probability & Reliability (Glowing)
+            // RIGHT CARD: Bust Probability & Reliability
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: AppColors.card,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.strokeStrong),
+                  border: Border.all(
+                    color: isExtended ? AppColors.orange.withOpacity(0.5) : AppColors.strokeStrong,
+                  ),
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -130,7 +138,7 @@ class NwpReliabilityCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            prediction.riskLevel,
+                            isExtended ? 'EXTENDED' : prediction.riskLevel,
                             style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.w800,
@@ -152,9 +160,9 @@ class NwpReliabilityCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Reliability ${(relScore * 100).toStringAsFixed(1)}%',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
-                        color: AppColors.textDim,
+                        color: isExtended ? AppColors.orange : AppColors.textDim,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -184,6 +192,58 @@ class NwpReliabilityCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 10),
+
+        // SCIENTIFIC STATUS BANNER (Clearly differentiates Days 1-7 from Days 8-30)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: isExtended ? AppColors.orange.withOpacity(0.10) : AppColors.green.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isExtended ? AppColors.orange.withOpacity(0.35) : AppColors.green.withOpacity(0.25),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isExtended ? Icons.warning_amber_rounded : Icons.verified_outlined,
+                color: isExtended ? AppColors.orange : AppColors.green,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isExtended
+                          ? 'STATUS: UNVALIDATED EXTENDED RANGE'
+                          : 'STATUS: SCIENTIFICALLY VALIDATED',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: isExtended ? AppColors.orange : AppColors.green,
+                        letterSpacing: 0.03,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isExtended
+                          ? 'Exploratory estimate only (Day $dayNum / ${prediction.leadHours}h). Days 8–30 have no formal scientific ERA5 validation.'
+                          : 'Validated against ECMWF ERA5 reanalysis reference data (Day $dayNum / ${prediction.leadHours}h).',
+                      style: const TextStyle(
+                        fontSize: 10.5,
+                        color: AppColors.textDim,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
 
@@ -245,6 +305,21 @@ class NwpReliabilityCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        // Mandatory Scientific Governance Disclaimer
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.card.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            'Disclaimer: This system provides forecast reliability estimation and does not replace official NWP or meteorological advisories.',
+            style: TextStyle(fontSize: 9.5, color: AppColors.textFaint, fontStyle: FontStyle.italic, height: 1.3),
+            textAlign: TextAlign.center,
           ),
         ),
       ],

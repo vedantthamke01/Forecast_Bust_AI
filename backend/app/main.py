@@ -76,7 +76,7 @@ async def health_check():
         "demo_mode": settings.DEMO_MODE,
         "demo_mode_description": "Application weather provider fallback mode. ML model provenance is tracked separately by 'data_type' and 'is_demo_model'.",
         "model_version": bust_service.model_version,
-        "dataset_version": getattr(bust_service, "dataset_version", "dataset_real_v002"),
+        "dataset_version": getattr(bust_service, "dataset_version", "dataset_global_v001"),
         "data_type": getattr(bust_service, "data_type", "REAL"),
         "is_demo_model": getattr(bust_service, "data_type", "REAL") == "SYNTHETIC",
         "scientific_disclaimer": "This system provides forecast reliability estimation and does not replace official NWP or meteorological advisories."

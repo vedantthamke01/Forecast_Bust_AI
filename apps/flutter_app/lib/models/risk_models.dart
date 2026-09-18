@@ -111,7 +111,20 @@ class RiskPrediction {
   final String riskLevel;
   final String riskBadge;
   final String forecastSource;
+  final String validationStatus;
+  final String? validationNote;
   final ShapExplanation? explanation;
+
+  bool get isExtendedRange => leadHours > 168;
+  bool get isScientificallyValidated => leadHours <= 168;
+
+  String get validationBadgeLabel => isScientificallyValidated
+      ? 'Scientifically validated'
+      : 'UNVALIDATED EXTENDED RANGE';
+
+  String get validationExplanation => isScientificallyValidated
+      ? 'Validated against ECMWF ERA5 reanalysis reference (Days 1–7).'
+      : 'Exploratory estimate only. Days 8–30 have no formal scientific validation.';
 
   const RiskPrediction({
     required this.latitude,
@@ -127,6 +140,8 @@ class RiskPrediction {
     required this.riskLevel,
     required this.riskBadge,
     required this.forecastSource,
+    required this.validationStatus,
+    this.validationNote,
     this.explanation,
   });
 
@@ -171,6 +186,24 @@ class RiskPrediction {
       expl = ShapExplanation.fromJson(json['explanation'] as Map<String, dynamic>);
     }
 
+    // Parse validation status from backend or compute from lead hours
+    final aiRisk = json['AI_BUST_RISK'] is Map<String, dynamic>
+        ? json['AI_BUST_RISK'] as Map<String, dynamic>
+        : null;
+    final sciGov = json['scientific_governance'] is Map<String, dynamic>
+        ? json['scientific_governance'] as Map<String, dynamic>
+        : (aiRisk?['scientific_governance'] is Map<String, dynamic>
+            ? aiRisk!['scientific_governance'] as Map<String, dynamic>
+            : null);
+
+    final valStatus = json['validation_status'] as String? ??
+        aiRisk?['validation_status'] as String? ??
+        sciGov?['validation_status'] as String? ??
+        (lead <= 168 ? 'SCIENTIFICALLY_VALIDATED' : 'UNVALIDATED_EXTENDED_RANGE');
+
+    final valNote = json['validation_note'] as String? ??
+        aiRisk?['validation_note'] as String?;
+
     return RiskPrediction(
       latitude: lat,
       longitude: lon,
@@ -183,8 +216,10 @@ class RiskPrediction {
       reliabilityScore: rel,
       reliabilityScorePercentage: relPct,
       riskLevel: json['risk_level'] as String? ?? 'LOW',
-      riskBadge: json['risk_badge'] as String? ?? '🟢 LOW',
+      riskBadge: json['risk_badge'] as String? ?? (lead > 168 ? '⚠️ EXTENDED' : '🟢 LOW'),
       forecastSource: json['forecast_source'] as String? ?? 'ECMWF IFS (Operational NWP)',
+      validationStatus: valStatus,
+      validationNote: valNote,
       explanation: expl,
     );
   }

@@ -1,0 +1,57 @@
+{
+  "project": "SIH26079",
+  "title": "AI-Based Forecast Bust Detection for Medium-Range Weather Forecasts",
+  "organization": "NCMRWF / MoES",
+  "team": "The Centinels",
+  "generated_at": "2026-09-18T06:34:43.142530Z",
+  "production_model": "global_v001",
+  "rollback_model": "model_real_v002",
+  "canary_enabled": false,
+  "git_sha": "32ae6b1",
+  "test_results": {
+    "total_passed": 96,
+    "total_skipped": 1,
+    "total_failed": 0,
+    "exit_code": 0
+  },
+  "model_metrics": {
+    "roc_auc": 0.8847,
+    "brier_score": 0.1124,
+    "calibration_ece": 0.0312,
+    "geographic_holdout_auc": 0.8712,
+    "validated_lead_days": "1-7",
+    "extended_range": "Days 8-30 labeled UNVALIDATED_EXTENDED_RANGE"
+  },
+  "canary_evidence": {
+    "total_requests": 12500,
+    "canary_requests": 3537,
+    "errors": 0,
+    "fallbacks": 0,
+    "schema_violations": 0,
+    "p95_latency_ms": 123.59,
+    "prod_p95_latency_ms": 103.12,
+    "latency_ratio": 1.198
+  },
+  "security": {
+    "cds_api_key_redacted": true,
+    "credential_rotation_advised": true,
+    "no_plaintext_secrets_in_code": true
+  },
+  "api_endpoints": {
+    "production": "https://forecast-bust-api.onrender.com",
+    "health": "/health",
+    "predict": "/api/predict",
+    "risk_location": "/api/risk/location",
+    "risk_map": "/api/risk/map",
+    "canary_status": "/api/canary/status",
+    "models_current": "/api/models/current"
+  },
+  "limitations": [
+    "Day 30 forecasts are UNVALIDATED_EXTENDED_RANGE \u2014 not scientifically validated",
+    "ERA5 used as reanalysis reference, not ground truth",
+    "global_v001 trained on synthetic global data; real-world NCMRWF station data not yet integrated",
+    "p95 canary latency 1.198x production \u2014 within SLA but should be monitored",
+    "CDS API key rotation advised (was transiently exposed in git history)"
+  ],
+  "readiness_verdict": "READY_FOR_SIH_DEMONSTRATION"
+}

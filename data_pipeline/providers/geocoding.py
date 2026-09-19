@@ -5,6 +5,8 @@ embedded database of Indian synoptic weather stations and major cities
 for instantaneous, reliable, offline-capable operation.
 """
 from typing import List, Optional
+import os
+import json
 import httpx
 import math
 from data_pipeline.providers.base import GeocodingProvider, GeocodedLocation
@@ -91,8 +93,33 @@ GLOBAL_BENCHMARK_STATIONS = INDIAN_CITIES_DB + [
     {"name": "Melbourne", "district": "Victoria", "state": "Australia", "lat": -37.8136, "lon": 144.9631, "elevation": 31.0, "country": "Australia", "climate_regime": "TEMPERATE"},
     {"name": "Alice Springs", "district": "Northern Territory", "state": "Australia", "lat": -23.6980, "lon": 133.8807, "elevation": 545.0, "country": "Australia", "climate_regime": "ARID"},
     {"name": "Darwin", "district": "Northern Territory", "state": "Australia", "lat": -12.4634, "lon": 130.8456, "elevation": 30.0, "country": "Australia", "climate_regime": "TROPICAL"},
-    {"name": "Auckland", "district": "Auckland", "state": "New Zealand", "lat": -36.8485, "lon": 174.7633, "elevation": 20.0, "country": "New Zealand", "climate_regime": "TEMPERATE"},
 ]
+
+# Load full 200 stations across 88 countries from dataset_global_v001 catalog if present
+_stations_json_path = os.path.join(os.path.dirname(__file__), "global_stations_200.json")
+if os.path.exists(_stations_json_path):
+    try:
+        import json as _json
+        with open(_stations_json_path, "r", encoding="utf-8") as _f:
+            _loaded = _json.load(_f)
+            _existing_by_name = {s["name"].lower(): s for s in GLOBAL_BENCHMARK_STATIONS}
+            _merged_list = []
+            for _item in _loaded:
+                _name_key = _item.get("name", "").lower()
+                _base = _existing_by_name.get(_name_key, {})
+                _entry = dict(_item)
+                if "climate_regime" not in _entry and "climate_category" in _entry:
+                    _entry["climate_regime"] = _entry["climate_category"]
+                elif "climate_regime" not in _entry and "climate_regime" in _base:
+                    _entry["climate_regime"] = _base["climate_regime"]
+                if not _entry.get("state") and _base.get("state"):
+                    _entry["state"] = _base["state"]
+                if not _entry.get("district") and _base.get("district"):
+                    _entry["district"] = _base["district"]
+                _merged_list.append(_entry)
+            GLOBAL_BENCHMARK_STATIONS = _merged_list
+    except Exception:
+        pass
 
 
 def _haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
